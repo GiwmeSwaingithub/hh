@@ -17,7 +17,7 @@
       const password = document.getElementById('login-password').value;
       try {
         await DKUT.auth.signInWithEmailAndPassword(email, password);
-        const next = new URLSearchParams(location.search).get('next') || '../../pages/home/';
+        const next = new URLSearchParams(location.search).get('next') || (DKUT.CONFIG ? DKUT.CONFIG.pageUrl('pages/home/') : '/');
         location.href = next;
       } catch (err) {
         show(err.message || 'Sign in failed.', 'error');

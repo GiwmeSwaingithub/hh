@@ -41,10 +41,10 @@
   ];
 
   const NAV_ITEMS = [
-    { id: 'home',         label: 'Home',        icon: 'home',        href: BASE + 'pages/home/' },
-    { id: 'locations',    label: 'Locations',   icon: 'locations',   href: BASE + 'pages/locations/' },
-    { id: 'scam-reports', label: 'Scam Alerts', icon: 'scam',        href: BASE + 'pages/scam-reports/' },
-    { id: 'report-issue', label: 'Report',      icon: 'report',      href: BASE + 'pages/report-issue/' },
+    { id: 'home',         label: 'Home',        icon: 'home',        href: pageUrl('pages/home/') },
+    { id: 'locations',    label: 'Locations',   icon: 'locations',   href: pageUrl('pages/locations/') },
+    { id: 'scam-reports', label: 'Scam Alerts', icon: 'scam',        href: pageUrl('pages/scam-reports/') },
+    { id: 'report-issue', label: 'Report',      icon: 'report',      href: pageUrl('pages/report-issue/') },
   ];
 
   const AMENITY_ICONS = {
@@ -90,6 +90,12 @@
     const path = location.pathname;
     const pagesIdx = path.indexOf('/pages/');
     if (pagesIdx >= 0) return path.slice(0, pagesIdx + 1);
+
+    // Dynamic root detection for Vercel/localhost clean URLs
+    if (location.hostname.includes('vercel.app') || location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      return '/';
+    }
+
     const hostelMatch = path.match(/^(.*\/hostel\/)/i);
     if (hostelMatch) return hostelMatch[1];
     if (path.endsWith('/')) return path;
@@ -98,7 +104,26 @@
 
   function pageUrl(relative) {
     const rel = String(relative || '').replace(/^\//, '');
-    return getAppRoot() + rel;
+    
+    // Separate query string/hash
+    const parts = rel.split(/([?#])/);
+    let path = parts[0];
+    const rest = parts.slice(1).join('');
+    
+    const root = getAppRoot();
+    if (root === '/') {
+      // Clean URLs for root hosting (e.g., Vercel)
+      let clean = path.replace(/^pages\//i, '');
+      clean = clean.replace(/\/index\.html$/i, '');
+      clean = clean.replace(/\/$/, '');
+      if (clean === 'home' || clean === '') {
+        return '/' + rest;
+      }
+      return '/' + clean + rest;
+    } else {
+      // Standard full URLs for subdirectory/static hosting
+      return root + rel;
+    }
   }
 
   function dataUrl() {

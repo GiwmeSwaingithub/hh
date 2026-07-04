@@ -244,7 +244,7 @@
     if (DKUT.CONFIG && DKUT.CONFIG.pageUrl) {
       return DKUT.CONFIG.pageUrl('pages/home/index.html?loc=' + encodeURIComponent(id));
     }
-    if (location.pathname.includes('/pages/home')) {
+    if (location.pathname.includes('/pages/home') || location.pathname === '/' || location.pathname === '/home') {
       return 'index.html?loc=' + encodeURIComponent(id);
     }
     return '../home/index.html?loc=' + encodeURIComponent(id);

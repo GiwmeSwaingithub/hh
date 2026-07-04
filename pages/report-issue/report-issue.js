@@ -89,7 +89,7 @@
             <div style="font-size:3rem;color:#0bda83;margin-bottom:16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 48px; height: 48px; margin: 0 auto;"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
             <h3 style="color:#d5d0e8;">Report Submitted</h3>
             <p class="quickstart-note">Thank you! We'll review within 24 hours.</p>
-            <a href="../../pages/home/" class="macos-download-btn" style="display:inline-flex;margin-top:16px;font-size:0.85rem;padding:12px 24px;">Back to Listings</a>
+            <a href="${DKUT.CONFIG ? DKUT.CONFIG.pageUrl('pages/home/') : '/'}" class="macos-download-btn" style="display:inline-flex;margin-top:16px;font-size:0.85rem;padding:12px 24px;">Back to Listings</a>
           </div>`;
       } else {
         showStatus('Database unavailable. Use the WhatsApp link below.', 'error');

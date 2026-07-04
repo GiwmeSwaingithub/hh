@@ -1,0 +1,21 @@
+{
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/pages/home(.*)", "destination": "/", "permanent": true },
+    { "source": "/pages/:path*", "destination": "/:path*", "permanent": true }
+  ],
+  "rewrites": [
+    { "source": "/", "destination": "/pages/home/index.html" },
+    { "source": "/home", "destination": "/pages/home/index.html" },
+    { "source": "/:path(home|hostel-details|locations|scam-reports|report-issue|login|signup|legal|services|demo).js", "destination": "/pages/:path/:path.js" },
+    { "source": "/login", "destination": "/pages/login/index.html" },
+    { "source": "/signup", "destination": "/pages/signup/index.html" },
+    { "source": "/hostel-details", "destination": "/pages/hostel-details/index.html" },
+    { "source": "/locations", "destination": "/pages/locations/index.html" },
+    { "source": "/scam-reports", "destination": "/pages/scam-reports/index.html" },
+    { "source": "/report-issue", "destination": "/pages/report-issue/index.html" },
+    { "source": "/legal", "destination": "/pages/legal/index.html" },
+    { "source": "/services", "destination": "/pages/services/index.html" },
+    { "source": "/demo", "destination": "/pages/demo/index.html" }
+  ]
+}

@@ -183,7 +183,7 @@
   }
 
   function bindHomeLinks() {
-    document.querySelectorAll('a[href="../home/"], a[href="../home/index.html"], #nav-btn-home, .topbar-left a, .footer-links a[href*="/home/"]').forEach(link => {
+    document.querySelectorAll('a[href="../home/"], a[href="../home/index.html"], a[href="/"], #nav-btn-home, .topbar-left a, .footer-links a[href*="/home/"]').forEach(link => {
       if (link.classList.contains('back-link-topbar')) return;
       link.addEventListener('click', () => {
         try {

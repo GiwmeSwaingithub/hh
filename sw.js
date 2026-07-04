@@ -1,36 +1,36 @@
-/* DKUT HOSTELS — SERVICE WORKER (hostel/) */
+const BASE_PATH = self.location.pathname.substring(0, self.location.pathname.lastIndexOf('/') + 1);
 
-const CACHE_VERSION = 'dkut-hostel-v2';
+const CACHE_VERSION = 'dkut-hostel-v3';
 const DATA_CACHE = 'dkut-hostel-data-v1';
 
 const STATIC_ASSETS = [
-  '/hostel/',
-  '/hostel/index.html',
-  '/hostel/manifest.json',
-  '/hostel/shared/css/theme.css',
-  '/hostel/shared/js/config.js',
-  '/hostel/shared/js/app.js',
-  '/hostel/shared/js/layout.js',
-  '/hostel/shared/js/firebase-init.js',
-  '/hostel/shared/js/auth-state.js',
-  '/hostel/shared/utils/security.js',
-  '/hostel/shared/utils/helpers.js',
-  '/hostel/shared/data/hostels.json',
-  '/hostel/shared/data/hostels.mock.json',
-  '/hostel/pages/home/index.html',
-  '/hostel/pages/home/home.js',
-  '/hostel/pages/hostel-details/index.html',
-  '/hostel/pages/hostel-details/hostel-details.js',
-  '/hostel/pages/locations/index.html',
-  '/hostel/pages/locations/locations.js',
-  '/hostel/pages/scam-reports/index.html',
-  '/hostel/pages/scam-reports/scam-reports.js',
-  '/hostel/pages/report-issue/index.html',
-  '/hostel/pages/report-issue/report-issue.js',
-  '/hostel/pages/login/index.html',
-  '/hostel/pages/login/login.js',
-  '/hostel/pages/signup/index.html',
-  '/hostel/pages/signup/signup.js',
+  BASE_PATH,
+  BASE_PATH + 'index.html',
+  BASE_PATH + 'manifest.json',
+  BASE_PATH + 'shared/css/theme.css',
+  BASE_PATH + 'shared/js/config.js',
+  BASE_PATH + 'shared/js/app.js',
+  BASE_PATH + 'shared/js/layout.js',
+  BASE_PATH + 'shared/js/firebase-init.js',
+  BASE_PATH + 'shared/js/auth-state.js',
+  BASE_PATH + 'shared/utils/security.js',
+  BASE_PATH + 'shared/utils/helpers.js',
+  BASE_PATH + 'shared/data/hostels.json',
+  BASE_PATH + 'shared/data/hostels.mock.json',
+  BASE_PATH + 'pages/home/index.html',
+  BASE_PATH + 'pages/home/home.js',
+  BASE_PATH + 'pages/hostel-details/index.html',
+  BASE_PATH + 'pages/hostel-details/hostel-details.js',
+  BASE_PATH + 'pages/locations/index.html',
+  BASE_PATH + 'pages/locations/locations.js',
+  BASE_PATH + 'pages/scam-reports/index.html',
+  BASE_PATH + 'pages/scam-reports/scam-reports.js',
+  BASE_PATH + 'pages/report-issue/index.html',
+  BASE_PATH + 'pages/report-issue/report-issue.js',
+  BASE_PATH + 'pages/login/index.html',
+  BASE_PATH + 'pages/login/login.js',
+  BASE_PATH + 'pages/signup/index.html',
+  BASE_PATH + 'pages/signup/signup.js',
 ];
 
 self.addEventListener('install', event => {
@@ -80,7 +80,7 @@ self.addEventListener('fetch', event => {
         caches.open(CACHE_VERSION).then(c => c.put(event.request, clone));
         return response;
       }).catch(() =>
-        caches.match(event.request).then(cached => cached || caches.match('/hostel/pages/home/index.html'))
+        caches.match(event.request).then(cached => cached || caches.match(BASE_PATH + 'pages/home/index.html'))
       )
     );
     return;

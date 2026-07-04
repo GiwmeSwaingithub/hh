@@ -20,7 +20,7 @@
       try {
         const cred = await DKUT.auth.createUserWithEmailAndPassword(email, password);
         if (cred.user && name) await cred.user.updateProfile({ displayName: name });
-        location.href = '../../pages/home/';
+        location.href = DKUT.CONFIG ? DKUT.CONFIG.pageUrl('pages/home/') : '/';
       } catch (err) {
         show(err.message || 'Sign up failed.', 'error');
       }
