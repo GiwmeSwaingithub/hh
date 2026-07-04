@@ -5,17 +5,17 @@
     { "source": "/pages/:path*", "destination": "/:path*", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/", "destination": "/pages/home/index.html" },
-    { "source": "/home", "destination": "/pages/home/index.html" },
+    { "source": "/", "destination": "/pages/home" },
+    { "source": "/home", "destination": "/pages/home" },
     { "source": "/:path(home|hostel-details|locations|scam-reports|report-issue|login|signup|legal|services|demo).js", "destination": "/pages/:path/:path.js" },
-    { "source": "/login", "destination": "/pages/login/index.html" },
-    { "source": "/signup", "destination": "/pages/signup/index.html" },
+    { "source": "/login", "destination": "/pages/login" },
+    { "source": "/signup", "destination": "/pages/signup" },
     { "source": "/hostel-details", "destination": "/api/hostel-details" },
-    { "source": "/locations", "destination": "/pages/locations/index.html" },
-    { "source": "/scam-reports", "destination": "/pages/scam-reports/index.html" },
-    { "source": "/report-issue", "destination": "/pages/report-issue/index.html" },
-    { "source": "/legal", "destination": "/pages/legal/index.html" },
-    { "source": "/services", "destination": "/pages/services/index.html" },
-    { "source": "/demo", "destination": "/pages/demo/index.html" }
+    { "source": "/locations", "destination": "/pages/locations" },
+    { "source": "/scam-reports", "destination": "/pages/scam-reports" },
+    { "source": "/report-issue", "destination": "/pages/report-issue" },
+    { "source": "/legal", "destination": "/pages/legal" },
+    { "source": "/services", "destination": "/pages/services" },
+    { "source": "/demo", "destination": "/pages/demo" }
   ]
 }
