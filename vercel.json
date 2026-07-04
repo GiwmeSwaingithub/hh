@@ -10,7 +10,7 @@
     { "source": "/:path(home|hostel-details|locations|scam-reports|report-issue|login|signup|legal|services|demo).js", "destination": "/pages/:path/:path.js" },
     { "source": "/login", "destination": "/pages/login/index.html" },
     { "source": "/signup", "destination": "/pages/signup/index.html" },
-    { "source": "/hostel-details", "destination": "/pages/hostel-details/index.html" },
+    { "source": "/hostel-details", "destination": "/api/hostel-details" },
     { "source": "/locations", "destination": "/pages/locations/index.html" },
     { "source": "/scam-reports", "destination": "/pages/scam-reports/index.html" },
     { "source": "/report-issue", "destination": "/pages/report-issue/index.html" },

@@ -5,7 +5,6 @@ const DATA_CACHE = 'dkut-hostel-data-v1';
 
 const STATIC_ASSETS = [
   BASE_PATH,
-  BASE_PATH + 'index.html',
   BASE_PATH + 'manifest.json',
   BASE_PATH + 'shared/css/theme.css',
   BASE_PATH + 'shared/js/config.js',
