@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scam Alerts — DKUT Hostels</title>
+  <meta name="description" content="Check phone numbers and view reported scam alerts for DKUT student hostels." />
+  <meta name="theme-color" content="#08080b" />
+  <link rel="stylesheet" href="../../shared/css/theme.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
+</head>
+<body>
+  <!-- Static Layout Elements -->
+  <div class="bg-layer" aria-hidden="true"></div>
+  <div class="bg-orb orb-1" aria-hidden="true"></div>
+  <div class="bg-orb orb-2" aria-hidden="true"></div>
+  <div class="bg-orb orb-3" aria-hidden="true"></div>
+
+  <svg style="display:none" aria-hidden="true">
+    <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+      <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" seed="5" result="turbulence" />
+      <feComponentTransfer in="turbulence" result="mapped">
+        <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+        <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+        <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+      </feComponentTransfer>
+      <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+      <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lighting-color="white" result="specLight">
+        <fePointLight x="-200" y="-200" z="300" />
+      </feSpecularLighting>
+      <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage" />
+      <feDisplacementMap in="SourceGraphic" in2="softMap" scale="150" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+  <div id="dkut-toast" class="dkut-toast" role="status" aria-live="polite"></div>
+
+  <header id="topbar" role="banner">
+    <div class="topbar-left">
+      <a href="../home/" style="text-decoration:none;color:inherit;display:flex;align-items:baseline;gap:10px;">
+        <h1>DKUT Hostels</h1>
+        <span class="subtitle">Student Housing</span>
+      </a>
+    </div>
+    <div class="topbar-center" style="visibility: hidden; pointer-events: none;">
+      <div id="poda"></div>
+    </div>
+    <div class="topbar-right" style="display:flex; align-items:center; gap:8px;">
+      <select id="theme-toggle-select" class="glass-select theme-select" aria-label="Toggle Theme">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="high-contrast">Contrast</option>
+      </select>
+      <a href="../login/" class="report-btn" id="nav-login-btn" aria-label="Sign in" title="Sign in" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="5"></circle>
+          <path d="M3 21c0-4.97 4.03-9 9-9s9 4.03 9 9"></path>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <nav id="nav-bar" aria-label="Main navigation">
+    <div class="liquidGlass-wrapper nav-group">
+      <div class="liquidGlass-effect" aria-hidden="true"></div>
+      <div class="liquidGlass-tint" aria-hidden="true"></div>
+      <div class="liquidGlass-shine" aria-hidden="true"></div>
+      <div class="liquidGlass-text">
+        <a href="../home/" class="nav-icon-btn" id="nav-btn-home" aria-label="Home" data-tooltip="Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"></path><polyline points="9 21 9 13 15 13 15 21"></polyline></svg>
+          <span class="nav-text">Home</span>
+        </a>
+        <a href="../locations/" class="nav-icon-btn" id="nav-btn-locations" aria-label="Locations" data-tooltip="Locations">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span class="nav-text">Locations</span>
+        </a>
+        <a href="../services/" class="nav-icon-btn" id="nav-btn-services" aria-label="Services" data-tooltip="Services">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+          <span class="nav-text">Services</span>
+        </a>
+        <a href="../scam-reports/" class="nav-icon-btn active" id="nav-btn-scam" aria-label="Scam Alerts" data-tooltip="Scam Alerts" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span class="nav-text">Help</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="content">
+    <div class="page-header">
+      <h2>Scam Alerts</h2>
+      <p>Verify landlord phone numbers before paying. Report suspicious activity to protect other students.</p>
+    </div>
+
+    <div class="scam-checker">
+      <h3 style="margin:0 0 12px;color:#d5d0e8;font-size:1rem;">Phone Number Checker</h3>
+      <div class="checker-row">
+        <input type="tel" id="checker-phone" class="form-input" placeholder="e.g. 0712345678" aria-label="Phone to check" />
+        <button type="button" class="macos-download-btn" id="checker-btn" style="font-size:0.85rem;padding:12px 20px;">Check Number</button>
+      </div>
+      <div id="checker-result" class="checker-result" hidden></div>
+    </div>
+
+    <div class="form-card" style="margin-bottom:24px;">
+      <h3 style="margin:0 0 16px;color:#d5d0e8;">Report a Scam</h3>
+      <form id="scam-form">
+        <div class="form-group">
+          <label for="scam-phone">Scammer Phone Number</label>
+          <input type="tel" id="scam-phone" class="form-input" required placeholder="0712345678" />
+        </div>
+        <div class="form-group">
+          <label for="scam-hostel">Hostel / Listing Name</label>
+          <input type="text" id="scam-hostel" class="form-input" placeholder="Optional" />
+        </div>
+        <div class="form-group">
+          <label for="scam-desc">What happened?</label>
+          <textarea id="scam-desc" class="form-textarea" required placeholder="Describe the scam in detail (min 20 characters)"></textarea>
+        </div>
+        <button type="submit" class="macos-download-btn" style="width:100%;justify-content:center;font-size:0.9rem;padding:14px;">Submit Scam Report</button>
+        <div id="scam-status" class="form-status" hidden></div>
+      </form>
+    </div>
+
+    <h3 style="color:#d5d0e8;margin-bottom:16px;">Known Alerts</h3>
+    <div class="scam-grid" id="scam-grid">
+      <p class="quickstart-note">Loading alerts...</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer" role="contentinfo" style="margin-top: 40px;">
+      <div class="footer-content">
+        <div class="footer-left">
+          <p>&copy; 2026 DKUT Hostels. Verified accommodation services near Dedan Kimathi University of Technology.</p>
+        </div>
+        <div class="footer-links">
+          <a href="../home/">Home</a>
+          <a href="../locations/">Locations</a>
+          <a href="../scam-reports/">Scam Alerts</a>
+          <a href="../legal/" class="footer-highlight-link">Legal Compliance &amp; Accessibility</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+  <script src="../../shared/utils/security.js"></script>
+  <script src="../../shared/utils/helpers.js"></script>
+  <script src="../../shared/js/config.js"></script>
+  <script src="../../shared/js/app.js"></script>
+  <script src="../../shared/js/firebase-init.js" defer></script>
+  <script src="../../shared/js/auth-state.js" defer></script>
+  <script src="../../shared/js/layout.js" defer></script>
+  <script src="./scam-reports.js" defer></script>
+</body>
+</html>

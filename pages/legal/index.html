@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compliance & Accessibility — DKUT Hostels</title>
+  <meta name="description" content="View tenancy compliance, student safety rules, and request special needs accommodation." />
+  <meta name="theme-color" content="#08080b" />
+  <link rel="stylesheet" href="../../shared/css/theme.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
+  <style>
+    /* Page specific styling */
+    .legal-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-bottom: 30px;
+    }
+    @media (min-width: 900px) {
+      .legal-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .tts-player {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      background: rgba(139, 126, 200, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    .tts-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #dfa2da;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tts-controls {
+      display: flex;
+      gap: 8px;
+      flex-grow: 1;
+      justify-content: flex-start;
+    }
+    .tts-btn {
+      padding: 6px 12px;
+      font-size: 0.8rem !important;
+      min-width: 60px;
+    }
+    .tts-rate-select {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e0dce8;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.8rem;
+    }
+
+    .theme-customizer {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 24px;
+      border-radius: 16px;
+      margin-bottom: 30px;
+    }
+    .theme-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .theme-row:last-child {
+      margin-bottom: 0;
+    }
+    .theme-label {
+      min-width: 100px;
+      font-weight: 600;
+      color: #dfa2da;
+      font-size: 0.9rem;
+    }
+    .theme-options {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .accent-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .accent-dot:hover {
+      transform: scale(1.15);
+    }
+    .accent-dot.active {
+      border-color: #ffffff;
+      transform: scale(1.2);
+    }
+    .accent-purple { background: #8b5cf6; }
+    .accent-pink { background: #cf30aa; }
+    .accent-blue { background: #3b82f6; }
+    .accent-gold { background: #d97706; }
+    .accent-green { background: #10b981; }
+
+    .compliance-list {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .compliance-list li {
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #c0b8d8;
+    }
+  </style>
+</head>
+  <!-- Static Layout Elements -->
+  <div class="bg-layer" aria-hidden="true"></div>
+  <div class="bg-orb orb-1" aria-hidden="true"></div>
+  <div class="bg-orb orb-2" aria-hidden="true"></div>
+  <div class="bg-orb orb-3" aria-hidden="true"></div>
+
+  <svg style="display:none" aria-hidden="true">
+    <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+      <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" seed="5" result="turbulence" />
+      <feComponentTransfer in="turbulence" result="mapped">
+        <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+        <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+        <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+      </feComponentTransfer>
+      <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+      <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lighting-color="white" result="specLight">
+        <fePointLight x="-200" y="-200" z="300" />
+      </feSpecularLighting>
+      <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage" />
+      <feDisplacementMap in="SourceGraphic" in2="softMap" scale="150" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+  <div id="dkut-toast" class="dkut-toast" role="status" aria-live="polite"></div>
+
+  <header id="topbar" role="banner">
+    <div class="topbar-left">
+      <a href="../home/" style="text-decoration:none;color:inherit;display:flex;align-items:baseline;gap:10px;">
+        <h1>DKUT Hostels</h1>
+        <span class="subtitle">Student Housing</span>
+      </a>
+    </div>
+    <div class="topbar-center" style="visibility: hidden; pointer-events: none;">
+      <div id="poda"></div>
+    </div>
+    <div class="topbar-right" style="display:flex; align-items:center; gap:8px;">
+      <select id="theme-toggle-select" class="glass-select theme-select" aria-label="Toggle Theme">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="high-contrast">Contrast</option>
+      </select>
+      <a href="../login/" class="report-btn" id="nav-login-btn" aria-label="Sign in" title="Sign in" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="5"></circle>
+          <path d="M3 21c0-4.97 4.03-9 9-9s9 4.03 9 9"></path>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <nav id="nav-bar" aria-label="Main navigation">
+    <div class="liquidGlass-wrapper nav-group">
+      <div class="liquidGlass-effect" aria-hidden="true"></div>
+      <div class="liquidGlass-tint" aria-hidden="true"></div>
+      <div class="liquidGlass-shine" aria-hidden="true"></div>
+      <div class="liquidGlass-text">
+        <a href="../home/" class="nav-icon-btn" id="nav-btn-home" aria-label="Home" data-tooltip="Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"></path><polyline points="9 21 9 13 15 13 15 21"></polyline></svg>
+          <span class="nav-text">Home</span>
+        </a>
+        <a href="../locations/" class="nav-icon-btn" id="nav-btn-locations" aria-label="Locations" data-tooltip="Locations">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span class="nav-text">Locations</span>
+        </a>
+        <a href="../services/" class="nav-icon-btn" id="nav-btn-services" aria-label="Services" data-tooltip="Services">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+          <span class="nav-text">Services</span>
+        </a>
+        <a href="../scam-reports/" class="nav-icon-btn" id="nav-btn-scam" aria-label="Scam Alerts" data-tooltip="Scam Alerts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span class="nav-text">Help</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="content">
+    <div class="page-header">
+      <h2>Legal Compliance & Accessibility</h2>
+      <p>Tenancy laws, safety guidelines, and accommodation request center for Dedan Kimathi University students.</p>
+    </div>
+
+    <!-- Text-to-Speech Player Controls -->
+    <div class="tts-player" id="tts-player-wrapper">
+      <div class="tts-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        <span>Read Aloud:</span>
+      </div>
+      <div class="tts-controls">
+        <button type="button" class="macos-download-btn tts-btn" id="tts-play-btn">Play</button>
+        <button type="button" class="macos-download-btn tts-btn" id="tts-pause-btn" disabled>Pause</button>
+        <button type="button" class="macos-download-btn tts-btn" id="tts-stop-btn" disabled>Stop</button>
+        <select id="tts-rate" class="tts-rate-select" aria-label="Speech speed selection">
+          <option value="0.8">0.8x speed</option>
+          <option value="1.0" selected>1.0x speed</option>
+          <option value="1.25">1.25x speed</option>
+          <option value="1.5">1.5x speed</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Theme Customization Section -->
+    <section class="theme-customizer">
+      <h3 style="margin:0 0 16px;color:#d5d0e8;">Aesthetic & Theme Customization</h3>
+      <div class="theme-row">
+        <div class="theme-label">Theme Mode</div>
+        <div class="theme-options">
+          <button type="button" class="macos-download-btn" data-theme-opt="dark">Dark Glass</button>
+          <button type="button" class="macos-download-btn" data-theme-opt="light">Light Glass</button>
+          <button type="button" class="macos-download-btn" data-theme-opt="high-contrast">High Contrast</button>
+          <button type="button" class="macos-download-btn" data-theme-opt="system">System Default</button>
+        </div>
+      </div>
+      <div class="theme-row">
+        <div class="theme-label">Accent Color</div>
+        <div class="theme-options" id="accent-selector">
+          <button type="button" class="accent-dot accent-purple" data-accent-opt="purple" aria-label="Purple accent" title="Purple"></button>
+          <button type="button" class="accent-dot accent-pink" data-accent-opt="pink" aria-label="Pink accent" title="Pink"></button>
+          <button type="button" class="accent-dot accent-blue" data-accent-opt="blue" aria-label="Blue accent" title="Blue"></button>
+          <button type="button" class="accent-dot accent-gold" data-accent-opt="gold" aria-label="Gold accent" title="Gold"></button>
+          <button type="button" class="accent-dot accent-green" data-accent-opt="green" aria-label="Green accent" title="Green"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Informational Content (Targeted for TTS reading) -->
+    <div class="legal-grid" id="tts-read-container">
+      
+      <!-- Card 1: Legal Compliance -->
+      <div class="form-card" style="margin-bottom:0;">
+        <h3 style="margin:0 0 16px;color:#d5d0e8;" class="read-node">1. Legal & Tenancy Compliance Guidelines</h3>
+        <p class="read-node" style="line-height:1.6;color:#a8a0b8;font-size:0.9rem;margin-bottom:16px;">
+          All private hostels housing students near Dedan Kimathi University of Technology must comply with local government regulations and university standards under the Directorate of Students' Welfare.
+        </p>
+        <h4 style="color:#dfa2da;margin-bottom:10px;" class="read-node">Tenancy Agreements & Security Deposits</h4>
+        <ul class="compliance-list">
+          <li class="read-node"><strong>Deposit Regulations:</strong> Under Kenya's Rent Restriction Act, landlord deposits are fully refundable upon vacancy, subject to normal wear-and-tear assessments.</li>
+          <li class="read-node"><strong>Notice Period:</strong> Standard tenancy leases require a one-month written notice before vacation by either party.</li>
+          <li class="read-node"><strong>Right to Privacy:</strong> Landlords must provide at least 24 hours notice prior to entering a student's room for maintenance or inspection.</li>
+        </ul>
+        <h4 style="color:#dfa2da;margin-top:20px;margin-bottom:10px;" class="read-node">Hostel Safety & Licensing Checklist</h4>
+        <ul class="compliance-list">
+          <li class="read-node"><strong>Security Measures:</strong> Properties must have functional biometric gates or 24-hour security guards, along with CCTV cameras in common entryways.</li>
+          <li class="read-node"><strong>Sanitation & Water:</strong> Continuous clean water supply via boreholes or municipal connection, and a valid Public Health Certificate.</li>
+          <li class="read-node"><strong>Fire Safety:</strong> Certified fire extinguishers placed on every floor and clear emergency exit routes.</li>
+        </ul>
+      </div>
+
+      <!-- Card 2: Special Needs Assistance Policy -->
+      <div class="form-card" style="margin-bottom:0;">
+        <h3 style="margin:0 0 16px;color:#d5d0e8;" class="read-node">2. Accessibility & Special Needs Assistance</h3>
+        <p class="read-node" style="line-height:1.6;color:#a8a0b8;font-size:0.9rem;margin-bottom:16px;">
+          DKUT is committed to ensuring that students with physical, visual, auditory, or medical challenges have equal access to secure and comfortable housing near the campus.
+        </p>
+        <h4 style="color:#dfa2da;margin-bottom:10px;" class="read-node">Priority Room Allocation</h4>
+        <p class="read-node" style="line-height:1.6;color:#a8a0b8;font-size:0.9rem;margin-bottom:16px;">
+          University policy ensures that students with verified special needs are given priority access to ground floor accommodation, shorter walking distances to gates, and accessible room setups.
+        </p>
+        <h4 style="color:#dfa2da;margin-bottom:10px;" class="read-node">Accessibility Infrastructure Requirements</h4>
+        <ul class="compliance-list">
+          <li class="read-node"><strong>Wheelchair Friendliness:</strong> Hostels certified for physical challenges must include step-free ramps, wide door entry frames (minimum 85cm), and safety handrails in bathrooms.</li>
+          <li class="read-node"><strong>Auditory/Visual Supports:</strong> Ground floor placements, tactile markings, and visual safety/alarm lights.</li>
+          <li class="read-node"><strong>Support Liaison:</strong> The DSW Special Needs office assists in placing students with disabilities in verified, compliant local hostels.</li>
+        </ul>
+        <div style="background:rgba(255,255,255,0.03);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);margin-top:16px;" class="read-node">
+          <strong style="color:#0bda83;">Special Needs Office Contact:</strong><br>
+          Office: Directorate of Students' Welfare, DSW Block Room 12<br>
+          Email: dsw.accessibility@dkut.ac.ke | Phone: +254 711 011 234
+        </div>
+      </div>
+    </div>
+
+    <!-- Special Needs Request Form -->
+    <div class="form-card" style="margin-bottom:30px;">
+      <h3 style="margin:0 0 8px;color:#d5d0e8;">Special Needs Assistance & Priority Allocation Request</h3>
+      <p style="color:#8a8298;font-size:0.85rem;margin-bottom:20px;">If you have a physical disability, medical condition, or visual/auditory impairment, submit this form to request verified accessible housing allocation priority.</p>
+      
+      <form id="accessibility-request-form">
+        <div class="form-group">
+          <label for="req-name">Full Name</label>
+          <input type="text" id="req-name" class="form-input" required placeholder="e.g. John Doe" />
+        </div>
+        <div class="form-group">
+          <label for="req-reg">Registration Number</label>
+          <input type="text" id="req-reg" class="form-input" required placeholder="e.g. C012-01-1234/2025" />
+        </div>
+        <div class="form-group">
+          <label for="req-phone">Phone Number</label>
+          <input type="tel" id="req-phone" class="form-input" required placeholder="e.g. 0712345678" />
+        </div>
+        <div class="form-group">
+          <label for="req-need">Special Need / Disability Category</label>
+          <select id="req-need" class="glass-select" required>
+            <option value="" disabled selected>Select category...</option>
+            <option value="wheelchair">Physical Disability (Wheelchair / Ramps required)</option>
+            <option value="mobility">Mobility Limitation (Ground Floor required)</option>
+            <option value="visual">Visual Impairment / Low Vision</option>
+            <option value="auditory">Auditory Impairment</option>
+            <option value="medical">Chronic Medical Condition (Requires close proximity)</option>
+            <option value="other">Other / Temporary Injury</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="req-location">Preferred Location Area</label>
+          <select id="req-location" class="glass-select" required>
+            <option value="" disabled selected>Select location area...</option>
+            <option value="campus">Inside Main Campus (Internal Hostels)</option>
+            <option value="gate-a">Gate A Area</option>
+            <option value="gate-b">Gate B Area</option>
+            <option value="embassy">Embassy Area</option>
+            <option value="boma">Boma Area</option>
+            <option value="nyeri-view">Nyeri View</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="req-desc">Describe your accommodation requirements</label>
+          <textarea id="req-desc" class="form-textarea" required placeholder="Please describe any specific accommodation requirements in detail (e.g. wheelchair ramps, low switches, grab bars, ground floor with no steps)." style="height:120px;"></textarea>
+        </div>
+        <button type="submit" class="macos-download-btn" id="req-submit-btn" style="width:100%;justify-content:center;font-size:0.9rem;padding:14px;">Submit Accommodation Request</button>
+        <div id="req-status" class="form-status" hidden></div>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer" role="contentinfo" style="margin-top: 40px;">
+      <div class="footer-content">
+        <div class="footer-left">
+          <p>&copy; 2026 DKUT Hostels. Verified accommodation services near Dedan Kimathi University of Technology.</p>
+        </div>
+        <div class="footer-links">
+          <a href="../home/">Home</a>
+          <a href="../locations/">Locations</a>
+          <a href="../scam-reports/">Scam Alerts</a>
+          <a href="../legal/" class="footer-highlight-link">Legal Compliance &amp; Accessibility</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script src="../../shared/utils/security.js"></script>
+  <script src="../../shared/utils/helpers.js"></script>
+  <script src="../../shared/js/config.js"></script>
+  <script src="../../shared/js/app.js"></script>
+  <script src="../../shared/js/firebase-init.js" defer></script>
+  <script src="../../shared/js/auth-state.js" defer></script>
+  <script src="../../shared/js/layout.js" defer></script>
+  <script src="./legal.js" defer></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('../../sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

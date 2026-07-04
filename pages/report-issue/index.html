@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report Issue — DKUT Hostels</title>
+  <meta name="description" content="Report incorrect listings, bugs, or other issues with DKUT Hostels." />
+  <meta name="theme-color" content="#08080b" />
+  <link rel="stylesheet" href="../../shared/css/theme.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
+</head>
+<body>
+  <!-- Static Layout Elements -->
+  <div class="bg-layer" aria-hidden="true"></div>
+  <div class="bg-orb orb-1" aria-hidden="true"></div>
+  <div class="bg-orb orb-2" aria-hidden="true"></div>
+  <div class="bg-orb orb-3" aria-hidden="true"></div>
+
+  <svg style="display:none" aria-hidden="true">
+    <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+      <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" seed="5" result="turbulence" />
+      <feComponentTransfer in="turbulence" result="mapped">
+        <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+        <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+        <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+      </feComponentTransfer>
+      <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+      <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lighting-color="white" result="specLight">
+        <fePointLight x="-200" y="-200" z="300" />
+      </feSpecularLighting>
+      <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage" />
+      <feDisplacementMap in="SourceGraphic" in2="softMap" scale="150" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+  <div id="dkut-toast" class="dkut-toast" role="status" aria-live="polite"></div>
+
+  <header id="topbar" role="banner">
+    <div class="topbar-left">
+      <a href="../home/" style="text-decoration:none;color:inherit;display:flex;align-items:baseline;gap:10px;">
+        <h1>DKUT Hostels</h1>
+        <span class="subtitle">Student Housing</span>
+      </a>
+    </div>
+    <div class="topbar-center" style="visibility: hidden; pointer-events: none;">
+      <div id="poda"></div>
+    </div>
+    <div class="topbar-right" style="display:flex; align-items:center; gap:8px;">
+      <select id="theme-toggle-select" class="glass-select theme-select" aria-label="Toggle Theme">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="high-contrast">Contrast</option>
+      </select>
+      <a href="../login/" class="report-btn" id="nav-login-btn" aria-label="Sign in" title="Sign in" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="5"></circle>
+          <path d="M3 21c0-4.97 4.03-9 9-9s9 4.03 9 9"></path>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <nav id="nav-bar" aria-label="Main navigation">
+    <div class="liquidGlass-wrapper nav-group">
+      <div class="liquidGlass-effect" aria-hidden="true"></div>
+      <div class="liquidGlass-tint" aria-hidden="true"></div>
+      <div class="liquidGlass-shine" aria-hidden="true"></div>
+      <div class="liquidGlass-text">
+        <a href="../home/" class="nav-icon-btn" id="nav-btn-home" aria-label="Home" data-tooltip="Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"></path><polyline points="9 21 9 13 15 13 15 21"></polyline></svg>
+          <span class="nav-text">Home</span>
+        </a>
+        <a href="../locations/" class="nav-icon-btn" id="nav-btn-locations" aria-label="Locations" data-tooltip="Locations">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span class="nav-text">Locations</span>
+        </a>
+        <a href="../services/" class="nav-icon-btn" id="nav-btn-services" aria-label="Services" data-tooltip="Services">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+          <span class="nav-text">Services</span>
+        </a>
+        <a href="../scam-reports/" class="nav-icon-btn active" id="nav-btn-scam" aria-label="Scam Alerts" data-tooltip="Scam Alerts" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span class="nav-text">Help</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="content">
+    <div class="page-header">
+      <h2>Report an Issue</h2>
+      <p>Help us keep listings accurate and the platform working well for all students.</p>
+    </div>
+
+    <div class="type-cards" id="type-cards">
+      <div class="type-card selected" data-type="listing" tabindex="0" role="button">
+        <h4>Wrong Listing</h4>
+        <p>Incorrect price, photos, or contact</p>
+      </div>
+      <div class="type-card" data-type="scam" tabindex="0" role="button">
+        <h4>Scam / Fraud</h4>
+        <p>Suspicious landlord or payment</p>
+      </div>
+      <div class="type-card" data-type="bug" tabindex="0" role="button">
+        <h4>Website Bug</h4>
+        <p>Something broken on the site</p>
+      </div>
+    </div>
+
+    <div class="form-card" id="report-form-section">
+      <h3 id="form-heading" style="margin:0 0 20px;color:#d5d0e8;">Wrong Listing</h3>
+      <form id="report-issue-form">
+        <div class="form-group">
+          <label for="issue-title">Title</label>
+          <input type="text" id="issue-title" class="form-input" required placeholder="Brief summary of the issue" />
+        </div>
+        <div class="form-group dynamic-fields visible" id="fields-listing">
+          <label for="hostel-ref">Hostel Name</label>
+          <input type="text" id="hostel-ref" class="form-input" placeholder="Which hostel?" />
+          <label for="whats-wrong" style="margin-top:12px;">What's wrong?</label>
+          <input type="text" id="whats-wrong" class="form-input" placeholder="e.g. wrong price, fake photos" />
+        </div>
+        <div class="form-group dynamic-fields" id="fields-bug">
+          <label for="affected-page">Affected Page</label>
+          <input type="text" id="affected-page" class="form-input" placeholder="URL or page name" />
+          <label for="steps-to-repro" style="margin-top:12px;">Steps to reproduce</label>
+          <textarea id="steps-to-repro" class="form-textarea" style="min-height:80px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="issue-description">Description</label>
+          <textarea id="issue-description" class="form-textarea" required placeholder="Describe the issue in detail (min 20 characters)"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="issue-contact">Your email (optional)</label>
+          <input type="email" id="issue-contact" class="form-input" placeholder="For follow-up" />
+        </div>
+        <button type="submit" class="macos-download-btn" id="submit-btn" style="width:100%;justify-content:center;padding:14px;">Submit Report</button>
+        <div id="report-status" class="form-status" hidden></div>
+      </form>
+      <p style="text-align:center;margin-top:16px;font-size:0.85rem;color:#8a8298;">
+        Or report via <a id="wa-fallback-btn" class="auth-link" href="#" target="_blank" rel="noopener">WhatsApp</a>
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer" role="contentinfo" style="margin-top: 40px;">
+      <div class="footer-content">
+        <div class="footer-left">
+          <p>&copy; 2026 DKUT Hostels. Verified accommodation services near Dedan Kimathi University of Technology.</p>
+        </div>
+        <div class="footer-links">
+          <a href="../home/">Home</a>
+          <a href="../locations/">Locations</a>
+          <a href="../scam-reports/">Scam Alerts</a>
+          <a href="../legal/" class="footer-highlight-link">Legal Compliance &amp; Accessibility</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+  <script src="../../shared/utils/security.js"></script>
+  <script src="../../shared/utils/helpers.js"></script>
+  <script src="../../shared/js/config.js"></script>
+  <script src="../../shared/js/app.js"></script>
+  <script src="../../shared/js/firebase-init.js" defer></script>
+  <script src="../../shared/js/auth-state.js" defer></script>
+  <script src="../../shared/js/layout.js" defer></script>
+  <script src="./report-issue.js" defer></script>
+</body>
+</html>

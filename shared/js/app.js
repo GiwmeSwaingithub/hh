@@ -1,0 +1,434 @@
+(function (global) {
+  'use strict';
+
+  const DKUT = global.DKUT || {};
+  const esc = s => (DKUT.security && DKUT.security.escapeHtml) ? DKUT.security.escapeHtml(s) : String(s || '');
+
+  const FALLBACK_IMG = 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&q=80';
+
+  function fmtPrice(val) {
+    if (val == null || val === '' || isNaN(val)) return 'Contact for price';
+    const n = Number(val);
+    if (n > 0 && n < 200) return 'KES ' + n + '/night';
+    return 'KES ' + n.toLocaleString('en-KE') + '/sem';
+  }
+
+  function normalizeHostels(data) {
+    const raw = Array.isArray(data) ? data : (data && Array.isArray(data.hostels) ? data.hostels : []);
+    return raw.map((h, i) => {
+      const isNewStructure = h.location && typeof h.location === 'object' && h.location.gate;
+      
+      if (isNewStructure) {
+        const locationName = h.location.gate;
+        const coordinatesStr = h.location.coordinates ? `${h.location.coordinates.latitude}, ${h.location.coordinates.longitude}` : '';
+        const phoneList = h.contact && Array.isArray(h.contact.phone) ? h.contact.phone.join(', ') : (h.contact && h.contact.phone ? h.contact.phone : '');
+        
+        const defaultRoom = h.rooms && h.rooms[0];
+        const priceSharing = defaultRoom && defaultRoom.price ? defaultRoom.price.amountSharing : 0;
+        const priceAlone = defaultRoom && defaultRoom.price ? defaultRoom.price.amountAlone : 0;
+        const roomTypeStr = defaultRoom ? defaultRoom.name : '';
+        const occupancyStr = defaultRoom && defaultRoom.occupancy && defaultRoom.occupancy.maximumPeople > 1 ? 'shared' : 'stay-alone';
+        
+        const utilitiesArray = [];
+        if (h.utilities) {
+          const u = h.utilities;
+          if (u.water) {
+            if (u.water.type === 'included') {
+              utilitiesArray.push('Free Water');
+            } else {
+              const desc = u.water.description || 'metered';
+              utilitiesArray.push(`Water (${desc})`);
+            }
+          }
+          if (u.electricity) {
+            if (u.electricity.type === 'included') {
+              utilitiesArray.push('Free Electricity');
+            } else {
+              const desc = u.electricity.description || 'paid separately';
+              utilitiesArray.push(`Electricity (${desc})`);
+            }
+          }
+          if (u.wifi && u.wifi.type === 'included') utilitiesArray.push('Free WiFi');
+          if (u.hotShower && u.hotShower.available) utilitiesArray.push('Hot Water');
+          if (u.bed && u.bed.included) utilitiesArray.push(u.bed.mattressIncluded ? 'Free Bed with mattress' : 'Free Bed');
+          if (u.laundry && u.laundry.available) utilitiesArray.push('Laundry Area');
+          if (u.parking && u.parking.available) utilitiesArray.push('Parking Available');
+        }
+        
+        if (h.security) {
+          const s = h.security;
+          if (s.fingerprintAccess) utilitiesArray.push('FingerPrint Security');
+          if (s.cctv) utilitiesArray.push('CCTV');
+          if (s.securityGuard) utilitiesArray.push('Security Guard');
+          if (s.fenced) utilitiesArray.push('Fenced Compound');
+        }
+        
+        if (h.accessibility && h.accessibility.wheelchairAccessible) {
+          utilitiesArray.push('Wheelchair Access');
+        }
+
+        return {
+          ...h,
+          id: h.id != null && h.id !== '' ? h.id : i + 1,
+          name: (h.name && String(h.name).trim()) || ('Hostel ' + (i + 1)),
+          location: locationName,
+          coordinates: coordinatesStr,
+          contact: phoneList,
+          price: priceSharing,
+          priceAlone: priceAlone,
+          roomType: roomTypeStr,
+          occupancy: occupancyStr,
+          utilities: utilitiesArray,
+          image: h.media && h.media.coverImage ? h.media.coverImage : (h.image || ''),
+          images: h.media && Array.isArray(h.media.gallery) 
+            ? h.media.gallery.flatMap(g => g.images || []) 
+            : (Array.isArray(h.images) ? h.images : []),
+          videos: h.media && Array.isArray(h.media.videos)
+            ? h.media.videos.map(v => v.url).filter(Boolean)
+            : (Array.isArray(h.videos) ? h.videos : [])
+        };
+      } else {
+        return {
+          ...h,
+          id: h.id != null && h.id !== '' ? h.id : i + 1,
+          name: (h.name && String(h.name).trim()) || ('Hostel ' + (i + 1)),
+          location: h.location || 'Nyeri',
+          utilities: Array.isArray(h.utilities) ? h.utilities : [],
+          images: Array.isArray(h.images) ? h.images.filter(Boolean) : (h.image ? [h.image] : []),
+          videos: Array.isArray(h.videos) ? h.videos.filter(Boolean) : (h.video ? [h.video] : []),
+        };
+      }
+    });
+  }
+
+  const MOCK_STORAGE_KEY = 'dkut_mock_mode';
+
+  function isMockMode() {
+    const params = new URLSearchParams(location.search);
+    if (params.get('mock') === '1' || params.get('demo') === '1') return true;
+    if (params.get('mock') === '0' || params.get('demo') === '0') return false;
+    try { return localStorage.getItem(MOCK_STORAGE_KEY) === '1'; } catch (_) { return false; }
+  }
+
+  function setMockMode(on) {
+    try {
+      if (on) localStorage.setItem(MOCK_STORAGE_KEY, '1');
+      else localStorage.removeItem(MOCK_STORAGE_KEY);
+    } catch (_) {}
+    document.dispatchEvent(new CustomEvent('dkut-mock-change', { detail: { mock: !!on } }));
+  }
+
+  function getMockDataUrls() {
+    const urls = [];
+    if (DKUT.CONFIG && DKUT.CONFIG.mockDataUrl) {
+      try { urls.push(DKUT.CONFIG.mockDataUrl()); } catch (_) {}
+    }
+    try { urls.push(new URL('../../shared/data/hostels.mock.json', location.href).href); } catch (_) {}
+    urls.push('/hostel/shared/data/hostels.mock.json');
+    urls.push('/shared/data/hostels.mock.json');
+    return [...new Set(urls)];
+  }
+
+  function getDataUrls() {
+    const urls = [];
+    if (DKUT.CONFIG && DKUT.CONFIG.dataUrl) {
+      try { urls.push(DKUT.CONFIG.dataUrl()); } catch (_) {}
+    }
+    try { urls.push(new URL('../../shared/data/hostels.json', location.href).href); } catch (_) {}
+    try { urls.push(new URL('../shared/data/hostels.json', location.href).href); } catch (_) {}
+    urls.push('/hostel/shared/data/hostels.json');
+    urls.push('/shared/data/hostels.json');
+    return [...new Set(urls)];
+  }
+
+  async function fetchFromUrls(urls, cacheKey, label) {
+    let lastErr = null;
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, { cache: 'no-cache' });
+        if (!res.ok) { lastErr = new Error('HTTP ' + res.status + ' for ' + url); continue; }
+        const data = await res.json();
+        const normalized = normalizeHostels(data);
+        if (normalized.length === 0) { lastErr = new Error('Empty list from ' + url); continue; }
+        if (cacheKey) {
+          try { localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: normalized })); } catch (_) {}
+        }
+        console.info('[DKUT] Loaded', normalized.length, label, 'from', url);
+        return normalized;
+      } catch (err) {
+        lastErr = err;
+      }
+    }
+    throw lastErr || new Error('Could not load ' + label);
+  }
+
+  async function fetchMockHostels() {
+    const cacheKey = (DKUT.CONFIG && DKUT.CONFIG.SETTINGS && DKUT.CONFIG.SETTINGS.mockCacheKey) || 'dkut_hostels_mock_cache';
+    const cacheTTL = (DKUT.CONFIG && DKUT.CONFIG.SETTINGS && DKUT.CONFIG.SETTINGS.cacheTTL) || 3600000;
+
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && parsed.ts && parsed.data && (Date.now() - parsed.ts < cacheTTL)) {
+          const normalized = normalizeHostels(parsed.data);
+          if (normalized.length > 0) return normalized;
+        }
+      }
+    } catch (_) {}
+
+    return fetchFromUrls(getMockDataUrls(), cacheKey, 'mock hostels');
+  }
+
+  async function fetchHostels() {
+    if (isMockMode()) return fetchMockHostels();
+
+    const cacheKey = (DKUT.CONFIG && DKUT.CONFIG.SETTINGS && DKUT.CONFIG.SETTINGS.cacheKey) || 'dkut_hostels_cache';
+    const cacheTTL = (DKUT.CONFIG && DKUT.CONFIG.SETTINGS && DKUT.CONFIG.SETTINGS.cacheTTL) || 3600000;
+
+    // Try fetching from Firestore collection 'hostels' first (Direct Live query)
+    if (global.DKUT && global.DKUT.db) {
+      try {
+        const snap = await global.DKUT.db.collection('hostels').get();
+        if (!snap.empty) {
+          const list = [];
+          snap.forEach(doc => {
+            list.push({ id: doc.id, ...doc.data() });
+          });
+          const normalized = normalizeHostels(list);
+          try {
+            localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: normalized }));
+          } catch (_) {}
+          console.info('[DKUT] Loaded', normalized.length, 'hostels from Firestore collection "hostels"');
+          return normalized;
+        }
+      } catch (err) {
+        console.warn('[DKUT] Firestore hostels query failed, trying cache/JSON:', err.message);
+      }
+    }
+
+    // Fallback to local storage cache
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && parsed.ts && parsed.data && (Date.now() - parsed.ts < cacheTTL)) {
+          const normalized = normalizeHostels(parsed.data);
+          if (normalized.length > 0) return normalized;
+        }
+      }
+    } catch (_) {
+      try { localStorage.removeItem(cacheKey); } catch (__) {}
+    }
+
+    try {
+      return await fetchFromUrls(getDataUrls(), cacheKey, 'hostels');
+    } catch (err) {
+      console.warn('[DKUT] Live data failed, falling back to mock:', err.message);
+      return fetchMockHostels();
+    }
+  }
+
+  function detailsUrl(hostelId) {
+    if (DKUT.CONFIG && DKUT.CONFIG.pageUrl) {
+      return DKUT.CONFIG.pageUrl('pages/hostel-details/index.html?h=' + encodeURIComponent(hostelId));
+    }
+    return '../hostel-details/index.html?h=' + encodeURIComponent(hostelId);
+  }
+
+  function homeLocationUrl(locationName) {
+    const locSlug = String(locationName || '').toLowerCase().trim().replace(/\s+/g, '-');
+    const locs = (DKUT.CONFIG && DKUT.CONFIG.LOCATIONS) || [];
+    const found = locs.find(l => (l.label || l.name || '').toLowerCase() === locationName.toLowerCase() || l.id === locSlug);
+    const id = found ? found.id : locSlug;
+    if (DKUT.CONFIG && DKUT.CONFIG.pageUrl) {
+      return DKUT.CONFIG.pageUrl('pages/home/index.html?loc=' + encodeURIComponent(id));
+    }
+    if (location.pathname.includes('/pages/home')) {
+      return 'index.html?loc=' + encodeURIComponent(id);
+    }
+    return '../home/index.html?loc=' + encodeURIComponent(id);
+  }
+
+  function switchTab(cardId, tab, btn) {
+    ['info', 'photos', 'map'].forEach(t => {
+      const el = document.getElementById(cardId + '-' + t);
+      if (el) el.style.display = (t === tab) ? 'block' : 'none';
+    });
+    if (btn && btn.closest) {
+      const btns = btn.closest('.mode-switch').querySelectorAll('.mode-btn');
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  }
+
+  function buildHostelCard(h, idx, options) {
+    options = options || {};
+    const hostelId = h.id != null ? h.id : idx;
+    const utils = h.utilities || [];
+    const imgs = h.images && h.images.length ? h.images : (h.image ? [h.image] : []);
+    const thumb = imgs[0] || h.image || FALLBACK_IMG;
+    const contact = h.contact ? String(h.contact).split(',')[0].trim() : '';
+    const whatsapp = contact ? 'https://wa.me/254' + contact.replace(/^0/, '') : '';
+    const detailHref = detailsUrl(hostelId);
+    const desc = String(h.description || '');
+    const descShort = desc.length > 120 ? desc.slice(0, 120) + '…' : desc;
+
+    const badges = utils.slice(0, 4).map(u => '<span class="project-tag">' + esc(u) + '</span>').join('');
+
+    const actionBtn = options.linkToDetails
+      ? '<a class="enquire-btn" href="' + esc(detailHref) + '"><em>View Details</em><i>&#10095;&#10095;</i></a>'
+      : '<a1' + (whatsapp ? ' href="' + esc(whatsapp) + '" target="_blank" rel="noopener noreferrer"' : '') + '><em>Enquire Now</em><i>&#10095;&#10095;</i></a1>';
+
+    return '<li class="project-item active" data-name="' + esc((h.name || '').toLowerCase()) + '" data-loc="' + esc((h.location || '').toLowerCase()) + '" data-id="' + esc(hostelId) + '">' +
+      '<div class="project-card">' +
+        '<div class="card-hero-wrap">' +
+          '<img src="' + esc(thumb) + '" alt="' + esc(h.name) + '" class="card-hero-img" loading="lazy" onerror="this.src=\'' + FALLBACK_IMG + '\'">' +
+          '<span class="card-hero-badge">#' + esc(hostelId) + '</span>' +
+        '</div>' +
+        '<div class="card-simple-info" style="margin-top:16px; text-align:left;">' +
+          '<h3 class="project-title" style="margin: 0 0 8px 0;"><a href="' + esc(detailHref) + '">' + esc(h.name) + '</a></h3>' +
+          '<div class="project-meta" style="margin-bottom: 8px;">' +
+            '<a class="project-date" href="' + esc(homeLocationUrl(h.location)) + '" style="text-decoration:none;cursor:pointer;">' + esc(h.location) + '</a>' +
+            '<span class="project-tag">' + esc(h.roomType || h.occupancy || 'Room') + '</span>' +
+          '</div>' +
+          '<p class="project-description" style="text-align:left; margin-bottom:12px; font-size:0.85rem; color:#8a8298; line-height:1.5;">' + esc(descShort || 'No description available.') + '</p>' +
+          '<div class="project-meta" style="flex-wrap:wrap;gap:6px;margin-bottom:12px;">' + badges + '</div>' +
+          '<div class="card-price-row" style="margin-top:12px; margin-bottom:16px; display:flex; gap:10px;">' +
+            '<span class="macos-download-btn card-price-pill" style="font-size:0.78rem !important; padding:8px 12px !important; flex:1; text-align:center; justify-content:center;">Sharing: ' + esc(fmtPrice(h.price)) + '</span>' +
+            '<span class="macos-download-btn card-price-pill" style="font-size:0.78rem !important; padding:8px 12px !important; flex:1; text-align:center; justify-content:center;">Solo: ' + esc(fmtPrice(h.priceAlone)) + '</span>' +
+          '</div>' +
+        '</div>' +
+        actionBtn +
+      '</div>' +
+    '</li>';
+  }
+
+  function showToast(msg, type, dur) {
+    const t = document.getElementById('dkut-toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.className = 'dkut-toast ' + (type || 'info') + ' show';
+    clearTimeout(t._t);
+    t._t = setTimeout(() => t.classList.remove('show'), dur || 3000);
+  }
+
+  function filterHostels(hostels, query, location, gender, sort, accessibility) {
+    let list = Array.isArray(hostels) ? [...hostels] : [];
+    const q = (query || '').trim().toLowerCase();
+
+    if (q) {
+      list = list.filter(h =>
+        String(h.id).includes(q) ||
+        (h.name || '').toLowerCase().includes(q) ||
+        (h.location || '').toLowerCase().includes(q) ||
+        (h.roomType || '').toLowerCase().includes(q) ||
+        (h.description || '').toLowerCase().includes(q) ||
+        (h.utilities || []).join(' ').toLowerCase().includes(q)
+      );
+    }
+
+    if (location && location !== 'all') {
+      const locEntry = (DKUT.CONFIG && DKUT.CONFIG.LOCATIONS || []).find(l => l.id === location);
+      const locLabel = locEntry ? locEntry.label.toLowerCase() : location.toLowerCase().replace(/-/g, ' ');
+      const locSlug = location.toLowerCase();
+      list = list.filter(h => {
+        const loc = (h.location || '').toLowerCase();
+        return loc.includes(locLabel) || loc.includes(locSlug) || loc.replace(/\s/g, '').includes(locSlug.replace(/-/g, ''));
+      });
+    }
+
+    if (gender && gender !== 'all') {
+      list = list.filter(h => {
+        const occ = (h.occupancy || '').toLowerCase();
+        const name = (h.name || '').toLowerCase();
+        if (gender === 'male') return occ.includes('male') || name.includes('male') || name.includes('men');
+        if (gender === 'female') return occ.includes('female') || name.includes('female') || name.includes('ladies');
+        return true;
+      });
+    }
+
+    if (accessibility && accessibility !== 'all') {
+      list = list.filter(h => {
+        const utils = (h.utilities || []).map(u => u.toLowerCase());
+        const desc = (h.description || '').toLowerCase();
+        if (accessibility === 'wheelchair') {
+          return utils.includes('wheelchair access') || desc.includes('wheelchair');
+        }
+        if (accessibility === 'ground-floor') {
+          return utils.includes('ground floor room') || desc.includes('ground floor');
+        }
+        if (accessibility === 'special-needs') {
+          return utils.includes('special needs approved') || desc.includes('special needs');
+        }
+        return true;
+      });
+    }
+
+    switch (sort) {
+      case 'price-asc': list.sort((a, b) => (a.price || 999999) - (b.price || 999999)); break;
+      case 'price-desc': list.sort((a, b) => (b.price || 0) - (a.price || 0)); break;
+      case 'name-asc': list.sort((a, b) => (a.name || '').localeCompare(b.name || '')); break;
+      case 'id-asc': list.sort((a, b) => Number(a.id) - Number(b.id)); break;
+      default: list.sort((a, b) => Number(a.id) - Number(b.id)); break;
+    }
+
+    return list;
+  }
+
+  /* ── Global Theme and Accent Managers ── */
+  function getTheme() {
+    try { return localStorage.getItem('dkut_theme') || 'system'; } catch (_) { return 'system'; }
+  }
+
+  function getAccent() {
+    try { return localStorage.getItem('dkut_accent') || 'green'; } catch (_) { return 'green'; }
+  }
+
+  function applyTheme(theme) {
+    let active = theme;
+    if (theme === 'system') {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      active = isDark ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', active);
+    document.dispatchEvent(new CustomEvent('dkut-theme-change', { detail: { theme: active } }));
+  }
+
+  function applyAccent(accent) {
+    document.documentElement.setAttribute('data-accent', accent);
+    document.dispatchEvent(new CustomEvent('dkut-accent-change', { detail: { accent } }));
+  }
+
+  function setTheme(theme) {
+    try { localStorage.setItem('dkut_theme', theme); } catch (_) {}
+    applyTheme(theme);
+  }
+
+  function setAccent(accent) {
+    try { localStorage.setItem('dkut_accent', accent); } catch (_) {}
+    applyAccent(accent);
+  }
+
+  // Initialize immediately
+  try {
+    applyTheme(getTheme());
+    applyAccent(getAccent());
+  } catch (_) {}
+
+  // Watch for system color scheme changes
+  try {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (getTheme() === 'system') {
+        applyTheme('system');
+      }
+    });
+  } catch (_) {}
+
+  DKUT.app = {
+    fetchHostels, fetchMockHostels, buildHostelCard, switchTab, fmtPrice, showToast,
+    filterHostels, esc, normalizeHostels, detailsUrl, homeLocationUrl, FALLBACK_IMG,
+    isMockMode, setMockMode, getTheme, getAccent, setTheme, setAccent, applyTheme, applyAccent,
+  };
+  global.DKUT = DKUT;
+})(window);

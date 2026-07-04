@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DKUT Hostels — Student Housing Near DeKUT</title>
+  <meta name="description" content="Find verified, affordable student hostels near Dedan Kimathi University of Technology in Nyeri, Kenya." />
+  <meta name="theme-color" content="#08080b" />
+  <link rel="manifest" href="../../manifest.json" />
+  <link rel="stylesheet" href="../../shared/css/theme.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
+</head>
+<body>
+  <!-- Static Layout Elements -->
+  <div class="bg-layer" aria-hidden="true"></div>
+  <div class="bg-orb orb-1" aria-hidden="true"></div>
+  <div class="bg-orb orb-2" aria-hidden="true"></div>
+  <div class="bg-orb orb-3" aria-hidden="true"></div>
+
+  <svg style="display:none" aria-hidden="true">
+    <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+      <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" seed="5" result="turbulence" />
+      <feComponentTransfer in="turbulence" result="mapped">
+        <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+        <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+        <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+      </feComponentTransfer>
+      <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+      <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lighting-color="white" result="specLight">
+        <fePointLight x="-200" y="-200" z="300" />
+      </feSpecularLighting>
+      <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage" />
+      <feDisplacementMap in="SourceGraphic" in2="softMap" scale="150" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+  <div id="dkut-toast" class="dkut-toast" role="status" aria-live="polite"></div>
+
+  <header id="topbar" role="banner">
+    <div class="topbar-left">
+      <a href="../home/" style="text-decoration:none;color:inherit;display:flex;align-items:baseline;gap:10px;">
+        <h1>DKUT Hostels</h1>
+        <span class="subtitle">Student Housing</span>
+      </a>
+    </div>
+    <div class="topbar-center">
+      <div id="poda" role="search">
+        <div class="glow" aria-hidden="true"></div>
+        <div class="darkBorderBg" aria-hidden="true"></div>
+        <div class="white" aria-hidden="true"></div>
+        <div class="border" aria-hidden="true"></div>
+        <div id="main">
+          <label for="search-input" class="visually-hidden">Search</label>
+          <input id="search-input" placeholder="Search hostels..." type="search" class="input" aria-label="Search hostels" autocomplete="off" />
+          <div id="input-mask" aria-hidden="true"></div>
+          <div id="pink-mask" aria-hidden="true"></div>
+          <div class="filterBorder" aria-hidden="true"></div>
+          <button id="filter-icon" type="button" aria-label="Open filters" aria-expanded="false">
+            <svg preserveAspectRatio="none" height="18" width="18" viewBox="4.8 4.56 14.832 15.408" fill="none" aria-hidden="true">
+              <path d="M8.16 6.65002H15.83C16.47 6.65002 16.99 7.17002 16.99 7.81002V9.09002C16.99 9.56002 16.7 10.14 16.41 10.43L13.91 12.64C13.56 12.93 13.33 13.51 13.33 13.98V16.48C13.33 16.83 13.1 17.29 12.81 17.47L12 17.98C11.24 18.45 10.2 17.92 10.2 16.99V13.91C10.2 13.5 9.97 12.98 9.73 12.69L7.52 10.36C7.23 10.08 7 9.55002 7 9.20002V7.87002C7 7.17002 7.52 6.65002 8.16 6.65002Z" stroke="#d6d6e6" stroke-width="1" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right" style="display:flex; align-items:center; gap:8px;">
+      <select id="theme-toggle-select" class="glass-select theme-select" aria-label="Toggle Theme">
+        <option value="system">System Theme</option>
+        <option value="light">Light Theme</option>
+        <option value="dark">Dark Theme</option>
+        <option value="high-contrast">High Contrast Theme</option>
+      </select>
+      <a href="../login/" class="report-btn" id="nav-login-btn" aria-label="Sign in" title="Sign in" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="5"></circle>
+          <path d="M3 21c0-4.97 4.03-9 9-9s9 4.03 9 9"></path>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <div id="mock-banner" class="mock-banner" hidden role="status">
+    <span class="mock-banner-text">UI Demo — 10 mock hostels (no live database)</span>
+    <div class="mock-banner-actions">
+      <a href="../demo/" class="mock-banner-link">Demo page</a>
+      <button type="button" class="mock-banner-btn" id="mock-toggle-btn">Switch to live data</button>
+    </div>
+  </div>
+
+  <div id="filter-panel" class="filter-panel" hidden>
+    <div class="filter-panel-inner content-card">
+      <h3>Filters</h3>
+      <div class="filter-row">
+        <label for="filter-location">Location</label>
+        <div class="location-chips" id="location-chips">
+          <!-- Loaded dynamically via layout.js -->
+        </div>
+      </div>
+      <div class="filter-row">
+        <label for="filter-gender">Gender</label>
+        <select id="filter-gender" class="glass-select">
+          <option value="all">All Genders</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+      <div class="filter-row">
+        <label for="filter-accessibility">Accessibility</label>
+        <select id="filter-accessibility" class="glass-select">
+          <option value="all">Any</option>
+          <option value="wheelchair">Wheelchair Accessible</option>
+          <option value="ground-floor">Ground Floor Available</option>
+          <option value="special-needs">Special Needs Approved</option>
+        </select>
+      </div>
+      <div class="filter-row">
+        <label for="filter-sort">Sort</label>
+        <select id="filter-sort" class="glass-select">
+          <option value="default">Default (by ID)</option>
+          <option value="id-asc">ID: Low to High</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name-asc">Name A–Z</option>
+        </select>
+      </div>
+      <button type="button" class="macos-download-btn" id="apply-filters-btn" style="margin-top:12px;width:100%;justify-content:center;">Apply Filters</button>
+    </div>
+  </div>
+
+  <nav id="nav-bar" aria-label="Main navigation">
+    <div class="liquidGlass-wrapper nav-group">
+      <div class="liquidGlass-effect" aria-hidden="true"></div>
+      <div class="liquidGlass-tint" aria-hidden="true"></div>
+      <div class="liquidGlass-shine" aria-hidden="true"></div>
+      <div class="liquidGlass-text">
+        <a href="../home/" class="nav-icon-btn active" id="nav-btn-home" aria-label="Home" data-tooltip="Home" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"></path><polyline points="9 21 9 13 15 13 15 21"></polyline></svg>
+          <span class="nav-text">Home</span>
+        </a>
+        <a href="../locations/" class="nav-icon-btn" id="nav-btn-locations" aria-label="Locations" data-tooltip="Locations">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span class="nav-text">Locations</span>
+        </a>
+        <a href="../services/" class="nav-icon-btn" id="nav-btn-services" aria-label="Services" data-tooltip="Services">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+          <span class="nav-text">Services</span>
+        </a>
+        <a href="../scam-reports/" class="nav-icon-btn" id="nav-btn-scam" aria-label="Scam Alerts" data-tooltip="Scam Alerts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span class="nav-text">Help</span>
+        </a>
+      </div>
+    </div>
+    <div class="liquidGlass-wrapper nav-search">
+      <div class="liquidGlass-effect" aria-hidden="true"></div>
+      <div class="liquidGlass-tint" aria-hidden="true"></div>
+      <div class="liquidGlass-shine" aria-hidden="true"></div>
+      <div class="liquidGlass-text">
+        <button type="button" class="nav-icon-btn" id="nav-search-btn" aria-label="Search" data-tooltip="Search" style="background:none;border:none;color:inherit;padding:0;cursor:pointer;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="content">
+    <div class="page-header">
+      <h2>Find Your Perfect Student Hostel</h2>
+      <p>Listings near Dedan Kimathi University of Technology, Nyeri</p>
+    </div>
+
+    <!-- Locations Carousel (Replaces tabbed Location Guide) -->
+    <div class="see-all-container">
+      <h3 style="margin: 0; color: var(--white-2); font-size: 1.2rem; font-weight: 600;">Locations near DeKUT</h3>
+      <a href="../locations/" class="see-all-link">See All &rarr;</a>
+    </div>
+
+    <div class="locations-carousel-container">
+      <button type="button" class="carousel-arrow arrow-left" id="locations-arrow-left" aria-label="Previous locations">&lsaquo;</button>
+      <div class="locations-carousel-track" id="locations-carousel-track">
+        <div class="location-card-wrapper" data-location="embassy">
+          <div class="macos-location-card" onclick="selectLocation('embassy')">
+            <div>
+              <h4 class="location-title">Embassy</h4>
+              <span class="location-distance">1-3 mins walk to campus</span>
+              <p class="location-desc">Embassy is located right opposite Dedan Kimathi University main campus. Highly popular, high-speed Wi-Fi, and steady water supply.</p>
+            </div>
+            <div class="location-footer">
+              <span><strong>Avg Price:</strong> KSh 4,500 - 7,000/sem</span>
+              <div class="location-tags">
+                <span class="project-tag">WiFi</span>
+                <span class="project-tag">Water</span>
+                <span class="project-tag">Security</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="location-card-wrapper" data-location="gate-a">
+          <div class="macos-location-card" onclick="selectLocation('gate-a')">
+            <div>
+              <h4 class="location-title">Gate A</h4>
+              <span class="location-distance">2-5 mins walk to campus</span>
+              <p class="location-desc">Gate A is the main entrance area of DeKUT. Hostels here offer quick access to the library, administration block, and lecture halls.</p>
+            </div>
+            <div class="location-footer">
+              <span><strong>Avg Price:</strong> KSh 4,000 - 6,500/sem</span>
+              <div class="location-tags">
+                <span class="project-tag">Shops</span>
+                <span class="project-tag">Security</span>
+                <span class="project-tag">Active Life</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="location-card-wrapper" data-location="gate-b">
+          <div class="macos-location-card" onclick="selectLocation('gate-b')">
+            <div>
+              <h4 class="location-title">Gate B</h4>
+              <span class="location-distance">5-10 mins walk to campus</span>
+              <p class="location-desc">Gate B area offers a quieter environment, located near the secondary entrance. Ideal for students who prefer peace and quiet.</p>
+            </div>
+            <div class="location-footer">
+              <span><strong>Avg Price:</strong> KSh 3,500 - 5,500/sem</span>
+              <div class="location-tags">
+                <span class="project-tag">Quiet Study</span>
+                <span class="project-tag">Budget Friendly</span>
+                <span class="project-tag">Modern</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="location-card-wrapper" data-location="boma">
+          <div class="macos-location-card" onclick="selectLocation('boma')">
+            <div>
+              <h4 class="location-title">Boma</h4>
+              <span class="location-distance">8-12 mins walk to campus</span>
+              <p class="location-desc">Boma is a vibrant student hub well-known for budget-friendly student housing, social communities, and highway access.</p>
+            </div>
+            <div class="location-footer">
+              <span><strong>Avg Price:</strong> KSh 3,000 - 5,000/sem</span>
+              <div class="location-tags">
+                <span class="project-tag">Social Hub</span>
+                <span class="project-tag">Borehole</span>
+                <span class="project-tag">Affordable</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="location-card-wrapper" data-location="nyeri-view">
+          <div class="macos-location-card" onclick="selectLocation('nyeri-view')">
+            <div>
+              <h4 class="location-title">Nyeri View</h4>
+              <span class="location-distance">10-15 mins walk / commute</span>
+              <p class="location-desc">Scenic, premium apartments with views of Mount Kenya. Features spacious rooms and quiet environments, ideal for solo residency.</p>
+            </div>
+            <div class="location-footer">
+              <span><strong>Avg Price:</strong> KSh 6,000 - 10,000/sem</span>
+              <div class="location-tags">
+                <span class="project-tag">Premium Space</span>
+                <span class="project-tag">Scenic</span>
+                <span class="project-tag">Solo Stay</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="carousel-arrow arrow-right" id="locations-arrow-right" aria-label="Next locations">&rsaquo;</button>
+    </div>
+
+    <!-- Grid Layout Controls -->
+    <div class="grid-controls" aria-label="Grid layout controls">
+      <span class="grid-controls-label">Columns:</span>
+      <div class="grid-btn-group">
+        <button type="button" class="grid-layout-btn" data-cols="1" aria-label="1 column">1</button>
+        <button type="button" class="grid-layout-btn" data-cols="2" aria-label="2 columns">2</button>
+        <button type="button" class="grid-layout-btn" data-cols="3" aria-label="3 columns">3</button>
+        <button type="button" class="grid-layout-btn active" data-cols="auto" aria-label="Auto layout">Auto</button>
+      </div>
+    </div>
+
+    <!-- Active Filter Info Banner -->
+    <div id="filter-info-banner" class="content-card" style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 12px; gap: 10px;" hidden></div>
+
+    <ul id="hostel-list"></ul>
+    <p id="hostel-empty">No hostels found. Try adjusting your search or filters.</p>
+
+    <div class="load-more-wrap" id="load-more-wrap" hidden>
+      <button type="button" class="btn-ghost" id="load-more-btn">Load More Hostels</button>
+    </div>
+
+    <section class="detail-section" id="faq-section" style="margin-top:40px;">
+      <h3 style="text-align:center;margin-bottom:20px;">Frequently Asked Questions</h3>
+      <div class="faq-list" id="faq-list"></div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer" role="contentinfo">
+      <div class="footer-content">
+        <div class="footer-left">
+          <p>&copy; 2026 DKUT Hostels. Verified accommodation services near Dedan Kimathi University of Technology.</p>
+        </div>
+        <div class="footer-links">
+          <a href="../home/">Home</a>
+          <a href="../locations/">Locations</a>
+          <a href="../scam-reports/">Scam Alerts</a>
+          <a href="../legal/" class="footer-highlight-link">Legal Compliance &amp; Accessibility</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script src="../../shared/utils/security.js"></script>
+  <script src="../../shared/utils/helpers.js"></script>
+  <script src="../../shared/js/config.js"></script>
+  <script src="../../shared/js/app.js"></script>
+  <script src="../../shared/js/firebase-init.js" defer></script>
+  <script src="../../shared/js/auth-state.js" defer></script>
+  <script src="../../shared/js/layout.js" defer></script>
+  <script src="./home.js" defer></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('../../sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

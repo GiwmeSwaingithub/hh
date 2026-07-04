@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse by Location — DKUT Hostels</title>
+  <meta name="description" content="Filter student hostels near DKUT by location: Gate A, Gate B, Boma, and more." />
+  <meta name="theme-color" content="#08080b" />
+  <link rel="stylesheet" href="../../shared/css/theme.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
+</head>
+<body>
+  <!-- Static Layout Elements -->
+  <div class="bg-layer" aria-hidden="true"></div>
+  <div class="bg-orb orb-1" aria-hidden="true"></div>
+  <div class="bg-orb orb-2" aria-hidden="true"></div>
+  <div class="bg-orb orb-3" aria-hidden="true"></div>
+
+  <svg style="display:none" aria-hidden="true">
+    <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+      <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" seed="5" result="turbulence" />
+      <feComponentTransfer in="turbulence" result="mapped">
+        <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+        <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+        <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+      </feComponentTransfer>
+      <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+      <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lighting-color="white" result="specLight">
+        <fePointLight x="-200" y="-200" z="300" />
+      </feSpecularLighting>
+      <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage" />
+      <feDisplacementMap in="SourceGraphic" in2="softMap" scale="150" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+  <div id="dkut-toast" class="dkut-toast" role="status" aria-live="polite"></div>
+
+  <header id="topbar" role="banner">
+    <div class="topbar-left">
+      <a href="../home/" style="text-decoration:none;color:inherit;display:flex;align-items:baseline;gap:10px;">
+        <h1>DKUT Hostels</h1>
+        <span class="subtitle">Student Housing</span>
+      </a>
+    </div>
+    <div class="topbar-center" style="visibility: hidden; pointer-events: none;">
+      <!-- Search bar hidden on locations grid page -->
+      <div id="poda"></div>
+    </div>
+    <div class="topbar-right" style="display:flex; align-items:center; gap:8px;">
+      <select id="theme-toggle-select" class="glass-select theme-select" aria-label="Toggle Theme">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="high-contrast">Contrast</option>
+      </select>
+      <a href="../login/" class="report-btn" id="nav-login-btn" aria-label="Sign in" title="Sign in" style="margin-left:8px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="5"></circle>
+          <path d="M3 21c0-4.97 4.03-9 9-9s9 4.03 9 9"></path>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <nav id="nav-bar" aria-label="Main navigation">
+    <div class="liquidGlass-wrapper nav-group">
+      <div class="liquidGlass-effect" aria-hidden="true"></div>
+      <div class="liquidGlass-tint" aria-hidden="true"></div>
+      <div class="liquidGlass-shine" aria-hidden="true"></div>
+      <div class="liquidGlass-text">
+        <a href="../home/" class="nav-icon-btn" id="nav-btn-home" aria-label="Home" data-tooltip="Home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"></path><polyline points="9 21 9 13 15 13 15 21"></polyline></svg>
+          <span class="nav-text">Home</span>
+        </a>
+        <a href="../locations/" class="nav-icon-btn active" id="nav-btn-locations" aria-label="Locations" data-tooltip="Locations" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span class="nav-text">Locations</span>
+        </a>
+        <a href="../services/" class="nav-icon-btn" id="nav-btn-services" aria-label="Services" data-tooltip="Services">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+          <span class="nav-text">Services</span>
+        </a>
+        <a href="../scam-reports/" class="nav-icon-btn" id="nav-btn-scam" aria-label="Scam Alerts" data-tooltip="Scam Alerts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span class="nav-text">Help</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="content">
+    <div class="page-header">
+      <h2>Browse by Location</h2>
+      <p>Select an area near Dedan Kimathi University to view available student hostels</p>
+    </div>
+
+    <!-- Grid of Locations -->
+    <ul class="locations-grid" id="locations-grid">
+      
+      <!-- 1. Gate A -->
+      <li class="project-item active">
+        <div class="macos-location-card" id="card-gate-a">
+          <div style="margin-bottom: 12px;">
+            <h4 class="location-title" style="margin:0 0 4px 0;">Gate A</h4>
+            <span class="location-distance">2-5 mins walk to campus</span>
+          </div>
+
+          <div class="location-mode-switch">
+            <button type="button" class="tab-btn active" data-tab="info" onclick="switchLocationTab(event, 'card-gate-a', 'info')">Info</button>
+            <button type="button" class="tab-btn" data-tab="photos" onclick="switchLocationTab(event, 'card-gate-a', 'photos')">Photos</button>
+            <button type="button" class="tab-btn" data-tab="video" onclick="switchLocationTab(event, 'card-gate-a', 'video')">Video</button>
+            <button type="button" class="tab-btn" data-tab="map" onclick="switchLocationTab(event, 'card-gate-a', 'map')">Map</button>
+          </div>
+
+          <!-- 1. Info Panel -->
+          <div class="location-tab-content tab-content-info">
+            <p class="location-desc">Gate A is the main entrance area of DeKUT. Hostels here offer quick access to the library, administration block, and lecture halls.</p>
+            <div class="location-footer" style="margin-top:auto; padding-top:16px;">
+              <span><strong>Avg Price:</strong> KSh 4,000 - 6,500/sem</span>
+              <div class="location-tags" style="margin: 8px 0 16px 0;">
+                <span class="project-tag">Shops</span>
+                <span class="project-tag">Security</span>
+                <span class="project-tag">Active Life</span>
+              </div>
+              <button class="enquire-btn" style="width:100%; border-radius:12px; margin:0;" onclick="event.stopPropagation(); selectLocation('gate-a');"><em>View Hostels</em><i>&#10095;&#10095;</i></button>
+            </div>
+          </div>
+
+          <!-- 2. Photos Panel -->
+          <div class="location-tab-content tab-content-photos" style="display:none;">
+            <div class="location-photos-grid">
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=300&fit=crop&q=60" alt="Gate A photo 1" />
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1498243691581-b145c3f54a5c?w=300&fit=crop&q=60" alt="Gate A photo 2" />
+            </div>
+          </div>
+
+          <!-- 3. Video Panel -->
+          <div class="location-tab-content tab-content-video" style="display:none;">
+            <div class="location-video-wrap">
+              <video controls preload="none" poster="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=300&fit=crop&q=60">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-campus-of-a-modern-university-from-above-43093-large.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+
+          <!-- 4. Map Panel -->
+          <div class="location-tab-content tab-content-map" style="display:none;">
+            <div class="location-map-wrap">
+              <iframe class="location-map-iframe" src="https://www.openstreetmap.org/export/embed.html?bbox=36.956%2C-0.401%2C36.964%2C-0.393&amp;layer=mapnik&amp;marker=-0.397%2C36.960" aria-label="Gate A Map"></iframe>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- 2. Gate B -->
+      <li class="project-item active">
+        <div class="macos-location-card" id="card-gate-b">
+          <div style="margin-bottom: 12px;">
+            <h4 class="location-title" style="margin:0 0 4px 0;">Gate B</h4>
+            <span class="location-distance">5-10 mins walk to campus</span>
+          </div>
+
+          <div class="location-mode-switch">
+            <button type="button" class="tab-btn active" data-tab="info" onclick="switchLocationTab(event, 'card-gate-b', 'info')">Info</button>
+            <button type="button" class="tab-btn" data-tab="photos" onclick="switchLocationTab(event, 'card-gate-b', 'photos')">Photos</button>
+            <button type="button" class="tab-btn" data-tab="video" onclick="switchLocationTab(event, 'card-gate-b', 'video')">Video</button>
+            <button type="button" class="tab-btn" data-tab="map" onclick="switchLocationTab(event, 'card-gate-b', 'map')">Map</button>
+          </div>
+
+          <!-- 1. Info Panel -->
+          <div class="location-tab-content tab-content-info">
+            <p class="location-desc">Gate B area offers a quieter environment, located near the secondary entrance. Ideal for students who prefer peace and quiet.</p>
+            <div class="location-footer" style="margin-top:auto; padding-top:16px;">
+              <span><strong>Avg Price:</strong> KSh 3,500 - 5,500/sem</span>
+              <div class="location-tags" style="margin: 8px 0 16px 0;">
+                <span class="project-tag">Quiet Study</span>
+                <span class="project-tag">Budget Friendly</span>
+                <span class="project-tag">Modern</span>
+              </div>
+              <button class="enquire-btn" style="width:100%; border-radius:12px; margin:0;" onclick="event.stopPropagation(); selectLocation('gate-b');"><em>View Hostels</em><i>&#10095;&#10095;</i></button>
+            </div>
+          </div>
+
+          <!-- 2. Photos Panel -->
+          <div class="location-tab-content tab-content-photos" style="display:none;">
+            <div class="location-photos-grid">
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=300&fit=crop&q=60" alt="Gate B photo 1" />
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1492538368577-8b55d2836857?w=300&fit=crop&q=60" alt="Gate B photo 2" />
+            </div>
+          </div>
+
+          <!-- 3. Video Panel -->
+          <div class="location-tab-content tab-content-video" style="display:none;">
+            <div class="location-video-wrap">
+              <video controls preload="none" poster="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=300&fit=crop&q=60">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-campus-of-a-modern-university-from-above-43093-large.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+
+          <!-- 4. Map Panel -->
+          <div class="location-tab-content tab-content-map" style="display:none;">
+            <div class="location-map-wrap">
+              <iframe class="location-map-iframe" src="https://www.openstreetmap.org/export/embed.html?bbox=36.950%2C-0.403%2C36.958%2C-0.395&amp;layer=mapnik&amp;marker=-0.399%2C36.954" aria-label="Gate B Map"></iframe>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- 3. Boma -->
+      <li class="project-item active">
+        <div class="macos-location-card" id="card-boma">
+          <div style="margin-bottom: 12px;">
+            <h4 class="location-title" style="margin:0 0 4px 0;">Boma</h4>
+            <span class="location-distance">8-12 mins walk to campus</span>
+          </div>
+
+          <div class="location-mode-switch">
+            <button type="button" class="tab-btn active" data-tab="info" onclick="switchLocationTab(event, 'card-boma', 'info')">Info</button>
+            <button type="button" class="tab-btn" data-tab="photos" onclick="switchLocationTab(event, 'card-boma', 'photos')">Photos</button>
+            <button type="button" class="tab-btn" data-tab="video" onclick="switchLocationTab(event, 'card-boma', 'video')">Video</button>
+            <button type="button" class="tab-btn" data-tab="map" onclick="switchLocationTab(event, 'card-boma', 'map')">Map</button>
+          </div>
+
+          <!-- 1. Info Panel -->
+          <div class="location-tab-content tab-content-info">
+            <p class="location-desc">Boma is a vibrant student hub well-known for budget-friendly student housing, social communities, and highway access.</p>
+            <div class="location-footer" style="margin-top:auto; padding-top:16px;">
+              <span><strong>Avg Price:</strong> KSh 3,000 - 5,000/sem</span>
+              <div class="location-tags" style="margin: 8px 0 16px 0;">
+                <span class="project-tag">Social Hub</span>
+                <span class="project-tag">Borehole</span>
+                <span class="project-tag">Affordable</span>
+              </div>
+              <button class="enquire-btn" style="width:100%; border-radius:12px; margin:0;" onclick="event.stopPropagation(); selectLocation('boma');"><em>View Hostels</em><i>&#10095;&#10095;</i></button>
+            </div>
+          </div>
+
+          <!-- 2. Photos Panel -->
+          <div class="location-tab-content tab-content-photos" style="display:none;">
+            <div class="location-photos-grid">
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=300&fit=crop&q=60" alt="Boma photo 1" />
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1562774053-701939374585?w=300&fit=crop&q=60" alt="Boma photo 2" />
+            </div>
+          </div>
+
+          <!-- 3. Video Panel -->
+          <div class="location-tab-content tab-content-video" style="display:none;">
+            <div class="location-video-wrap">
+              <video controls preload="none" poster="https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=300&fit=crop&q=60">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-campus-of-a-modern-university-from-above-43093-large.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+
+          <!-- 4. Map Panel -->
+          <div class="location-tab-content tab-content-map" style="display:none;">
+            <div class="location-map-wrap">
+              <iframe class="location-map-iframe" src="https://www.openstreetmap.org/export/embed.html?bbox=36.960%2C-0.405%2C36.968%2C-0.397&amp;layer=mapnik&amp;marker=-0.401%2C36.964" aria-label="Boma Map"></iframe>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- 4. Embassy -->
+      <li class="project-item active">
+        <div class="macos-location-card" id="card-embassy">
+          <div style="margin-bottom: 12px;">
+            <h4 class="location-title" style="margin:0 0 4px 0;">Embassy</h4>
+            <span class="location-distance">1-3 mins walk to campus</span>
+          </div>
+
+          <div class="location-mode-switch">
+            <button type="button" class="tab-btn active" data-tab="info" onclick="switchLocationTab(event, 'card-embassy', 'info')">Info</button>
+            <button type="button" class="tab-btn" data-tab="photos" onclick="switchLocationTab(event, 'card-embassy', 'photos')">Photos</button>
+            <button type="button" class="tab-btn" data-tab="video" onclick="switchLocationTab(event, 'card-embassy', 'video')">Video</button>
+            <button type="button" class="tab-btn" data-tab="map" onclick="switchLocationTab(event, 'card-embassy', 'map')">Map</button>
+          </div>
+
+          <!-- 1. Info Panel -->
+          <div class="location-tab-content tab-content-info">
+            <p class="location-desc">Embassy is located right opposite Dedan Kimathi University main campus. Highly popular, high-speed Wi-Fi, and steady water supply.</p>
+            <div class="location-footer" style="margin-top:auto; padding-top:16px;">
+              <span><strong>Avg Price:</strong> KSh 4,500 - 7,000/sem</span>
+              <div class="location-tags" style="margin: 8px 0 16px 0;">
+                <span class="project-tag">WiFi</span>
+                <span class="project-tag">Water</span>
+                <span class="project-tag">Security</span>
+              </div>
+              <button class="enquire-btn" style="width:100%; border-radius:12px; margin:0;" onclick="event.stopPropagation(); selectLocation('embassy');"><em>View Hostels</em><i>&#10095;&#10095;</i></button>
+            </div>
+          </div>
+
+          <!-- 2. Photos Panel -->
+          <div class="location-tab-content tab-content-photos" style="display:none;">
+            <div class="location-photos-grid">
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=300&fit=crop&q=60" alt="Embassy photo 1" />
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=300&fit=crop&q=60" alt="Embassy photo 2" />
+            </div>
+          </div>
+
+          <!-- 3. Video Panel -->
+          <div class="location-tab-content tab-content-video" style="display:none;">
+            <div class="location-video-wrap">
+              <video controls preload="none" poster="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=300&fit=crop&q=60">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-campus-of-a-modern-university-from-above-43093-large.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+
+          <!-- 4. Map Panel -->
+          <div class="location-tab-content tab-content-map" style="display:none;">
+            <div class="location-map-wrap">
+              <iframe class="location-map-iframe" src="https://www.openstreetmap.org/export/embed.html?bbox=36.958%2C-0.399%2C36.968%2C-0.395&amp;layer=mapnik&amp;marker=-0.397%2C36.963" aria-label="Embassy Map"></iframe>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- 5. Nyeri View -->
+      <li class="project-item active">
+        <div class="macos-location-card" id="card-nyeri-view">
+          <div style="margin-bottom: 12px;">
+            <h4 class="location-title" style="margin:0 0 4px 0;">Nyeri View</h4>
+            <span class="location-distance">10-15 mins walk / commute</span>
+          </div>
+
+          <div class="location-mode-switch">
+            <button type="button" class="tab-btn active" data-tab="info" onclick="switchLocationTab(event, 'card-nyeri-view', 'info')">Info</button>
+            <button type="button" class="tab-btn" data-tab="photos" onclick="switchLocationTab(event, 'card-nyeri-view', 'photos')">Photos</button>
+            <button type="button" class="tab-btn" data-tab="video" onclick="switchLocationTab(event, 'card-nyeri-view', 'video')">Video</button>
+            <button type="button" class="tab-btn" data-tab="map" onclick="switchLocationTab(event, 'card-nyeri-view', 'map')">Map</button>
+          </div>
+
+          <!-- 1. Info Panel -->
+          <div class="location-tab-content tab-content-info">
+            <p class="location-desc">Scenic, premium apartments with views of Mount Kenya. Features spacious rooms and quiet environments, ideal for solo residency.</p>
+            <div class="location-footer" style="margin-top:auto; padding-top:16px;">
+              <span><strong>Avg Price:</strong> KSh 6,000 - 10,000/sem</span>
+              <div class="location-tags" style="margin: 8px 0 16px 0;">
+                <span class="project-tag">Premium Space</span>
+                <span class="project-tag">Scenic</span>
+                <span class="project-tag">Solo Stay</span>
+              </div>
+              <button class="enquire-btn" style="width:100%; border-radius:12px; margin:0;" onclick="event.stopPropagation(); selectLocation('nyeri-view');"><em>View Hostels</em><i>&#10095;&#10095;</i></button>
+            </div>
+          </div>
+
+          <!-- 2. Photos Panel -->
+          <div class="location-tab-content tab-content-photos" style="display:none;">
+            <div class="location-photos-grid">
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&fit=crop&q=60" alt="Nyeri View photo 1" />
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=300&fit=crop&q=60" alt="Nyeri View photo 2" />
+            </div>
+          </div>
+
+          <!-- 3. Video Panel -->
+          <div class="location-tab-content tab-content-video" style="display:none;">
+            <div class="location-video-wrap">
+              <video controls preload="none" poster="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&fit=crop&q=60">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-campus-of-a-modern-university-from-above-43093-large.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+
+          <!-- 4. Map Panel -->
+          <div class="location-tab-content tab-content-map" style="display:none;">
+            <div class="location-map-wrap">
+              <iframe class="location-map-iframe" src="https://www.openstreetmap.org/export/embed.html?bbox=36.945%2C-0.390%2C36.953%2C-0.382&amp;layer=mapnik&amp;marker=-0.386%2C36.949" aria-label="Nyeri View Map"></iframe>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- 6. Main Campus -->
+      <li class="project-item active">
+        <div class="macos-location-card" id="card-main-campus">
+          <div style="margin-bottom: 12px;">
+            <h4 class="location-title" style="margin:0 0 4px 0;">Main Campus</h4>
+            <span class="location-distance">0 mins walk (Inside University)</span>
+          </div>
+
+          <div class="location-mode-switch">
+            <button type="button" class="tab-btn active" data-tab="info" onclick="switchLocationTab(event, 'card-main-campus', 'info')">Info</button>
+            <button type="button" class="tab-btn" data-tab="photos" onclick="switchLocationTab(event, 'card-main-campus', 'photos')">Photos</button>
+            <button type="button" class="tab-btn" data-tab="video" onclick="switchLocationTab(event, 'card-main-campus', 'video')">Video</button>
+            <button type="button" class="tab-btn" data-tab="map" onclick="switchLocationTab(event, 'card-main-campus', 'map')">Map</button>
+          </div>
+
+          <!-- 1. Info Panel -->
+          <div class="location-tab-content tab-content-info">
+            <p class="location-desc">Main Campus housing is located within DeKUT itself. Offers maximum security, zero transport cost, and instant access to class and campus library.</p>
+            <div class="location-footer" style="margin-top:auto; padding-top:16px;">
+              <span><strong>Avg Price:</strong> KSh 5,000 - 8,500/sem</span>
+              <div class="location-tags" style="margin: 8px 0 16px 0;">
+                <span class="project-tag">Inside Campus</span>
+                <span class="project-tag">Max Security</span>
+                <span class="project-tag">Dining Hall</span>
+              </div>
+              <button class="enquire-btn" style="width:100%; border-radius:12px; margin:0;" onclick="event.stopPropagation(); selectLocation('main-campus');"><em>View Hostels</em><i>&#10095;&#10095;</i></button>
+            </div>
+          </div>
+
+          <!-- 2. Photos Panel -->
+          <div class="location-tab-content tab-content-photos" style="display:none;">
+            <div class="location-photos-grid">
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1527891751199-7225231a68dd?w=300&fit=crop&q=60" alt="Main Campus photo 1" />
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=300&fit=crop&q=60" alt="Main Campus photo 2" />
+            </div>
+          </div>
+
+          <!-- 3. Video Panel -->
+          <div class="location-tab-content tab-content-video" style="display:none;">
+            <div class="location-video-wrap">
+              <video controls preload="none" poster="https://images.unsplash.com/photo-1527891751199-7225231a68dd?w=300&fit=crop&q=60">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-campus-of-a-modern-university-from-above-43093-large.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+
+          <!-- 4. Map Panel -->
+          <div class="location-tab-content tab-content-map" style="display:none;">
+            <div class="location-map-wrap">
+              <iframe class="location-map-iframe" src="https://www.openstreetmap.org/export/embed.html?bbox=36.958%2C-0.402%2C36.962%2C-0.398&amp;layer=mapnik&amp;marker=-0.400%2C36.960" aria-label="Main Campus Map"></iframe>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- 7. Mathari -->
+      <li class="project-item active">
+        <div class="macos-location-card" id="card-mathari">
+          <div style="margin-bottom: 12px;">
+            <h4 class="location-title" style="margin:0 0 4px 0;">Mathari</h4>
+            <span class="location-distance">15-25 mins walk / commute</span>
+          </div>
+
+          <div class="location-mode-switch">
+            <button type="button" class="tab-btn active" data-tab="info" onclick="switchLocationTab(event, 'card-mathari', 'info')">Info</button>
+            <button type="button" class="tab-btn" data-tab="photos" onclick="switchLocationTab(event, 'card-mathari', 'photos')">Photos</button>
+            <button type="button" class="tab-btn" data-tab="video" onclick="switchLocationTab(event, 'card-mathari', 'video')">Video</button>
+            <button type="button" class="tab-btn" data-tab="map" onclick="switchLocationTab(event, 'card-mathari', 'map')">Map</button>
+          </div>
+
+          <!-- 1. Info Panel -->
+          <div class="location-tab-content tab-content-info">
+            <p class="location-desc">Mathari is located slightly away from campus, offering affordable accommodation. Quiet, serene environment suitable for study away from the student bustle.</p>
+            <div class="location-footer" style="margin-top:auto; padding-top:16px;">
+              <span><strong>Avg Price:</strong> KSh 3,000 - 4,500/sem</span>
+              <div class="location-tags" style="margin: 8px 0 16px 0;">
+                <span class="project-tag">Serene</span>
+                <span class="project-tag">Affordable</span>
+                <span class="project-tag">Quiet</span>
+              </div>
+              <button class="enquire-btn" style="width:100%; border-radius:12px; margin:0;" onclick="event.stopPropagation(); selectLocation('mathari');"><em>View Hostels</em><i>&#10095;&#10095;</i></button>
+            </div>
+          </div>
+
+          <!-- 2. Photos Panel -->
+          <div class="location-tab-content tab-content-photos" style="display:none;">
+            <div class="location-photos-grid">
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&fit=crop&q=60" alt="Mathari photo 1" />
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=300&fit=crop&q=60" alt="Mathari photo 2" />
+            </div>
+          </div>
+
+          <!-- 3. Video Panel -->
+          <div class="location-tab-content tab-content-video" style="display:none;">
+            <div class="location-video-wrap">
+              <video controls preload="none" poster="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&fit=crop&q=60">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-campus-of-a-modern-university-from-above-43093-large.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+
+          <!-- 4. Map Panel -->
+          <div class="location-tab-content tab-content-map" style="display:none;">
+            <div class="location-map-wrap">
+              <iframe class="location-map-iframe" src="https://www.openstreetmap.org/export/embed.html?bbox=36.935%2C-0.415%2C36.945%2C-0.405&amp;layer=mapnik&amp;marker=-0.410%2C36.940" aria-label="Mathari Map"></iframe>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- 8. Mweiga -->
+      <li class="project-item active">
+        <div class="macos-location-card" id="card-mweiga">
+          <div style="margin-bottom: 12px;">
+            <h4 class="location-title" style="margin:0 0 4px 0;">Mweiga</h4>
+            <span class="location-distance">10-15 mins drive / bus ride</span>
+          </div>
+
+          <div class="location-mode-switch">
+            <button type="button" class="tab-btn active" data-tab="info" onclick="switchLocationTab(event, 'card-mweiga', 'info')">Info</button>
+            <button type="button" class="tab-btn" data-tab="photos" onclick="switchLocationTab(event, 'card-mweiga', 'photos')">Photos</button>
+            <button type="button" class="tab-btn" data-tab="video" onclick="switchLocationTab(event, 'card-mweiga', 'video')">Video</button>
+            <button type="button" class="tab-btn" data-tab="map" onclick="switchLocationTab(event, 'card-mweiga', 'map')">Map</button>
+          </div>
+
+          <!-- 1. Info Panel -->
+          <div class="location-tab-content tab-content-info">
+            <p class="location-desc">Mweiga is a town area located further from the campus. Popular for student houses that are highly budget-friendly, with access to local markets.</p>
+            <div class="location-footer" style="margin-top:auto; padding-top:16px;">
+              <span><strong>Avg Price:</strong> KSh 2,500 - 4,000/sem</span>
+              <div class="location-tags" style="margin: 8px 0 16px 0;">
+                <span class="project-tag">Budget Friendly</span>
+                <span class="project-tag">Town Life</span>
+                <span class="project-tag">Market Access</span>
+              </div>
+              <button class="enquire-btn" style="width:100%; border-radius:12px; margin:0;" onclick="event.stopPropagation(); selectLocation('mweiga');"><em>View Hostels</em><i>&#10095;&#10095;</i></button>
+            </div>
+          </div>
+
+          <!-- 2. Photos Panel -->
+          <div class="location-tab-content tab-content-photos" style="display:none;">
+            <div class="location-photos-grid">
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1531266752426-aad472b7bbf4?w=300&fit=crop&q=60" alt="Mweiga photo 1" />
+              <img class="location-photo-img" src="https://images.unsplash.com/photo-1473081556163-2a17de81fc97?w=300&fit=crop&q=60" alt="Mweiga photo 2" />
+            </div>
+          </div>
+
+          <!-- 3. Video Panel -->
+          <div class="location-tab-content tab-content-video" style="display:none;">
+            <div class="location-video-wrap">
+              <video controls preload="none" poster="https://images.unsplash.com/photo-1531266752426-aad472b7bbf4?w=300&fit=crop&q=60">
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-campus-of-a-modern-university-from-above-43093-large.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+
+          <!-- 4. Map Panel -->
+          <div class="location-tab-content tab-content-map" style="display:none;">
+            <div class="location-map-wrap">
+              <iframe class="location-map-iframe" src="https://www.openstreetmap.org/export/embed.html?bbox=36.900%2C-0.380%2C36.920%2C-0.360&amp;layer=mapnik&amp;marker=-0.370%2C36.910" aria-label="Mweiga Map"></iframe>
+            </div>
+          </div>
+        </div>
+      </li>
+
+    </ul>
+
+    <!-- Footer -->
+    <footer class="app-footer" role="contentinfo" style="margin-top: 40px;">
+      <div class="footer-content">
+        <div class="footer-left">
+          <p>&copy; 2026 DKUT Hostels. Verified accommodation services near Dedan Kimathi University of Technology.</p>
+        </div>
+        <div class="footer-links">
+          <a href="../home/">Home</a>
+          <a href="../locations/">Locations</a>
+          <a href="../scam-reports/">Scam Alerts</a>
+          <a href="../legal/" class="footer-highlight-link">Legal Compliance &amp; Accessibility</a>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script src="../../shared/utils/security.js"></script>
+  <script src="../../shared/utils/helpers.js"></script>
+  <script src="../../shared/js/config.js"></script>
+  <script src="../../shared/js/app.js"></script>
+  <script src="../../shared/js/firebase-init.js" defer></script>
+  <script src="../../shared/js/auth-state.js" defer></script>
+  <script src="../../shared/js/layout.js" defer></script>
+  <script src="./locations.js" defer></script>
+</body>
+</html>
