@@ -115,6 +115,8 @@ module.exports = (req, res) => {
     <meta property="og:title" content="${escapeAttr(title)}" />
     <meta property="og:description" content="${escapeAttr(description)}" />
     <meta property="og:image" content="${escapeAttr(image)}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="${escapeAttr(url)}" />
     <meta name="twitter:title" content="${escapeAttr(title)}" />
@@ -127,6 +129,7 @@ module.exports = (req, res) => {
     html = html.replace(/<meta\s+[^>]*?name=["']description["'][^>]*?\/?>/gi, '');
     html = html.replace(/<meta\s+[^>]*?property=["']og:[^]*?["'][^>]*?\/?>/gi, '');
     html = html.replace(/<meta\s+[^>]*?name=["']twitter:[^]*?["'][^>]*?\/?>/gi, '');
+    html = html.replace(/<link\s+[^>]*?rel=["']icon["'][^>]*?\/?>/gi, '');
     
     // Inject dynamic metaBlock at the start of the head element
     html = html.replace('<head>', `<head>${metaBlock}`);

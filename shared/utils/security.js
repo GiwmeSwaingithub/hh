@@ -254,7 +254,9 @@
       
       const fontSize = Math.max(11, Math.floor(Math.min(canvas.width, canvas.height) * 0.045));
       ctx.font = `bold ${fontSize}px sans-serif`;
-      ctx.fillStyle = "rgba(255, 255, 255, 0.16)";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.22)";
+      ctx.strokeStyle = "rgba(0, 0, 0, 0.12)";
+      ctx.lineWidth = 1;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       
@@ -273,6 +275,7 @@
       for (let x = -limit; x < limit; x += stepX) {
         for (let y = -limit; y < limit; y += stepY) {
           ctx.fillText(text, x, y);
+          ctx.strokeText(text, x, y);
         }
       }
       
@@ -374,7 +377,14 @@
       });
     }, { rootMargin: '120px' });
 
+    // Debounce scanAndObserve so MutationObserver doesn't thrash on heavy DOM updates
+    let _scanTimer = null;
     function scanAndObserve() {
+      clearTimeout(_scanTimer);
+      _scanTimer = setTimeout(_doScan, 80);
+    }
+
+    function _doScan() {
       // 1. Process custom secure canvas elements
       document.querySelectorAll('canvas.secure-canvas[data-secure-src]').forEach(canvas => {
         lazyObserver.observe(canvas);
@@ -390,7 +400,7 @@
         
         // Skip standard font-awesome/favicon/marker graphics
         const src = img.src || '';
-        if (src.includes('data:image/svg+xml') || src.endsWith('.svg') || src.includes('favicon')) return;
+        if (!src || src.includes('data:image/svg+xml') || src.endsWith('.svg') || src.includes('favicon')) return;
 
         syncImageToCanvas(img);
       });
@@ -398,6 +408,11 @@
 
     function syncImageToCanvas(img) {
       if (img.classList.contains('secure-protected-img')) return;
+
+      // Block drag on the source img directly
+      img.setAttribute('draggable', 'false');
+      img.addEventListener('dragstart', e => e.preventDefault(), true);
+      img.addEventListener('contextmenu', e => e.preventDefault(), true);
 
       let canvas = img.nextElementSibling;
       if (!canvas || !canvas.classList.contains('secure-canvas-sync')) {
@@ -414,6 +429,11 @@
           }
         }
         
+        // Prevent drag / right-click on the canvas too
+        canvas.setAttribute('draggable', 'false');
+        canvas.addEventListener('dragstart', e => e.preventDefault(), true);
+        canvas.addEventListener('contextmenu', e => e.preventDefault(), true);
+
         // Hide the original image visually but keep it in flow
         img.style.setProperty('display', 'none', 'important');
         img.classList.add('secure-protected-img');
@@ -423,22 +443,39 @@
       }
       
       const draw = () => {
-        if (!img.naturalWidth) return;
+        if (!img.naturalWidth || !img.naturalHeight) return;
         canvas.width = img.naturalWidth;
         canvas.height = img.naturalHeight;
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-        drawWatermark(canvas, ctx);
+        try {
+          ctx.drawImage(img, 0, 0);
+          drawWatermark(canvas, ctx);
+        } catch (e) {
+          // Tainted canvas (cross-origin) — just show the image without extractable pixel data
+        }
         canvas.style.display = ''; // Ensure canvas is visible
       };
       
+      // Always rely on the load event first — covers lazy-loaded and dynamic images
       if (img.complete && img.naturalWidth) {
+        // Already loaded: draw immediately but also queue a microtask in case
+        // naturalWidth is briefly reported before decode completes
         draw();
       } else {
         img.addEventListener('load', draw, { once: true });
       }
+
+      // Handle image decode errors gracefully
+      img.addEventListener('error', () => {
+        canvas.width = 400;
+        canvas.height = 250;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#1f2937';
+        ctx.fillRect(0, 0, 400, 250);
+        canvas.style.display = '';
+      }, { once: true });
       
-      // Observe src changes
+      // Observe src changes so re-assigned images get re-watermarked
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           if (mutation.attributeName === 'src') {
@@ -859,9 +896,13 @@
   function sanitizeQueryParameters() {
     const params = new URLSearchParams(window.location.search);
     let dirty = false;
-    const pattern = /(<script|script:|javascript:|data:|onload|onerror|onmouseover|SELECT|UNION|INSERT|DELETE|UPDATE|DROP|--|'|"|`)/i;
+    // Detect actual attack patterns — more specific than broad keyword matching
+    const pattern = /(<script|<\/script|script\s*:|javascript\s*:|data\s*:[^,]*base64|onload\s*=|onerror\s*=|onmouseover\s*=|eval\s*\(|document\s*\.\s*cookie|window\s*\.\s*location|<iframe|<object|UNION\s+SELECT|INSERT\s+INTO|DROP\s+TABLE|UPDATE\s+\w+\s+SET|DELETE\s+FROM|--|;\s*(SELECT|INSERT|UPDATE|DELETE))/i;
     
     for (const [key, value] of params.entries()) {
+      // Skip the hostel ID param — it is always a numeric string (safe)
+      if (key === 'h' && /^\d+$/.test(value)) continue;
+
       if (pattern.test(key) || pattern.test(value)) {
         params.delete(key);
         dirty = true;
