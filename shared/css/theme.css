@@ -1721,17 +1721,25 @@ body.mock-mode-active #content { padding-top: calc(var(--topbar-h) + 44px + 24px
     background: rgba(139, 126, 200, 0.1);
     color: #dfa2da;
     font-weight: 600;
-    padding: 8px 8px;
+    padding: 6px 8px;
     text-align: left;
     border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
     text-transform: uppercase;
     font-size: 0.75rem;
     letter-spacing: 0.5px;
 }
+.pricing-table th:last-child {
+    border-right: none;
+}
 .pricing-table td {
-    padding: 8px 8px;
+    padding: 6px 8px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
     vertical-align: middle;
+}
+.pricing-table td:last-child {
+    border-right: none;
 }
 .pricing-table tr:last-child td {
     border-bottom: none;
@@ -1743,6 +1751,29 @@ body.mock-mode-active #content { padding-top: calc(var(--topbar-h) + 44px + 24px
     font-weight: 700;
     color: #0bda83;
 }
+
+[data-theme="light"] .pricing-table th {
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .pricing-table td {
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+}
+[data-theme="light"] .pricing-table th:last-child,
+[data-theme="light"] .pricing-table td:last-child {
+    border-right: none;
+}
+
+@media (max-width: 480px) {
+    .pricing-table {
+        min-width: 100% !important;
+    }
+    .pricing-table th,
+    .pricing-table td {
+        padding: 4px 2px !important;
+        font-size: 0.78rem !important;
+    }
+}
+
 
 /* ============================================================
    DKUT HOSTELS — FOOTER, ACCESSIBILITY, THEMES & SPEECH STYLES
