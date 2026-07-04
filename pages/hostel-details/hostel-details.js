@@ -45,10 +45,13 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
     document.getElementById('gallery-grid')?.addEventListener('click', e => {
       const target = e.target;
-      if (target.tagName === 'IMG') {
-        img.src = target.src;
-        img.alt = target.alt;
-        lb.classList.add('open');
+      if (target.tagName === 'IMG' || target.tagName === 'CANVAS') {
+        const actualImg = target.tagName === 'CANVAS' ? target.previousElementSibling : target;
+        if (actualImg && actualImg.tagName === 'IMG') {
+          img.src = actualImg.src;
+          img.alt = actualImg.alt;
+          lb.classList.add('open');
+        }
       }
     });
   }
