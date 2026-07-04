@@ -655,6 +655,40 @@
         }
       });
     }
+
+    // Bind share button click
+    const shareBtn = document.getElementById('share-btn');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', async () => {
+        const shareData = {
+          title: (hostel.name || 'Hostel') + ' — DKUT Hostels',
+          text: `Check out ${hostel.name || 'this hostel'} on DKUT Hostels:`,
+          url: window.location.href
+        };
+        
+        if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+          try {
+            await navigator.share(shareData);
+          } catch (err) {
+            if (err.name !== 'AbortError') {
+              console.error('Error sharing:', err);
+            }
+          }
+        } else {
+          // Fallback to clipboard copy
+          try {
+            await navigator.clipboard.writeText(window.location.href);
+            if (window.DKUT && window.DKUT.app && window.DKUT.app.showToast) {
+              window.DKUT.app.showToast('Link copied to clipboard!', 'success');
+            } else {
+              alert('Link copied to clipboard!');
+            }
+          } catch (err) {
+            console.error('Clipboard copy failed:', err);
+          }
+        }
+      });
+    }
   }
 
   if (document.readyState === 'loading') {

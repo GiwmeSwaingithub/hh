@@ -1,14 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 
-function escapeHtml(str) {
+function escapeAttr(str) {
   if (str == null) return '';
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 module.exports = (req, res) => {
@@ -108,24 +107,28 @@ module.exports = (req, res) => {
 
     // Build meta inject block
     const metaBlock = `
-    <title>${escapeHtml(title)}</title>
-    <meta name="description" content="${escapeHtml(description)}" />
+    <title>${escapeAttr(title)}</title>
+    <meta name="description" content="${escapeAttr(description)}" />
     <link rel="icon" type="image/png" href="https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="${escapeHtml(url)}" />
-    <meta property="og:title" content="${escapeHtml(title)}" />
-    <meta property="og:description" content="${escapeHtml(description)}" />
-    <meta property="og:image" content="${escapeHtml(image)}" />
+    <meta property="og:url" content="${escapeAttr(url)}" />
+    <meta property="og:title" content="${escapeAttr(title)}" />
+    <meta property="og:description" content="${escapeAttr(description)}" />
+    <meta property="og:image" content="${escapeAttr(image)}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="${escapeHtml(url)}" />
-    <meta name="twitter:title" content="${escapeHtml(title)}" />
-    <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${escapeHtml(image)}" />
+    <meta name="twitter:url" content="${escapeAttr(url)}" />
+    <meta name="twitter:title" content="${escapeAttr(title)}" />
+    <meta name="twitter:description" content="${escapeAttr(description)}" />
+    <meta name="twitter:image" content="${escapeAttr(image)}" />
     `;
 
-    // Replace the static title & description with the dynamic block
-    html = html.replace(/<title>[^]*?<\/title>/i, '');
-    html = html.replace(/<meta\s+name=["']description["']\s+content=["'][^]*?["']\s*\/?>/i, '');
+    // Strip duplicate static title, description, og, and twitter tags from the template
+    html = html.replace(/<title>[^]*?<\/title>/gi, '');
+    html = html.replace(/<meta\s+[^>]*?name=["']description["'][^>]*?\/?>/gi, '');
+    html = html.replace(/<meta\s+[^>]*?property=["']og:[^]*?["'][^>]*?\/?>/gi, '');
+    html = html.replace(/<meta\s+[^>]*?name=["']twitter:[^]*?["'][^>]*?\/?>/gi, '');
+    
+    // Inject dynamic metaBlock at the start of the head element
     html = html.replace('<head>', `<head>${metaBlock}`);
 
     res.setHeader('Content-Type', 'text/html');
