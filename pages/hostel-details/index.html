@@ -469,6 +469,275 @@
             color: #fff;
             box-shadow: 0 4px 12px color-mix(in srgb, var(--carousel-accent) 25%, transparent);
         }
+
+        /* ── Shimmering Loading Skeleton ── */
+        @keyframes skeleton-pulse {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-pulse 1.5s infinite linear;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        [data-theme="light"] .skeleton {
+            background: linear-gradient(90deg, rgba(0,0,0,0.03) 25%, rgba(0,0,0,0.08) 50%, rgba(0,0,0,0.03) 75%);
+            background-size: 200% 100%;
+        }
+        .skeleton-wrapper {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 16px;
+        }
+        .skeleton-carousel {
+            height: var(--carousel-container-h, 400px);
+            border-radius: 20px;
+            margin-bottom: 24px;
+        }
+        .skeleton-title {
+            height: 2rem;
+            width: 50%;
+            margin-bottom: 8px;
+        }
+        .skeleton-subtitle {
+            height: 1.2rem;
+            width: 30%;
+            margin-bottom: 30px;
+        }
+        .skeleton-section-title {
+            height: 1.5rem;
+            width: 25%;
+            margin-bottom: 16px;
+            margin-top: 24px;
+        }
+        .skeleton-text {
+            height: 1rem;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .skeleton-table {
+            height: 150px;
+            border-radius: 12px;
+        }
+
+        /* ── Carousel Card Shimmer ── */
+        .carousel-card.image-loading {
+            background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.02) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-pulse 1.5s infinite linear;
+        }
+        .carousel-card.image-loading img {
+            opacity: 0;
+        }
+
+        /* ── Notebook Paper Rules Style ── */
+        .page {
+            position: relative;
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 100%;
+            font-family: cursive, "Comic Sans MS", "Marker Felt", sans-serif;
+            font-size: 15px;
+            border-radius: 10px;
+            background: #fff;
+            background-image: linear-gradient(#f5f5f0 1.1rem, #ccc 1.2rem);
+            background-size: 100% 1.2rem;
+            line-height: 1.2rem;
+            padding: 1.4rem 1rem 0.5rem 3.2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            margin-top: 12px;
+        }
+        .page::before,
+        .page::after {
+            position: absolute;
+            content: "";
+            bottom: 10px;
+            width: 40%;
+            height: 10px;
+            box-shadow: 0 5px 14px rgba(0, 0, 0, 0.4);
+            z-index: -1;
+            transition: all 0.3s ease;
+        }
+        .page::before {
+            left: 15px;
+            transform: skew(-5deg) rotate(-5deg);
+        }
+        .page::after {
+            right: 15px;
+            transform: skew(5deg) rotate(5deg);
+        }
+        .page:hover::before,
+        .page:hover::after {
+            box-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+        }
+        .margin {
+            position: absolute;
+            border-left: 1px solid #d88;
+            height: 100%;
+            left: 2.4rem;
+            top: 0;
+        }
+
+        @media (max-width: 480px) {
+            .page {
+                padding: 1.2rem 0.6rem 0.4rem 2.4rem !important;
+            }
+            .margin {
+                left: 1.8rem !important;
+            }
+            .page p.rule-item {
+                padding-left: 0.8rem !important;
+            }
+            .page p.rule-item::before {
+                left: 0.1rem !important;
+            }
+        }
+        .rules-list-container {
+            overflow: hidden;
+            max-height: calc(1.2rem * 12);
+            transition: max-height 0.4s ease;
+        }
+        .rules-list-container.expanded {
+            max-height: 2000px;
+        }
+        .page p.rule-item {
+            margin: 0;
+            text-indent: 0;
+            padding-bottom: 0;
+            color: #1a1a1a !important;
+            line-height: 1.2rem;
+            min-height: 1.2rem;
+            position: relative;
+            padding-left: 1.2rem;
+        }
+        .page p.rule-item::before {
+            content: "•";
+            position: absolute;
+            left: 0.2rem;
+            color: #333;
+            font-weight: bold;
+        }
+        .rules-see-more-btn {
+            background: transparent;
+            border: none;
+            color: var(--carousel-accent);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 12px;
+            padding: 6px 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s ease;
+        }
+        .rules-see-more-btn:hover {
+            color: color-mix(in srgb, var(--carousel-accent) 80%, white);
+        }
+
+        /* ── Room Selector & Indicator Styles ── */
+        .room-selector-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+            width: 100%;
+            text-align: left;
+        }
+        .room-selector-buttons {
+            display: inline-flex;
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 3px;
+            gap: 0;
+            backdrop-filter: blur(10px);
+        }
+        .room-select-btn {
+            background: transparent;
+            border: none;
+            color: var(--light-gray-70);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .room-select-btn:hover {
+            color: var(--white-2);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .room-select-btn.active {
+            color: #fff !important;
+            background: var(--carousel-accent) !important;
+            box-shadow: 0 2px 8px color-mix(in srgb, var(--carousel-accent) 40%, transparent) !important;
+        }
+        .selected-room-indicator {
+            font-size: 0.9rem;
+            color: #8a8298;
+        }
+        .selected-room-indicator .highlight {
+            color: var(--carousel-accent);
+            font-weight: 700;
+        }
+        [data-theme="light"] .room-selector-buttons {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        [data-theme="light"] .room-select-btn {
+            color: #5a5266;
+        }
+        [data-theme="light"] .room-select-btn:hover {
+            color: #1e1b24;
+            background: rgba(0, 0, 0, 0.04);
+        }
+        [data-theme="light"] .room-select-btn.active {
+            color: #fff !important;
+            background: var(--carousel-accent) !important;
+            box-shadow: none !important;
+        }
+
+        /* ── Scam Warning Disclaimer Style ── */
+        .scam-disclaimer-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-top: 16px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            text-align: left;
+        }
+        .scam-disclaimer-card svg {
+            color: #ef4444;
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+        }
+        .scam-disclaimer-card span {
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            line-height: 1.4;
+        }
+        .scam-disclaimer-card span strong {
+            color: #f87171;
+        }
+        [data-theme="light"] .scam-disclaimer-card {
+            background: rgba(239, 68, 68, 0.04);
+            border-color: rgba(239, 68, 68, 0.15);
+        }
+        [data-theme="light"] .scam-disclaimer-card span {
+            color: #1e293b;
+        }
     </style>
 </head>
     <!-- Static Layout Elements -->
@@ -515,7 +784,23 @@
     </header>
 
     <main id="content">
-        <div id="loading-state" style="text-align:center;padding:60px;color:#8a8298;">Loading hostel details...</div>
+        <div id="loading-state">
+          <div class="skeleton-wrapper">
+            <!-- Carousel skeleton -->
+            <div class="skeleton skeleton-carousel"></div>
+            <!-- Title skeleton -->
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-subtitle"></div>
+            <!-- About skeleton -->
+            <div class="skeleton skeleton-section-title"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text" style="width: 80%;"></div>
+            <div class="skeleton skeleton-text" style="width: 60%;"></div>
+            <!-- Pricing skeleton -->
+            <div class="skeleton skeleton-section-title"></div>
+            <div class="skeleton skeleton-table"></div>
+          </div>
+        </div>
 
         <article id="hostel-content" hidden>
           <!-- ========== PHOTOS SECTION — 3D CAROUSEL ========== -->
@@ -542,6 +827,11 @@
                 <!-- Dots navigation -->
                 <div class="carousel-dots" id="carousel-dots" aria-label="Media indicators"></div>
 
+                <!-- Carousel Tap Hint -->
+                <div id="carousel-tap-hint" style="text-align: center; font-size: 0.8rem; color: #8a8298; margin-top: 8px; font-weight: 500;">
+                  Tap an image to view full image
+                </div>
+
                 <!-- Active Category Tag -->
                 <div id="carousel-image-category" style="text-align: center; margin-top: 10px; min-height: 1.5em;">
                   <span id="current-image-category-name" class="project-tag" style="display: inline-block; font-size: 0.8rem; font-weight: 700; background: rgba(11, 218, 131, 0.15); color: var(--accent); padding: 4px 12px; border-radius: 12px; border: 1px solid rgba(11, 218, 131, 0.25); text-transform: uppercase; letter-spacing: 0.05em;">General</span>
@@ -567,13 +857,33 @@
 
             <div class="detail-section">
                 <h3>Pricing</h3>
-                <div class="mode-switch-container" style="margin-bottom: 15px; display: inline-flex;">
+                
+                <!-- Dynamic Room Type Selector Buttons & Active Indicator -->
+                <div id="room-selector-container" class="room-selector-container" style="display: none;">
+                  <div class="room-selector-buttons" id="room-selector-buttons"></div>
+                  <div class="selected-room-indicator" id="selected-room-indicator">
+                    Selected: <span class="highlight" id="selected-room-name">-</span>
+                  </div>
+                </div>
+
+                <div class="mode-switch-container" id="pricing-mode-switch-wrapper" style="margin-bottom: 15px; display: inline-flex;">
                   <div class="mode-switch" id="pricing-mode-switch">
                     <button class="mode-btn active" type="button" id="btn-stay-alone">Stay Alone</button>
                     <button class="mode-btn" type="button" id="btn-sharing">Sharing</button>
                   </div>
                 </div>
+                
                 <div class="pricing-row" id="pricing-row"></div>
+
+                <!-- Scam warning disclaimer -->
+                <div class="scam-disclaimer-card">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                  <span><strong>Warning:</strong> Always pay directly to the official hostel accounts. Avoid scammers and unauthorized agents.</span>
+                </div>
             </div>
             
  <div class="detail-section">
@@ -843,10 +1153,20 @@
                             card.appendChild(video);
                         }
                     } else {
+                        card.classList.add('image-loading');
                         const img = document.createElement('img');
                         img.src = url;
                         img.alt = 'Hostel photo ' + (i + 1);
                         img.loading = 'lazy';
+                        img.addEventListener('load', () => {
+                            card.classList.remove('image-loading');
+                        });
+                        img.addEventListener('error', () => {
+                            card.classList.remove('image-loading');
+                        });
+                        if (img.complete) {
+                            card.classList.remove('image-loading');
+                        }
                         card.appendChild(img);
                     }
 
@@ -1180,7 +1500,9 @@
                 setMedia: function(items, type) {
                     currentMediaType = type || 'image';
                     currentIndex = 0;
+                    const tapHint = document.getElementById('carousel-tap-hint');
                     if (currentMediaType === 'video') {
+                        if (tapHint) tapHint.style.display = 'none';
                         const chipsContainer = document.getElementById('category-filter-row');
                         if (chipsContainer) chipsContainer.style.display = 'none';
                         const categoryLabelWrapper = document.getElementById('carousel-image-category');
@@ -1188,6 +1510,7 @@
                         imageUrls = items || [];
                         buildCards(false);
                     } else {
+                        if (tapHint) tapHint.style.display = (items && items.length > 0) ? 'block' : 'none';
                         selectedCategory = 'All';
                         const categoryLabelWrapper = document.getElementById('carousel-image-category');
                         if (categoryLabelWrapper) categoryLabelWrapper.style.display = 'block';

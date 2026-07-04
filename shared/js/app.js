@@ -276,6 +276,38 @@
 
     const badges = utils.slice(0, 4).map(u => '<span class="project-tag">' + esc(u) + '</span>').join('');
 
+    const stripPeriod = s => String(s || '').replace(/\/sem/i, '').replace(/\/night/i, '').replace(/\/month/i, '').replace(/\/day/i, '');
+    const priceLines = [];
+    if (h.rooms && Array.isArray(h.rooms) && h.rooms.length > 0) {
+      h.rooms.forEach(room => {
+        const amtStr = room.price.amountSharing ? stripPeriod(fmtPrice(room.price.amountSharing)) : '';
+        if (amtStr) {
+          priceLines.push(room.name + ' (Sharing): ' + amtStr);
+        }
+        const aloneStr = room.price.amountAlone ? stripPeriod(fmtPrice(room.price.amountAlone)) : '';
+        if (aloneStr) {
+          priceLines.push(room.name + ' (Solo): ' + aloneStr);
+        }
+      });
+    } else {
+      if (h.price > 0) {
+        priceLines.push('Sharing: ' + stripPeriod(fmtPrice(h.price)));
+      }
+      if (h.priceAlone > 0) {
+        priceLines.push('Solo: ' + stripPeriod(fmtPrice(h.priceAlone)));
+      }
+    }
+
+    let pricingHtml = '';
+    if (priceLines.length > 0) {
+      pricingHtml = '<div class="page card-notebook-pricing">' +
+        '<div class="margin"></div>' +
+        '<div class="card-notebook-lines">' +
+          priceLines.map(line => '<p class="rule-item">' + esc(line) + '</p>').join('') +
+        '</div>' +
+      '</div>';
+    }
+
     const actionBtn = options.linkToDetails
       ? '<a class="enquire-btn" href="' + esc(detailHref) + '"><em>View Details</em><i>&#10095;&#10095;</i></a>'
       : '<a1' + (whatsapp ? ' href="' + esc(whatsapp) + '" target="_blank" rel="noopener noreferrer"' : '') + '><em>Enquire Now</em><i>&#10095;&#10095;</i></a1>';
@@ -294,10 +326,7 @@
           '</div>' +
           '<p class="project-description" style="text-align:left; margin-bottom:12px; font-size:0.85rem; color:#8a8298; line-height:1.5;">' + esc(descShort || 'No description available.') + '</p>' +
           '<div class="project-meta" style="flex-wrap:wrap;gap:6px;margin-bottom:12px;">' + badges + '</div>' +
-          '<div class="card-price-row" style="margin-top:12px; margin-bottom:16px; display:flex; gap:10px;">' +
-            '<span class="macos-download-btn card-price-pill" style="font-size:0.78rem !important; padding:8px 12px !important; flex:1; text-align:center; justify-content:center;">Sharing: ' + esc(fmtPrice(h.price)) + '</span>' +
-            '<span class="macos-download-btn card-price-pill" style="font-size:0.78rem !important; padding:8px 12px !important; flex:1; text-align:center; justify-content:center;">Solo: ' + esc(fmtPrice(h.priceAlone)) + '</span>' +
-          '</div>' +
+          pricingHtml +
         '</div>' +
         actionBtn +
       '</div>' +

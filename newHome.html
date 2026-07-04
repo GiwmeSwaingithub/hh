@@ -1230,6 +1230,91 @@
                 left: max(var(--nav-margin), env(safe-area-inset-left, 10px));
             }
         }
+
+        /* ── Active Search Bar Layout Adjustments ── */
+        #topbar:has(#poda.search-visible) .topbar-left,
+        #topbar:has(#poda.search-visible) .topbar-right {
+            display: none !important;
+        }
+
+        #topbar:has(#poda.search-visible) .topbar-center {
+            width: 100%;
+        }
+
+        #topbar:has(#poda.search-visible) {
+            --input-w: calc(100vw - 40px);
+        }
+
+        @media (min-width: 480px) {
+            #topbar:has(#poda.search-visible) {
+                --input-w: 400px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            #topbar:has(#poda.search-visible) {
+                --input-w: 260px;
+            }
+        }
+
+        /* ── Card Notebook Ruled Pricing Style ── */
+        .card-notebook-pricing {
+            position: relative;
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 100%;
+            font-family: cursive, "Comic Sans MS", "Marker Felt", sans-serif;
+            font-size: 13px !important;
+            border-radius: 8px;
+            background: #fff;
+            background-image: linear-gradient(#f5f5f0 0.95rem, #ccc 1.0rem);
+            background-size: 100% 1.0rem;
+            line-height: 1.0rem !important;
+            padding: 0.8rem 0.5rem 0.2rem 2.4rem !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+            margin-top: 12px;
+        }
+        .card-notebook-pricing::before,
+        .card-notebook-pricing::after {
+            position: absolute;
+            content: "";
+            bottom: 5px;
+            width: 40%;
+            height: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: -1;
+        }
+        .card-notebook-pricing::before {
+            left: 10px;
+            transform: skew(-4deg) rotate(-4deg);
+        }
+        .card-notebook-pricing::after {
+            right: 10px;
+            transform: skew(4deg) rotate(4deg);
+        }
+        .card-notebook-pricing .margin {
+            position: absolute;
+            border-left: 1px solid #d88;
+            height: 100%;
+            left: 1.8rem !important;
+            top: 0;
+        }
+        .card-notebook-pricing p.rule-item {
+            margin: 0 !important;
+            padding-bottom: 0 !important;
+            color: #1a1a1a !important;
+            line-height: 1.0rem !important;
+            min-height: 1.0rem !important;
+            position: relative;
+            padding-left: 0.8rem !important;
+        }
+        .card-notebook-pricing p.rule-item::before {
+            content: "•";
+            position: absolute;
+            left: 0.1rem;
+            color: #333;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
