@@ -879,7 +879,7 @@
             flex-direction: column;
             gap: 20px;
         }
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
             #content {
                 padding-left: calc(var(--nav-item-size) + var(--nav-gap) * 2 + var(--nav-margin) * 3 + 32px);
                 padding-bottom: 40px;
@@ -929,8 +929,8 @@
             gap: 12px;
             align-items: center;
         }
-        /* Mobile: bottom */
-        @media (max-width: 767px) {
+        /* Small screens / resized windows: bottom bar */
+        @media (max-width: 1023px) {
             #nav-bar {
                 bottom: var(--nav-margin);
                 left: 50%;
@@ -939,8 +939,8 @@
                 padding: 0;
             }
         }
-        /* Desktop: left sidebar */
-        @media (min-width: 768px) {
+        /* Wide desktop: left sidebar */
+        @media (min-width: 1024px) {
             #nav-bar {
                 left: var(--nav-margin);
                 top: 50%;
@@ -1020,7 +1020,7 @@
             gap: var(--nav-gap);
             padding: 8px 10px;
         }
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
             .nav-group .liquidGlass-text {
                 flex-direction: column;
                 gap: var(--nav-gap);
@@ -1170,7 +1170,7 @@
                 transform: translateX(-50%);
             }
         }
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
             .nav-icon-btn[data-tooltip]::after {
                 left: calc(100% + 10px);
                 top: 50%;
@@ -1182,12 +1182,12 @@
         }
 
         /* â”€â”€ Responsive touch-ups â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-        @media (max-width: 767px) {
+        @media (max-width: 1023px) {
             #nav-bar {
                 bottom: max(var(--nav-margin), env(safe-area-inset-bottom, 10px));
             }
         }
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
             #nav-bar {
                 left: max(var(--nav-margin), env(safe-area-inset-left, 10px));
             }
@@ -2719,13 +2719,13 @@ a.project-date:hover {
   transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out !important;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   #nav-bar.hide {
     transform: translate(-50%, 150px) !important;
     opacity: 0;
   }
 }
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   #nav-bar.hide {
     transform: translate(-150px, -50%) !important;
     opacity: 0;
