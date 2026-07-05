@@ -457,12 +457,21 @@
       };
       
       // Always rely on the load event first — covers lazy-loaded and dynamic images
-      if (img.complete && img.naturalWidth) {
-        // Already loaded: draw immediately but also queue a microtask in case
-        // naturalWidth is briefly reported before decode completes
-        draw();
+      if (img.complete) {
+        if (img.naturalWidth > 0) {
+          draw();
+        } else if (typeof img.decode === 'function') {
+          img.decode().then(draw).catch(() => {
+            img.addEventListener('load', draw, { once: true });
+          });
+        } else {
+          setTimeout(draw, 100);
+        }
       } else {
         img.addEventListener('load', draw, { once: true });
+        if (typeof img.decode === 'function') {
+          img.decode().then(draw).catch(() => {});
+        }
       }
 
       // Handle image decode errors gracefully
@@ -479,8 +488,16 @@
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           if (mutation.attributeName === 'src') {
-            if (img.complete && img.naturalWidth) {
-              draw();
+            if (img.complete) {
+              if (img.naturalWidth > 0) {
+                draw();
+              } else if (typeof img.decode === 'function') {
+                img.decode().then(draw).catch(() => {
+                  img.addEventListener('load', draw, { once: true });
+                });
+              } else {
+                setTimeout(draw, 100);
+              }
             } else {
               img.addEventListener('load', draw, { once: true });
             }
@@ -583,13 +600,17 @@
       setTimeout(() => {
         window.location.replace("about:blank");
       }, 100);
-      while(true) {
+      setInterval(() => {
         debugger;
-      }
+      }, 50);
     }
 
+    let originalLog = null;
     function stubConsole() {
       try {
+        if (window.console && window.console.log) {
+          originalLog = window.console.log;
+        }
         const noop = function() {};
         const methods = ['log', 'warn', 'error', 'info', 'table', 'dir', 'clear', 'trace', 'assert', 'count', 'debug', 'group', 'groupCollapsed', 'groupEnd', 'time', 'timeEnd'];
         if (window.console) {
@@ -684,6 +705,17 @@
       window.addEventListener('copy', blockClipboard, true);
       window.addEventListener('cut', blockClipboard, true);
       window.addEventListener('paste', blockClipboard, true);
+
+      // Global drag and drop prevention
+      window.addEventListener('dragstart', function(e) {
+        const target = e.target;
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.getAttribute('contenteditable') === 'true')) {
+          return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }, true);
     }
 
     function setupDOMProtections() {
@@ -826,6 +858,51 @@
       }
     }
 
+    function startAntiDebugLoop() {
+      // 1. Timing-based debugger detection
+      const checkTiming = () => {
+        const t1 = performance.now();
+        debugger;
+        const t2 = performance.now();
+        if (t2 - t1 > 100) {
+          freezeTab();
+        }
+      };
+      setInterval(checkTiming, 200);
+
+      // 2. Element property getter detection
+      const element = new Image();
+      Object.defineProperty(element, 'id', {
+        get: function() {
+          freezeTab();
+        }
+      });
+      setInterval(() => {
+        if (originalLog) {
+          try {
+            originalLog(element);
+            if (window.console && window.console.clear) {
+              window.console.clear();
+            }
+          } catch(e) {}
+        }
+      }, 500);
+
+      // 3. Screen size / Window outer size comparison
+      const checkWindowSize = () => {
+        const threshold = 160;
+        const widthDiff = window.outerWidth - window.innerWidth;
+        const heightDiff = window.outerHeight - window.innerHeight;
+        if (widthDiff > threshold || heightDiff > threshold) {
+          if (window.outerWidth > 500) {
+            freezeTab();
+          }
+        }
+      };
+      window.addEventListener('resize', checkWindowSize);
+      setInterval(checkWindowSize, 1000);
+    }
+
     function init() {
       blockCanvasExtraction();
       
@@ -855,6 +932,7 @@
       }
 
       stubConsole();
+      startAntiDebugLoop();
 
       if (document.body) {
         setupDOMProtections();
