@@ -90,16 +90,27 @@ function verifyToken(token) {
 }
 
 // --- HTTP Request Proxy Helper ---
-function makeRequest(url, method, headers, body = null) {
+function makeRequest(urlStr, method, headers, body = null) {
   return new Promise((resolve, reject) => {
-    const req = https.request(url, { method, headers }, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => resolve({ status: res.statusCode, body: data }));
-    });
-    req.on('error', reject);
-    if (body) req.write(body);
-    req.end();
+    try {
+      const parsedUrl = new URL(urlStr);
+      const options = {
+        hostname: parsedUrl.hostname,
+        path: parsedUrl.pathname + parsedUrl.search,
+        method: method,
+        headers: headers
+      };
+      const req = https.request(options, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => resolve({ status: res.statusCode, body: data }));
+      });
+      req.on('error', reject);
+      if (body) req.write(body);
+      req.end();
+    } catch (e) {
+      reject(e);
+    }
   });
 }
 
@@ -120,7 +131,7 @@ async function getAdminDoc(uid, idToken) {
 }
 
 async function saveAdminDoc(uid, idToken, mfaEnabled, totpSecret) {
-  const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/admins/${uid}?updateMask.fieldPaths=mfaEnabled&updateMask.fieldPaths=totpSecret`;
+  const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/admins/${uid}`;
   const body = JSON.stringify({
     fields: {
       mfaEnabled: { booleanValue: mfaEnabled },
