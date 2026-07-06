@@ -5,11 +5,13 @@
     { "source": "/pages/:path*", "destination": "/:path*", "permanent": true }
   ],
   "rewrites": [
+    { "source": "/api/web/uploadImage", "destination": "/api/uploadImage" },
+    { "source": "/api/web/sendMsg", "destination": "/api/sendMsg" },
+    { "source": "/api/web/getWall", "destination": "/api/getWall" },
     { "source": "/", "destination": "/pages/home" },
     { "source": "/home", "destination": "/pages/home" },
     { "source": "/home/", "destination": "/pages/home" },
     { "source": "/:path(home|hostel-details|locations|scam-reports|report-issue|login|signup|legal|services|demo).js", "destination": "/pages/:path/:path.js" },
-    { "source": "/:dir(home|hostel-details|locations|scam-reports|report-issue|login|signup|legal|services|demo)/:file.js", "destination": "/pages/:dir/:file.js" },
     { "source": "/login", "destination": "/pages/login" },
     { "source": "/login/", "destination": "/pages/login" },
     { "source": "/signup", "destination": "/pages/signup" },

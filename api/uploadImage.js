@@ -40,10 +40,12 @@ module.exports = async (req, res) => {
     }
 
     const imageUrl = match[1];
-    res.status(200).json({ imageUrl });
+    return res.status(200).json({ imageUrl });
 
   } catch (err) {
     console.error("Upload error:", err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({
+      error: err.message
+    });
   }
 };

@@ -8,11 +8,11 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { msg, images = [], username = 'dekutconnect', qid = '' } = req.body;
+    const { msg, images = [] } = req.body;
 
-    let finalMsg = msg;
+    let finalMsg = msg || '';
     if (images && images.length > 0) {
-      finalMsg = `${msg}\n${images[0]}`;
+      finalMsg = `${finalMsg}\n${images[0]}`;
     }
 
     const response = await fetch(
@@ -22,8 +22,8 @@ module.exports = async (req, res) => {
         headers: JSON_HEADERS,
         body: JSON.stringify({
           msg: finalMsg,
-          username: username,
-          qid: qid,
+          username: req.body.username || "dekutconnect",
+          qid: req.body.qid || "",
           images: images
         })
       }
@@ -34,6 +34,8 @@ module.exports = async (req, res) => {
 
   } catch (err) {
     console.error("Error sending message:", err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({
+      error: err.message
+    });
   }
 };

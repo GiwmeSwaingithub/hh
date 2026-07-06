@@ -22,6 +22,8 @@ module.exports = async (req, res) => {
 
   } catch (err) {
     console.error("Error loading wall:", err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({
+      error: err.message
+    });
   }
 };

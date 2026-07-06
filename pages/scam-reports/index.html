@@ -17,30 +17,25 @@
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scam Alerts & Anonymous Reports — DKUT Hostels</title>
-  <meta name="description" content="Check phone numbers, report scams anonymously or via WhatsApp, and send anonymous messages." />
+  <title>Scam Alerts — DKUT Hostels</title>
+  <meta name="description" content="Check phone numbers and view reported scam alerts for DKUT student hostels." />
   <link rel="icon" type="image/png" href="https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://hostel.dekut.site/scam-reports" />
-  <meta property="og:title" content="Scam Alerts & Anonymous Reports — DKUT Hostels" />
-  <meta property="og:description" content="Check phone numbers and report scams to protect DKUT students. Anonymous reporting available." />
+  <meta property="og:title" content="Scam Alerts — DKUT Hostels" />
+  <meta property="og:description" content="Check phone numbers and view reported scam alerts for DKUT student hostels." />
   <meta property="og:image" content="https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:type" content="image/png" />
-  <meta property="og:site_name" content="DKUT Hostels" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="https://hostel.dekut.site/scam-reports" />
-  <meta name="twitter:title" content="Scam Alerts & Anonymous Reports — DKUT Hostels" />
-  <meta name="twitter:description" content="Check phone numbers and report scams to protect DKUT students. Anonymous reporting available." />
+  <meta name="twitter:title" content="Scam Alerts — DKUT Hostels" />
+  <meta name="twitter:description" content="Check phone numbers and view reported scam alerts for DKUT student hostels." />
   <meta name="twitter:image" content="https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png" />
   <meta name="theme-color" content="#08080b" />
   <link rel="stylesheet" href="../../shared/css/theme.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
@@ -64,94 +59,48 @@
     }
   </script>
   <script src="../../shared/utils/security.js"></script>
-
   <style>
     :root {
-        --bg-card: rgba(255, 255, 255, 0.025);
-        --border-card: rgba(255, 255, 255, 0.07);
-        --text-primary: #f1ecff;
-        --text-secondary: #a59cb8;
-        --text-muted: #8c8896;
-        --accent-glow: rgba(124, 77, 255, 0.35);
-        --success: #4caf50;
-        --success-glow: rgba(76, 175, 80, 0.3);
-        --danger: #ff3b30;
-        --whatsapp: #00d757;
-        --whatsapp-dark: #00bf4f;
-        --radius-sm: 12px;
-        --radius-md: 16px;
-        --radius-lg: 24px;
-        --radius-xl: 40px;
-        --transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      --bg-card: rgba(255, 255, 255, 0.025);
+      --border-card: rgba(255, 255, 255, 0.07);
+      --text-muted: #8c8896;
+      --accent-glow: rgba(11, 218, 131, 0.25);
+      --success: #4caf50;
+      --success-glow: rgba(76, 175, 80, 0.3);
+      --danger: #ff3b30;
+      --whatsapp: #00d757;
+      --whatsapp-dark: #00bf4f;
+      --radius-sm: 12px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 40px;
+      --transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    #content {
-        position: relative;
-        z-index: 1;
-        max-width: 720px;
-        margin: 0 auto;
-        padding: 90px 16px 100px;
-    }
-
-    .mode-chips { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; position: relative; z-index: 10; }
-    .mode-chip { padding: 12px 20px; border-radius: var(--radius-xl); font-weight: 700; font-size: 0.9rem; cursor: pointer; border: 2px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--text-secondary); transition: var(--transition); display: flex; align-items: center; gap: 8px; user-select: none; position: relative; z-index: 10; }
+    .mode-chips { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; }
+    .mode-chip { padding: 12px 20px; border-radius: var(--radius-xl); font-weight: 700; font-size: 0.9rem; cursor: pointer; border: 2px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--light-gray); transition: var(--transition); display: flex; align-items: center; gap: 8px; user-select: none; }
     .mode-chip:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.06); color: #fff; }
-    .mode-chip.selected { border-color: var(--accent); background: rgba(124,77,255,0.18); color: #fff; box-shadow: 0 0 22px var(--accent-glow); }
+    .mode-chip.selected { border-color: var(--accent); background: rgba(11,218,131,0.18); color: #fff; box-shadow: 0 0 22px rgba(11,218,131,0.35); }
 
-    .card { background: var(--bg-card); border: 1px solid var(--border-card); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.35); animation: fadeIn 0.5s cubic-bezier(0.16,1,0.3,1); }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-    .card h3 { color: #d5d0e8; font-size: 1rem; margin: 0 0 14px; font-weight: 700; }
+    .panel-card { background: var(--bg-card); border: 1px solid var(--border-card); backdrop-filter: blur(20px); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px; box-shadow: 0 12px 32px rgba(0,0,0,0.35); animation: panelFadeIn 0.5s cubic-bezier(0.16,1,0.3,1); }
+    @keyframes panelFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+    .panel-card h3 { color: #d5d0e8; font-size: 1rem; margin: 0 0 14px; font-weight: 700; }
 
-    .form-input, .form-textarea { width: 100%; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-md); padding: 12px 16px; color: #fff; font-size: 0.9rem; font-family: inherit; transition: var(--transition); resize: vertical; }
-    .form-input:focus, .form-textarea:focus { outline: none; border-color: var(--accent); background: rgba(255,255,255,0.04); box-shadow: 0 0 20px var(--accent-glow); }
-    .form-textarea { min-height: 100px; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 5px; font-weight: 500; }
-    .form-status { margin-top: 12px; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500; }
-    .form-status.success { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.3); color: #81c784; }
-    .form-status.error { background: rgba(255,59,48,0.1); border: 1px solid rgba(255,59,48,0.3); color: #ef5350; }
-
-    .btn { border: none; padding: 11px 18px; border-radius: var(--radius-md); font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; }
-    .btn-primary { background: linear-gradient(135deg, #7c4dff 0%, #6200ea 100%); color: #fff; box-shadow: 0 6px 20px var(--accent-glow); }
-    .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(124,77,255,0.5); }
-    .btn-primary:disabled { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.3); box-shadow: none; cursor: not-allowed; }
-    .btn-secondary { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #fff; }
-    .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
-
-    .btn.loading {
-        color: transparent !important;
-        position: relative;
-        pointer-events: none;
-    }
-    .btn.loading::after {
-        content: "";
-        position: absolute;
-        width: 18px;
-        height: 18px;
-        border: 2px solid #fff;
-        border-top-color: transparent;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
-    .chip-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; position: relative; z-index: 10; }
-    .chip { padding: 10px 18px; border-radius: var(--radius-xl); font-size: 0.82rem; font-weight: 600; cursor: pointer; border: 2px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--text-secondary); transition: var(--transition); display: flex; align-items: center; gap: 7px; user-select: none; position: relative; z-index: 10; }
+    .chip-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    .chip { padding: 10px 18px; border-radius: var(--radius-xl); font-size: 0.82rem; font-weight: 600; cursor: pointer; border: 2px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--light-gray); transition: var(--transition); display: flex; align-items: center; gap: 7px; user-select: none; }
     .chip:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.06); color: #fff; }
-    .chip.selected { border-color: var(--accent); background: rgba(124,77,255,0.18); color: #fff; box-shadow: 0 0 18px var(--accent-glow); }
+    .chip.selected { border-color: var(--accent); background: rgba(11,218,131,0.18); color: #fff; box-shadow: 0 0 18px rgba(11,218,131,0.3); }
     .chip.whatsapp-chip.selected { border-color: var(--whatsapp); background: rgba(0,215,87,0.15); box-shadow: 0 0 18px rgba(0,215,87,0.3); }
 
-    /* Custom WhatsApp Button (fixed alignment inside button) */
+    /* Custom WhatsApp Button */
     .wa-btn {
-        position: relative;
-        display: flex; align-items: center; justify-content: flex-start;
-        width: 50px; height: 50px; border: none; border-radius: 50%;
-        cursor: pointer; overflow: hidden; transition-duration: 0.3s;
-        box-shadow: 2px 2px 14px rgba(0,0,0,0.3), 0 0 20px rgba(0,215,87,0.25);
-        background-color: var(--whatsapp);
-        text-decoration: none; margin: 0 auto;
+      display: flex; align-items: center; justify-content: flex-start;
+      width: 50px; height: 50px; border: none; border-radius: 50%;
+      cursor: pointer; overflow: hidden; transition-duration: 0.3s;
+      box-shadow: 2px 2px 14px rgba(0,0,0,0.3), 0 0 20px rgba(0,215,87,0.25);
+      background-color: var(--whatsapp);
+      text-decoration: none; margin: 0 auto;
+      position: relative;
     }
     .wa-btn .sign { width: 100%; transition-duration: 0.3s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .wa-btn .sign svg { width: 25px; height: 25px; }
@@ -162,97 +111,64 @@
     .wa-btn:hover .btn-text { opacity: 1; width: 70%; padding-right: 12px; }
     .wa-btn:active { transform: translate(2px, 2px); }
 
-    .checker-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .checker-row .form-input { flex: 1; min-width: 180px; }
-    .checker-result { margin-top: 12px; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500; }
-    .checker-result.clean { background: rgba(76,175,80,0.08); border: 1px solid rgba(76,175,80,0.25); color: #81c784; }
-    .checker-result.flagged { background: rgba(255,59,48,0.08); border: 1px solid rgba(255,59,48,0.25); color: #ef5350; }
-
-    .scam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
-    .scam-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius-md); padding: 16px; }
-    .scam-card h4 { font-size: 0.9rem; margin-bottom: 6px; color: #e1dbf0; }
-    .scam-card p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
-
+    /* TwetLink Anonymous Chat specific styling */
     .profile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
-    .profile-pic { width: 52px; height: 52px; border-radius: 50%; background-size: cover; background-position: center; border: 2px solid var(--accent); box-shadow: 0 0 18px var(--accent-glow); }
+    .profile-pic { width: 52px; height: 52px; border-radius: 50%; background-size: cover; background-position: center; border: 2px solid var(--accent); box-shadow: 0 0 18px rgba(11,218,131,0.35); }
     .user-info h4 { margin: 0; font-size: 1rem; font-weight: 700; }
     .lastseen { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
     
-    .attach-images { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
-    .img-thumb { width: 72px; height: 72px; border-radius: var(--radius-sm); background-size: cover; background-position: center; position: relative; border: 1px solid rgba(255,255,255,0.15); }
-    .remove-img { position: absolute; top: -7px; right: -7px; background: var(--danger); width: 22px; height: 22px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #fff; font-weight: bold; font-size: 13px; box-shadow: 0 2px 8px rgba(255,59,48,0.45); }
-    .remove-img:hover { transform: scale(1.2); }
-    .actions-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top:12px; }
+    .imgs-container { margin-bottom: 20px; }
+    .attach-images { display: flex; gap: 12px; flex-wrap: wrap; }
+    .attach-images .img { width: 80px; height: 80px; border-radius: 12px; background-size: cover; background-position: center; position: relative; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
+    .remove-img-attach { position: absolute; top: -6px; right: -6px; background: var(--danger); width: 22px; height: 22px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 2px 6px rgba(255, 59, 48, 0.4); transition: all 0.2s ease; }
+    .remove-img-attach:hover { transform: scale(1.15); }
+    .remove-img-attach span { color: white; font-weight: bold; font-size: 14px; line-height: 1; }
+
+    .actions-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
 
     .success-screen { text-align: center; display: none; }
-    .success-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(76, 175, 80, 0.1); color: var(--success); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; border: 2px solid var(--success-glow); }
+    .success-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(76, 175, 80, 0.1); color: var(--success); font-size: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; border: 2px solid var(--success-glow); }
     .success-screen h2 { background: linear-gradient(90deg, #4caf50, #81c784); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.4rem; margin-bottom: 8px; }
+    
     .ig-card { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-md); padding: 16px; text-decoration: none; color: inherit; margin-bottom: 10px; }
     .ig-card:hover { border-color: rgba(255,255,255,0.2); }
-    .ig-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #f09433, #dc2743); display: flex; align-items: center; justify-content: center; color: white; }
-
-    /* TwetLink Wall styles */
+    .ig-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #f09433, #dc2743); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    
     .wall { margin-top: 20px; }
-    .wall h3 {
-        margin-top: 0;
-        font-size: 1.1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        padding-bottom: 12px;
-        color: #d5d0e8;
+    .wall h3 { margin-top: 0; font-size: 1.1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px; color: #d5d0e8; }
+    .default-answer { background: rgba(255, 255, 255, 0.02); border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.05); }
+    .pinfo { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .pinfo .pic { width: 36px; height: 36px; border-radius: 50%; background-size: cover; background-position: center; }
+    .pinfo .col { display: flex; flex-direction: column; }
+    .pinfo .question { font-size: 0.9rem; font-weight: 600; color: #fff; }
+    .pinfo .timeago { font-size: 0.75rem; color: var(--text-muted); }
+    .msg { font-size: 0.95rem; line-height: 1.5; color: #e1dbf0; }
+
+    .dkut-link {
+      color: #0bda83 !important;
+      text-decoration: none;
+      font-weight: inherit;
+      transition: opacity 0.2s ease;
     }
-    .default-answer {
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 16px;
-        padding: 16px;
-        margin-bottom: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+    .dkut-link:hover {
+      opacity: 0.8;
+      text-decoration: underline;
     }
-    .pinfo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 12px;
+    .dekutconnect-link {
+      color: #b39ddb !important;
+      text-decoration: none;
+      font-weight: 600;
+      transition: opacity 0.2s ease;
     }
-    .pinfo .pic {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        background-size: cover;
-        background-position: center;
+    .dekutconnect-link:hover {
+      opacity: 0.8;
+      text-decoration: underline;
     }
-    .pinfo .col {
-        display: flex;
-        flex-direction: column;
-    }
-    .pinfo .question {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #f1ecff;
-    }
-    .pinfo .timeago {
-        font-size: 0.75rem;
-        color: #8c8896;
-    }
-    .msg {
-        font-size: 0.95rem;
-        line-height: 1.5;
-        color: #e1dbf0;
-    }
-    .msg .text {
-        word-break: break-word;
-        white-space: pre-wrap;
-    }
-    .reply {
-        margin-top: 8px;
-        padding-top: 8px;
-        border-top: 1px dashed rgba(255, 255, 255, 0.05);
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-    }
-    .reply .text {
-        word-break: break-word;
-        white-space: pre-wrap;
-    }
+    
+    /* Spin animation for buttons */
+    .btn.loading { color: transparent !important; position: relative; pointer-events: none; }
+    .btn.loading::after { content: ""; position: absolute; width: 18px; height: 18px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: btnSpin 0.8s linear infinite; top: calc(50% - 9px); left: calc(50% - 9px); }
+    @keyframes btnSpin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -274,19 +190,30 @@
       <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lighting-color="white" result="specLight">
         <fePointLight x="-200" y="-200" z="300" />
       </feSpecularLighting>
+  <div class="bg-orb orb-3" aria-hidden="true"></div>
+
+  <svg style="display:none" aria-hidden="true">
+    <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+      <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" seed="5" result="turbulence" />
+      <feComponentTransfer in="turbulence" result="mapped">
+        <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+        <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+        <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+      </feComponentTransfer>
+      <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+      <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lighting-color="white" result="specLight">
+        <fePointLight x="-200" y="-200" z="300" />
+      </feSpecularLighting>
       <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage" />
       <feDisplacementMap in="SourceGraphic" in2="softMap" scale="150" xChannelSelector="R" yChannelSelector="G" />
     </filter>
   </svg>
   <div id="dkut-toast" class="dkut-toast" role="status" aria-live="polite"></div>
 
-  <!-- Keep existing topbar -->
   <header id="topbar" role="banner">
-    <div class="topbar-left">
-      <a href="../home/" style="text-decoration:none;color:inherit;display:flex;align-items:baseline;gap:10px;">
-        <h1>DKUT Hostels</h1>
-        <span class="subtitle">Student Housing</span>
-      </a>
+    <div class="topbar-left" style="display:flex;align-items:baseline;gap:10px;">
+      <h1><a href="https://www.dkut.ac.ke/" target="_blank" rel="noopener" class="dkut-link">DKUT</a> <a href="../home/" style="text-decoration:none;color:inherit;">Hostels</a></h1>
+      <span class="subtitle"><a href="../home/" style="text-decoration:none;color:inherit;">Student Housing</a></span>
     </div>
     <div class="topbar-center" style="visibility: hidden; pointer-events: none;">
       <div id="poda"></div>
@@ -307,7 +234,6 @@
     </div>
   </header>
 
-  <!-- Keep existing navigation bar -->
   <nav id="nav-bar" aria-label="Main navigation">
     <div class="liquidGlass-wrapper nav-group">
       <div class="liquidGlass-effect" aria-hidden="true"></div>
@@ -336,129 +262,125 @@
 
   <main id="content">
     <div class="mode-chips">
-        <button class="mode-chip selected" data-mode="report">Report Scam</button>
-        <button class="mode-chip" data-mode="chat">Anonymous Chat</button>
-        <button class="mode-chip" data-mode="check">Check Scammer</button>
+      <button class="mode-chip selected" data-mode="report">Report Scam</button>
+      <button class="mode-chip" data-mode="chat">Anonymous Chat</button>
+      <button class="mode-chip" data-mode="check">Check Scammer</button>
     </div>
 
     <!-- Report Scam Panel -->
     <div id="panel-report" class="panel">
-        <div class="card">
-            <h3>Report a Scam</h3>
-            <div class="chip-group" id="report-method-chips">
-                <button class="chip selected" data-method="anonymous" type="button">Report Anonymously</button>
-                <button class="chip whatsapp-chip" data-method="whatsapp" type="button">Report via WhatsApp</button>
-            </div>
-
-            <!-- Anonymous form (visible by default) -->
-            <div id="report-form-container">
-                <form id="scam-form">
-                    <div class="form-group">
-                        <label for="scam-phone">Scammer Phone Number *</label>
-                        <input type="tel" id="scam-phone" class="form-input" required placeholder="0712345678" />
-                    </div>
-                    <div class="form-group">
-                        <label for="scam-hostel">Hostel / Listing Name</label>
-                        <input type="text" id="scam-hostel" class="form-input" placeholder="Optional" />
-                    </div>
-                    <div class="form-group">
-                        <label for="scam-desc">What happened? * (min 20 characters)</label>
-                        <textarea id="scam-desc" class="form-textarea" required placeholder="Describe the scam in detail..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%;padding:14px;">Submit Scam Report</button>
-                    <div id="scam-status" class="form-status" hidden></div>
-                </form>
-            </div>
-
-            <!-- WhatsApp direct button (hidden by default) -->
-            <div id="report-whatsapp-container" style="display:none; text-align:center; padding:20px 0;">
-                <p style="color:var(--text-secondary); margin-bottom:20px; font-size:0.9rem;">Tap the button below to open WhatsApp and send your scam report directly.</p>
-                <button class="wa-btn" id="whatsapp-direct-btn" type="button" aria-label="Report via WhatsApp">
-                    <div class="sign">
-                        <svg viewBox="0 0 16 16" width="25" height="25">
-                            <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                        </svg>
-                    </div>
-                    <span class="btn-text">WhatsApp</span>
-                </button>
-            </div>
+      <div class="panel-card">
+        <h3>Report a Scam</h3>
+        <div class="chip-group" id="report-method-chips">
+          <button class="chip selected" data-method="anonymous" type="button">Report Anonymously</button>
+          <button class="chip whatsapp-chip" data-method="whatsapp" type="button">Report via WhatsApp</button>
         </div>
+
+        <!-- Anonymous form (visible by default) -->
+        <div id="report-form-container">
+          <form id="scam-form">
+            <div class="form-group">
+              <label for="scam-phone">Scammer Phone Number *</label>
+              <input type="tel" id="scam-phone" class="form-input" required placeholder="0712345678" />
+            </div>
+            <div class="form-group">
+              <label for="scam-hostel">Hostel / Listing Name</label>
+              <input type="text" id="scam-hostel" class="form-input" placeholder="Optional" />
+            </div>
+            <div class="form-group">
+              <label for="scam-desc">What happened? * (min 20 characters)</label>
+              <textarea id="scam-desc" class="form-textarea" required placeholder="Describe the scam in detail..."></textarea>
+            </div>
+            <button type="submit" class="macos-download-btn" style="width:100%;justify-content:center;font-size:0.9rem;padding:14px;">Submit Scam Report</button>
+            <div id="scam-status" class="form-status" hidden></div>
+          </form>
+        </div>
+
+        <!-- WhatsApp direct button (hidden by default) -->
+        <div id="report-whatsapp-container" style="display:none; text-align:center; padding:20px 0;">
+          <p style="color:var(--light-gray); margin-bottom:20px; font-size:0.9rem;">Tap the button below to open WhatsApp and send your scam report directly.</p>
+          <button class="wa-btn" id="whatsapp-direct-btn" type="button" aria-label="Report via WhatsApp">
+            <div class="sign">
+              <svg viewBox="0 0 16 16" width="25" height="25">
+                <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+              </svg>
+            </div>
+            <span class="btn-text">WhatsApp</span>
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Anonymous Chat Panel -->
     <div id="panel-chat" class="panel" style="display:none;">
-        <div class="card" id="anon-msg-card">
-            <div class="profile-header">
-                <div class="profile-pic" id="anon-profile-pic" style="background-image: url('https://cdn.twet.link/profile/img/2025/09/07/SBhXu07249.jpg');"></div>
-                <div class="user-info">
-                    <h4>@dekutconnect</h4>
-                    <p class="lastseen" id="lastseen-text">Last seen recently</p>
-                </div>
-            </div>
-            <h3>Send Anonymous Message</h3>
-            <textarea id="anon-msg-box" class="form-textarea" rows="5" placeholder="Type your anonymous message here..."></textarea>
-            <div class="attach-images" id="attach-preview" style="display:none;"></div>
-            <input id="imageInput" type="file" accept="image/*" style="display:none;" />
-            <div class="actions-row">
-                <button id="cameraBtn" class="btn btn-secondary" type="button">Attach Photo</button>
-                <button id="randomQuestionBtn" class="btn btn-secondary" type="button">Random Question</button>
-                <button id="sendAnonBtn" class="btn btn-primary" type="button" disabled style="margin-left:auto;">Send Anonymously</button>
-            </div>
+      <div class="panel-card" id="anon-msg-card">
+        <div class="profile-header">
+          <div class="profile-pic" id="anon-profile-pic" style="background-image: url('https://cdn.twet.link/profile/img/2025/09/07/SBhXu07249.jpg');"></div>
+          <div class="user-info">
+            <h4>@dekutconnect</h4>
+            <p class="lastseen" id="lastseen-text">Last seen recently</p>
+          </div>
+        </div>
+        <h3>Send Anonymous Message</h3>
+        <textarea id="anon-msg-box" class="form-textarea" rows="5" placeholder="Type your anonymous message here..."></textarea>
+        
+        <!-- Preview container for attached images -->
+        <div class="imgs-container" id="attach-preview-container" style="display:none;">
+          <div class="attach-images" id="attach-preview"></div>
         </div>
         
-        <div class="card success-screen" id="anon-success-screen">
-            <div class="success-icon">
-                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-            </div>
-            <h2>Message Sent!</h2>
-            <p class="ig-prompt">Delivered anonymously.<br><strong>Follow us on Instagram @dekutconnect</strong></p>
-            <a href="https://instagram.com/dekutconnect" target="_blank" rel="noopener noreferrer" class="ig-card">
-                <div class="ig-avatar">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;">
-                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                        <circle cx="12" cy="13" r="4"></circle>
-                    </svg>
-                </div>
-                <div class="ig-info"><div class="ig-handle">@dekutconnect</div><div class="ig-label">DKUT Connect</div></div>
-            </a>
-            <a href="https://wa.me/254769486775" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#00d757,#00a844);box-shadow:0 6px 20px rgba(0,215,87,0.3);margin-bottom:8px;">
-                <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" style="margin-right:8px;vertical-align:middle;">
-                    <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
-                </svg>Chat on WhatsApp
-            </a>
-            <button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="resetAnonForm()">Send Another Message</button>
+        <input id="imageInput" type="file" accept="image/*" style="display:none;" />
+        <div class="actions-row">
+          <button id="cameraBtn" class="macos-download-btn btn-secondary" type="button" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">Attach Photo</button>
+          <button id="randomQuestionBtn" class="macos-download-btn btn-secondary" type="button" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);">Random Question</button>
+          <button id="sendAnonBtn" class="macos-download-btn" type="button" disabled style="margin-left:auto;padding:12px 24px;">Send Anonymously</button>
         </div>
+      </div>
+      
+      <!-- Success Screen -->
+      <div class="panel-card success-screen" id="anon-success-screen">
+        <div class="success-icon">✓</div>
+        <h2>Message Sent!</h2>
+        <p class="ig-prompt" style="color:var(--light-gray);margin-bottom:16px;">Delivered anonymously.<br><strong>Follow us on Instagram @dekutconnect</strong></p>
+        <a href="https://instagram.com/dekutconnect" target="_blank" rel="noopener noreferrer" class="ig-card">
+          <div class="ig-avatar" style="background:linear-gradient(135deg, #f09433, #dc2743);color:white;font-weight:bold;font-size:1rem;display:flex;align-items:center;justify-content:center;">IG</div>
+          <div class="ig-info" style="text-align:left;"><div class="ig-handle" style="font-weight:700;">@dekutconnect</div><div class="ig-label" style="font-size:0.8rem;color:var(--text-muted);">DKUT Connect</div></div>
+        </a>
+        <a href="https://wa.me/254769486775" target="_blank" rel="noopener noreferrer" class="macos-download-btn" style="width:100%;justify-content:center;background:linear-gradient(135deg,#00d757,#00a844);box-shadow:0 6px 20px rgba(0,215,87,0.3);margin-top:10px;">Chat on WhatsApp</a>
+        <button class="macos-download-btn btn-secondary" style="width:100%;justify-content:center;margin-top:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);" onclick="resetAnonForm()">Send Another Message</button>
+      </div>
 
-        <!-- TwetLink style Message wall -->
-        <div class="card wall" id="anon-wall-card" style="display: none;">
-            <h3>Received Messages</h3>
-            <div id="wall-loading" class="btn loading" style="display: none; border: none; background: transparent; width: 100%;"></div>
-            <div class="wall-list"></div>
-            <button class="btn btn-secondary load-more" id="wall-load-more-btn" style="display: none; width: 100%; margin-top: 10px;">Load More</button>
-        </div>
+      <!-- Message wall -->
+      <div class="panel-card wall" id="anon-wall" style="display: none;">
+        <h3>Received Messages</h3>
+        <div class="loading-wall" style="display: none; padding:10px; color:var(--text-muted);">Loading wall...</div>
+        <div class="wall-list"></div>
+        <button class="macos-download-btn btn-secondary load-more" style="display: none; width: 100%; margin-top: 10px; justify-content:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);">Load More</button>
+      </div>
     </div>
 
     <!-- Check Scammer Panel -->
     <div id="panel-check" class="panel" style="display:none;">
-        <div class="card">
-            <h3>Phone Number Checker</h3>
-            <div class="checker-row">
-                <input type="tel" id="checker-phone" class="form-input" placeholder="e.g. 0712345678" />
-                <button type="button" class="btn btn-primary" id="checker-btn">Check Number</button>
-            </div>
-            <div id="checker-result" class="checker-result" hidden></div>
+      <div class="panel-card">
+        <h3>Phone Number Checker</h3>
+        <div class="checker-row">
+          <input type="tel" id="checker-phone" class="form-input" placeholder="e.g. 0712345678" aria-label="Phone to check" />
+          <button type="button" class="macos-download-btn" id="checker-btn" style="font-size:0.85rem;padding:12px 20px;">Check Number</button>
         </div>
-        <h3 style="color:#d5d0e8;margin-bottom:14px;">Known Alerts</h3>
-        <div class="scam-grid" id="scam-grid"><p style="color:var(--text-muted);grid-column:1/-1;">Loading alerts...</p></div>
+        <div id="checker-result" class="checker-result" hidden></div>
+      </div>
+      <h3 style="color:#d5d0e8;margin-bottom:14px;font-size:1.1rem;font-weight:700;">Known Alerts</h3>
+      <div class="scam-grid" id="scam-grid">
+        <p style="color:var(--text-muted);">Loading alerts...</p>
+      </div>
     </div>
 
-    <!-- Keep existing footer -->
+    <!-- Footer -->
     <footer class="app-footer" role="contentinfo" style="margin-top: 40px;">
       <div class="footer-content">
         <div class="footer-left">
-          <p>&copy; 2026 <a href="https://www.dkut.ac.ke/" style="color:inherit;text-decoration:underline;">DKUT</a> Hostels. Verified accommodation services near <a href="https://www.dkut.ac.ke/" style="color:inherit;text-decoration:underline;">Dedan Kimathi</a> University of Technology.<br>Website built and managed by <a href="https://instagram.com/dekutconnect" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;">dekutconnect</a> community.</p>
+          <p>&copy; 2026 <a href="https://www.dkut.ac.ke/" target="_blank" rel="noopener" class="dkut-link">DKUT</a> Hostels. Verified accommodation services near <a href="https://www.dkut.ac.ke/" target="_blank" rel="noopener" class="dkut-link">Dedan Kimathi</a> University of Technology.</p>
+          <p style="margin-top:8px; font-size:0.75rem; color:var(--text-muted);">Website built and managed by <a href="https://instagram.com/dekutconnect" target="_blank" rel="noopener" class="dekutconnect-link">dekutconnect</a> community</p>
         </div>
         <div class="footer-links">
           <a href="../home/">Home</a>
@@ -469,11 +391,8 @@
       </div>
     </footer>
   </main>
-
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  
   <script src="../../shared/utils/helpers.js"></script>
   <script src="../../shared/js/config.js"></script>
   <script src="../../shared/js/app.js"></script>
