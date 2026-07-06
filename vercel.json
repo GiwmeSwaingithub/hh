@@ -27,5 +27,22 @@
     { "source": "/services/", "destination": "/pages/services" },
     { "source": "/demo", "destination": "/pages/demo" },
     { "source": "/demo/", "destination": "/pages/demo" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "Content-Security-Policy", "value": "frame-ancestors 'self' https://hostel.dekut.site;" }
+      ]
+    },
+    {
+      "source": "/(.*)\\.(html|js|json)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }
+      ]
+    }
   ]
 }

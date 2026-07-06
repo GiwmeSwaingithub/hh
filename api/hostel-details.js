@@ -135,7 +135,13 @@ module.exports = (req, res) => {
     html = html.replace('<head>', `<head>${metaBlock}`);
 
     res.setHeader('Content-Type', 'text/html');
-    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=59');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('Content-Security-Policy', "frame-ancestors 'self' https://hostel.dekut.site;");
     return res.status(200).send(html);
 
   } catch (error) {

@@ -1944,10 +1944,11 @@ body.mock-mode-active #content { padding-top: calc(var(--topbar-h) + 44px + 24px
 }
 [data-theme="light"] .macos-download-btn,
 [data-theme="light"] .enquire-btn,
+[data-theme="light"] .project-card a1,
 [data-theme="light"] .btn-ghost {
     background: rgba(0, 0, 0, 0.04) !important;
     border: 1px solid rgba(0, 0, 0, 0.1) !important;
-    color: #1e1b24 !important;
+    color: #000000 !important;
     text-shadow: none !important;
     box-shadow: none !important;
 }
@@ -1959,10 +1960,24 @@ body.mock-mode-active #content { padding-top: calc(var(--topbar-h) + 44px + 24px
     box-shadow: none !important;
 }
 [data-theme="light"] .macos-download-btn:hover,
-[data-theme="light"] .enquire-btn:hover {
+[data-theme="light"] .enquire-btn:hover,
+[data-theme="light"] .project-card a1:hover {
     background: var(--accent) !important;
     color: #ffffff !important;
     border-color: var(--accent) !important;
+}
+[data-theme="light"] .enquire-btn em,
+[data-theme="light"] .enquire-btn i,
+[data-theme="light"] .project-card a1 em,
+[data-theme="light"] .project-card a1 i {
+    color: #000000 !important;
+    transition: color 0.3s ease;
+}
+[data-theme="light"] .enquire-btn:hover em,
+[data-theme="light"] .enquire-btn:hover i,
+[data-theme="light"] .project-card a1:hover em,
+[data-theme="light"] .project-card a1:hover i {
+    color: #ffffff !important;
 }
 [data-theme="light"] .mode-btn.active {
     background: var(--accent) !important;
