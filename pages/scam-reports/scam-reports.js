@@ -47,17 +47,19 @@
     }
   }
 
-  // --- Tabs (Modes) ---
-  const modeChips = document.querySelectorAll('.mode-chip');
-  const panels = {
-    report: document.getElementById('panel-report'),
-    chat: document.getElementById('panel-chat'),
-    check: document.getElementById('panel-check')
-  };
+  // --- Lexical Scope Variables for DOM Elements ---
+  let modeChips;
+  let panels = {};
   let currentMode = 'report';
+  let selectedReportMethod = 'anonymous';
+  let methodChips, formContainer, waContainer;
+  let imageInput, attachPreview, cameraBtn, sendAnonBtn, anonMsgBox;
+  let wallLoadMoreBtn, wallLoadingSpinner, wallList;
 
   function setMode(mode) {
-    modeChips.forEach(c => c.classList.remove('selected'));
+    if (modeChips) {
+      modeChips.forEach(c => c.classList.remove('selected'));
+    }
     const selectedBtn = document.querySelector(`.mode-chip[data-mode="${mode}"]`);
     if (selectedBtn) selectedBtn.classList.add('selected');
     
@@ -74,95 +76,10 @@
     }
   }
 
-  modeChips.forEach(chip => {
-    chip.addEventListener('click', function() {
-      setMode(this.dataset.mode);
-    });
-  });
-
-  // --- Report Scam Panel ---
-  let selectedReportMethod = 'anonymous';
-  const methodChips = document.querySelectorAll('#report-method-chips .chip');
-  const formContainer = document.getElementById('report-form-container');
-  const waContainer = document.getElementById('report-whatsapp-container');
-
-  methodChips.forEach(chip => {
-    chip.addEventListener('click', function() {
-      methodChips.forEach(c => c.classList.remove('selected'));
-      this.classList.add('selected');
-      selectedReportMethod = this.dataset.method;
-      if (selectedReportMethod === 'whatsapp') {
-        formContainer.style.display = 'none';
-        waContainer.style.display = 'block';
-      } else {
-        formContainer.style.display = 'block';
-        waContainer.style.display = 'none';
-      }
-    });
-  });
-
-  // WhatsApp direct button click
-  document.getElementById('whatsapp-direct-btn')?.addEventListener('click', function() {
-    window.open(WA_URL, '_blank');
-  });
-
-  // Scam form submission
-  document.getElementById('scam-form')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const status = document.getElementById('scam-status');
-    const phone = document.getElementById('scam-phone').value.trim();
-    const desc = document.getElementById('scam-desc').value.trim();
-    const hostel = document.getElementById('scam-hostel').value.trim();
-
-    if (!isValidKenyanPhone(phone)) {
-      status.hidden = false;
-      status.className = 'form-status error';
-      status.textContent = 'Warning: Enter a valid Kenyan phone number.';
-      return;
-    }
-    if (desc.length < 20) {
-      status.hidden = false;
-      status.className = 'form-status error';
-      status.textContent = 'Warning: Please provide more detail (at least 20 characters).';
-      return;
-    }
-
-    const norm = normalizePhone(phone);
-    const report = {
-      phoneNumber: norm,
-      description: sanitizeInput(desc, 2000),
-      hostelAffected: sanitizeInput(hostel, 200),
-      timestamp: new Date().toISOString(),
-      status: 'pending',
-      method: 'anonymous'
-    };
-
-    let ok = false;
-    if (window.DKUT?.db) {
-      try {
-        await window.DKUT.db.collection('scamReports').add(report);
-        ok = true;
-      } catch (_) {}
-    }
-
-    if (ok) {
-      status.hidden = false;
-      status.className = 'form-status success';
-      status.textContent = 'Success: Report submitted anonymously.';
-      this.reset();
-      loadAlerts();
-    } else {
-      const msg = encodeURIComponent(`[DKUT Scam Report]\nPhone: ${phone}\nHostel: ${hostel}\nDetails: ${desc}`);
-      window.open(`${WA_URL}?text=${msg}`, '_blank');
-      status.hidden = false;
-      status.className = 'form-status error';
-      status.textContent = 'Database unavailable. Opened WhatsApp fallback - please send your report there.';
-    }
-  });
-
   // --- Check Scammer Panel ---
   async function checkPhone(phone) {
     const res = document.getElementById('checker-result');
+    if (!res) return;
     res.hidden = false;
 
     if (!phone || !isValidKenyanPhone(phone)) {
@@ -189,13 +106,9 @@
     }
   }
 
-  document.getElementById('checker-btn')?.addEventListener('click', function() {
-    const v = document.getElementById('checker-phone').value.trim();
-    checkPhone(v);
-  });
-
   async function loadAlerts() {
     const grid = document.getElementById('scam-grid');
+    if (!grid) return;
     let items = [];
 
     if (window.DKUT?.db) {
@@ -227,35 +140,6 @@
   let lastId = -1;
   let isSendingMsg = false;
 
-  const imageInput = document.getElementById('imageInput');
-  const attachPreview = document.getElementById('attach-preview');
-  const cameraBtn = document.getElementById('cameraBtn');
-  const sendAnonBtn = document.getElementById('sendAnonBtn');
-  const anonMsgBox = document.getElementById('anon-msg-box');
-
-  cameraBtn?.addEventListener('click', () => {
-    if (attachedImages.length >= 1) return;
-    imageInput?.click();
-  });
-
-  imageInput?.addEventListener('change', function() {
-    const file = this.files[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      showToast('Selected file must be an image', 'error');
-      return;
-    }
-
-    // Attach photo to initialize photo picker only (no background uploading immediately)
-    resizeImage(file, 700, 700, (base64) => {
-      attachedImages = [base64];
-      renderAttachedImages();
-      updateAnonSendBtn();
-    });
-    this.value = '';
-  });
-
   function renderAttachedImages() {
     if (!attachPreview) return;
     if (attachedImages.length > 0) {
@@ -273,11 +157,11 @@
           updateAnonSendBtn();
         });
       });
-      cameraBtn.style.display = 'none';
+      if (cameraBtn) cameraBtn.style.display = 'none';
     } else {
       attachPreview.style.display = 'none';
       attachPreview.innerHTML = '';
-      cameraBtn.style.display = 'inline-flex';
+      if (cameraBtn) cameraBtn.style.display = 'inline-flex';
     }
   }
 
@@ -286,8 +170,6 @@
     const txt = anonMsgBox.value.trim();
     sendAnonBtn.disabled = !(txt.length >= 1 || attachedImages.length > 0);
   }
-
-  anonMsgBox?.addEventListener('input', updateAnonSendBtn);
 
   const fakeQuestions = [
     "a secret you kept from your parents",
@@ -312,72 +194,6 @@
     "what was the best day so far this year?"
   ];
 
-  document.getElementById('randomQuestionBtn')?.addEventListener('click', () => {
-    if (!anonMsgBox) return;
-    anonMsgBox.value = fakeQuestions[Math.floor(Math.random() * fakeQuestions.length)];
-    updateAnonSendBtn();
-  });
-
-  sendAnonBtn?.addEventListener('click', async function() {
-    if (isSendingMsg) return;
-    const txt = anonMsgBox.value.trim();
-
-    if (txt.length < 1 && attachedImages.length === 0) {
-      showToast('Type a message or attach a photo', 'error');
-      return;
-    }
-
-    isSendingMsg = true;
-    sendAnonBtn.classList.add('loading');
-    sendAnonBtn.disabled = true;
-
-    try {
-      let finalImages = [];
-      if (attachedImages.length > 0) {
-        // Upload the image first since it is now submitting
-        const cleanBase64 = attachedImages[0].replace(/^data:image\/[a-z]+;base64,/, "");
-        
-        const uploadRes = await $.ajax({
-          url: '/api/uploadImage',
-          type: "POST",
-          data: JSON.stringify({ image: cleanBase64 }),
-          contentType: 'application/json'
-        });
-        
-        if (uploadRes && uploadRes.imageUrl) {
-          finalImages.push(uploadRes.imageUrl);
-        }
-      }
-
-      await $.ajax({
-        url: '/api/sendMsg',
-        type: "POST",
-        data: JSON.stringify({
-          msg: txt,
-          username: username,
-          qid: "",
-          images: finalImages
-        }),
-        contentType: 'application/json'
-      });
-
-      // Clear input, show success
-      document.getElementById('anon-msg-card').style.display = 'none';
-      document.getElementById('anon-wall-card').style.display = 'none';
-      document.getElementById('anon-success-screen').style.display = 'block';
-      showToast('Message sent anonymously!', 'success');
-      resetAnonState();
-
-    } catch (err) {
-      console.error(err);
-      showToast('Error, please try again', 'error');
-    } finally {
-      isSendingMsg = false;
-      sendAnonBtn.classList.remove('loading');
-      updateAnonSendBtn();
-    }
-  });
-
   function resetAnonState() {
     if (anonMsgBox) anonMsgBox.value = '';
     attachedImages = [];
@@ -394,10 +210,6 @@
   };
 
   // --- Message Wall (TwetLink Wall Loading) ---
-  const wallLoadMoreBtn = document.getElementById('wall-load-more-btn');
-  const wallLoadingSpinner = document.getElementById('wall-loading');
-  const wallList = document.querySelector('.wall-list');
-
   async function loadWall(append = false) {
     if (!append) {
       lastId = -1;
@@ -501,10 +313,6 @@
     }
   }
 
-  if (wallLoadMoreBtn) {
-    wallLoadMoreBtn.addEventListener('click', () => loadWall(true));
-  }
-
   // Last seen text updater
   function updateLastSeen() {
     const textEl = document.getElementById('lastseen-text');
@@ -513,9 +321,6 @@
     }
   }
   
-  updateLastSeen();
-  setInterval(updateLastSeen, 60000);
-
   // Resize Image helper
   function resizeImage(inputFile, maxWidth, maxHeight, callback) {
     const reader = new FileReader();
@@ -552,6 +357,213 @@
 
   // Initialize
   async function init() {
+    // 1. Query DOM elements
+    modeChips = document.querySelectorAll('.mode-chip');
+    panels = {
+      report: document.getElementById('panel-report'),
+      chat: document.getElementById('panel-chat'),
+      check: document.getElementById('panel-check')
+    };
+
+    methodChips = document.querySelectorAll('#report-method-chips .chip');
+    formContainer = document.getElementById('report-form-container');
+    waContainer = document.getElementById('report-whatsapp-container');
+
+    imageInput = document.getElementById('imageInput');
+    attachPreview = document.getElementById('attach-preview');
+    cameraBtn = document.getElementById('cameraBtn');
+    sendAnonBtn = document.getElementById('sendAnonBtn');
+    anonMsgBox = document.getElementById('anon-msg-box');
+
+    wallLoadMoreBtn = document.getElementById('wall-load-more-btn');
+    wallLoadingSpinner = document.getElementById('wall-loading');
+    wallList = document.querySelector('.wall-list');
+
+    // 2. Attach Event Listeners
+    if (modeChips) {
+      modeChips.forEach(chip => {
+        chip.addEventListener('click', function() {
+          setMode(this.dataset.mode);
+        });
+      });
+    }
+
+    if (methodChips) {
+      methodChips.forEach(chip => {
+        chip.addEventListener('click', function() {
+          methodChips.forEach(c => c.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedReportMethod = this.dataset.method;
+          if (selectedReportMethod === 'whatsapp') {
+            if (formContainer) formContainer.style.display = 'none';
+            if (waContainer) waContainer.style.display = 'block';
+          } else {
+            if (formContainer) formContainer.style.display = 'block';
+            if (waContainer) waContainer.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    document.getElementById('whatsapp-direct-btn')?.addEventListener('click', function() {
+      window.open(WA_URL, '_blank');
+    });
+
+    document.getElementById('scam-form')?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const status = document.getElementById('scam-status');
+      if (!status) return;
+      
+      const phoneInput = document.getElementById('scam-phone');
+      const descInput = document.getElementById('scam-desc');
+      const hostelInput = document.getElementById('scam-hostel');
+      
+      const phone = phoneInput ? phoneInput.value.trim() : '';
+      const desc = descInput ? descInput.value.trim() : '';
+      const hostel = hostelInput ? hostelInput.value.trim() : '';
+
+      if (!isValidKenyanPhone(phone)) {
+        status.hidden = false;
+        status.className = 'form-status error';
+        status.textContent = 'Warning: Enter a valid Kenyan phone number.';
+        return;
+      }
+      if (desc.length < 20) {
+        status.hidden = false;
+        status.className = 'form-status error';
+        status.textContent = 'Warning: Please provide more detail (at least 20 characters).';
+        return;
+      }
+
+      const norm = normalizePhone(phone);
+      const report = {
+        phoneNumber: norm,
+        description: sanitizeInput(desc, 2000),
+        hostelAffected: sanitizeInput(hostel, 200),
+        timestamp: new Date().toISOString(),
+        status: 'pending',
+        method: 'anonymous'
+      };
+
+      let ok = false;
+      if (window.DKUT?.db) {
+        try {
+          await window.DKUT.db.collection('scamReports').add(report);
+          ok = true;
+        } catch (_) {}
+      }
+
+      if (ok) {
+        status.hidden = false;
+        status.className = 'form-status success';
+        status.textContent = 'Success: Report submitted anonymously.';
+        this.reset();
+        loadAlerts();
+      } else {
+        const msg = encodeURIComponent(`[DKUT Scam Report]\nPhone: ${phone}\nHostel: ${hostel}\nDetails: ${desc}`);
+        window.open(`${WA_URL}?text=${msg}`, '_blank');
+        status.hidden = false;
+        status.className = 'form-status error';
+        status.textContent = 'Database unavailable. Opened WhatsApp fallback - please send your report there.';
+      }
+    });
+
+    document.getElementById('checker-btn')?.addEventListener('click', function() {
+      const v = document.getElementById('checker-phone')?.value.trim();
+      checkPhone(v);
+    });
+
+    cameraBtn?.addEventListener('click', () => {
+      if (attachedImages.length >= 1) return;
+      imageInput?.click();
+    });
+
+    imageInput?.addEventListener('change', function() {
+      const file = this.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        showToast('Selected file must be an image', 'error');
+        return;
+      }
+
+      resizeImage(file, 700, 700, (base64) => {
+        attachedImages = [base64];
+        renderAttachedImages();
+        updateAnonSendBtn();
+      });
+      this.value = '';
+    });
+
+    anonMsgBox?.addEventListener('input', updateAnonSendBtn);
+
+    sendAnonBtn?.addEventListener('click', async function() {
+      if (isSendingMsg) return;
+      const txt = anonMsgBox ? anonMsgBox.value.trim() : '';
+
+      if (txt.length < 1 && attachedImages.length === 0) {
+        showToast('Type a message or attach a photo', 'error');
+        return;
+      }
+
+      isSendingMsg = true;
+      sendAnonBtn.classList.add('loading');
+      sendAnonBtn.disabled = true;
+
+      try {
+        let finalImages = [];
+        if (attachedImages.length > 0) {
+          const cleanBase64 = attachedImages[0].replace(/^data:image\/[a-z]+;base64,/, "");
+          
+          const uploadRes = await $.ajax({
+            url: '/api/uploadImage',
+            type: "POST",
+            data: JSON.stringify({ image: cleanBase64 }),
+            contentType: 'application/json'
+          });
+          
+          if (uploadRes && uploadRes.imageUrl) {
+            finalImages.push(uploadRes.imageUrl);
+          }
+        }
+
+        await $.ajax({
+          url: '/api/sendMsg',
+          type: "POST",
+          data: JSON.stringify({
+            msg: txt,
+            username: username,
+            qid: "",
+            images: finalImages
+          }),
+          contentType: 'application/json'
+        });
+
+        document.getElementById('anon-msg-card').style.display = 'none';
+        document.getElementById('anon-wall-card').style.display = 'none';
+        document.getElementById('anon-success-screen').style.display = 'block';
+        showToast('Message sent anonymously!', 'success');
+        resetAnonState();
+
+      } catch (err) {
+        console.error(err);
+        showToast('Error, please try again', 'error');
+      } finally {
+        isSendingMsg = false;
+        sendAnonBtn.classList.remove('loading');
+        updateAnonSendBtn();
+      }
+    });
+
+    if (wallLoadMoreBtn) {
+      wallLoadMoreBtn.addEventListener('click', () => loadWall(true));
+    }
+
+    // 3. Last seen updater setup
+    updateLastSeen();
+    setInterval(updateLastSeen, 60000);
+
+    // 4. Set Initial State
     setMode('report');
     updateAnonSendBtn();
     loadAlerts();
