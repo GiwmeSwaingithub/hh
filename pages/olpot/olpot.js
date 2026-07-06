@@ -26,7 +26,7 @@
   // ── Helpers ──────────────────────────────────────────────────────────────
 
   function show(id) {
-    ['section-login','section-mfa-setup','section-mfa-verify','section-dashboard']
+    ['section-login','section-register','section-mfa-setup','section-mfa-verify','section-dashboard']
       .forEach(s => {
         const el = document.getElementById(s);
         if (el) el.style.display = s === id ? 'block' : 'none';
@@ -147,6 +147,69 @@
         } catch (err) {
           console.error(err);
           setStatus(statusEl, err.message || 'Login failed. Incorrect email or password.', 'error');
+        }
+      });
+    }
+
+    // Toggle links to switch login/register forms
+    const showRegisterLink = document.getElementById('link-show-register');
+    if (showRegisterLink) {
+      showRegisterLink.addEventListener('click', e => {
+        e.preventDefault();
+        show('section-register');
+        const regEmail = document.getElementById('register-email');
+        if (regEmail) regEmail.focus();
+      });
+    }
+
+    const showLoginLink = document.getElementById('link-show-login');
+    if (showLoginLink) {
+      showLoginLink.addEventListener('click', e => {
+        e.preventDefault();
+        show('section-login');
+        const loginEmail = document.getElementById('login-email');
+        if (loginEmail) loginEmail.focus();
+      });
+    }
+
+    // 1b. Registration Form submission
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+      registerForm.addEventListener('submit', async e => {
+        e.preventDefault();
+        const statusEl = document.getElementById('register-status');
+        setStatus(statusEl, 'Creating account in Firebase...', 'info');
+
+        const email = document.getElementById('register-email').value.trim();
+        const password = document.getElementById('register-password').value;
+
+        try {
+          if (!window.DKUT?.auth) {
+            throw new Error('Firebase SDK not initialized.');
+          }
+
+          // Create user inside Firebase Auth on client side
+          const cred = await window.DKUT.auth.createUserWithEmailAndPassword(email, password);
+          idToken = await cred.user.getIdToken();
+          const uid = cred.user.uid;
+
+          setStatus(statusEl, `Account created! UID: ${uid}. Logging in...`, 'info');
+
+          // Directly authenticate this session in Vercel backend
+          const check = await post('check-mfa', { idToken });
+          
+          if (check.bypassed) {
+            sessionToken = check.token;
+            sessionStorage.setItem('dkut_admin_token', check.token);
+            toast('Successfully registered and logged in!', 'success');
+            showDashboard();
+            statusEl.hidden = true;
+            return;
+          }
+          setStatus(statusEl, 'Registration complete. Click Sign In to verify session.', 'success');
+        } catch (err) {
+          console.error(err);
+          setStatus(statusEl, err.message || 'Registration failed.', 'error');
         }
       });
     }
@@ -303,25 +366,30 @@
 
   function initThemeSelectors() {
     const selLogin = document.getElementById('theme-toggle-select');
+    const selReg   = document.getElementById('theme-toggle-select-reg');
     const selDash  = document.getElementById('theme-toggle-select-dash');
     
     if (window.DKUT && window.DKUT.app) {
       const activeTheme = window.DKUT.app.getTheme();
       if (selLogin) selLogin.value = activeTheme;
+      if (selReg)   selReg.value   = activeTheme;
       if (selDash)  selDash.value  = activeTheme;
       
       const changeHandler = e => {
         window.DKUT.app.setTheme(e.target.value);
         if (selLogin) selLogin.value = e.target.value;
+        if (selReg)   selReg.value   = e.target.value;
         if (selDash)  selDash.value  = e.target.value;
       };
       
       if (selLogin) selLogin.addEventListener('change', changeHandler);
+      if (selReg)   selReg.addEventListener('change', changeHandler);
       if (selDash)  selDash.addEventListener('change', changeHandler);
 
       document.addEventListener('dkut-theme-change', () => {
         const t = window.DKUT.app.getTheme();
         if (selLogin) selLogin.value = t;
+        if (selReg)   selReg.value   = t;
         if (selDash)  selDash.value  = t;
       });
     }

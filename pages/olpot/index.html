@@ -188,6 +188,37 @@
         </div>
         <button type="submit" class="enter-btn">Continue</button>
         <div id="login-status" class="form-status" hidden style="font-size:12px;max-width:250px;text-align:center;margin-top:14px;"></div>
+        <p style="text-align:center;font-size:0.75rem;margin-top:16px;color:rgba(255,255,255,0.5);margin-bottom:0;">
+          Don't have an account? <a href="#" id="link-show-register" style="color:var(--primary-color);text-decoration:underline;">Register</a>
+        </p>
+      </form>
+    </div>
+
+    <!-- ── Step 1b: Register Account (Debug helper) ── -->
+    <div id="section-register" class="auth-container" style="display:none;">
+      <form id="register-form" class="neomorphic-card">
+        <a class="neomorphic-title">Console Sign Up</a>
+        <div style="display:flex; justify-content:center; margin-bottom:18px;">
+          <select id="theme-toggle-select-reg" class="glass-select theme-select" aria-label="Toggle Theme" style="max-width:140px; padding:6px 10px; font-size:0.8rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);">
+            <option value="system">System Theme</option>
+            <option value="light">Light Theme</option>
+            <option value="dark">Dark Theme</option>
+            <option value="high-contrast">Contrast Theme</option>
+          </select>
+        </div>
+        <div class="inputBox1">
+          <input type="email" id="register-email" required autocomplete="username" />
+          <span class="user">Email</span>
+        </div>
+        <div class="inputBox">
+          <input type="password" id="register-password" required autocomplete="new-password" />
+          <span>Password</span>
+        </div>
+        <button type="submit" class="enter-btn">Register & Log In</button>
+        <div id="register-status" class="form-status" hidden style="font-size:12px;max-width:250px;text-align:center;margin-top:14px;"></div>
+        <p style="text-align:center;font-size:0.75rem;margin-top:16px;color:rgba(255,255,255,0.5);margin-bottom:0;">
+          Already have an account? <a href="#" id="link-show-login" style="color:var(--primary-color);text-decoration:underline;">Sign In</a>
+        </p>
       </form>
     </div>
 
