@@ -17,7 +17,7 @@ module.exports = (req, res) => {
     // Default metadata values
     let title = 'Hostel Details — DKUT Hostels';
     let description = 'Full hostel details, photos, pricing, and contact information.';
-    let image = 'https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png';
+    let image = 'https://hostel.dekut.site/shared/img/og-image-compressed.jpg';
     let url = `https://${req.headers.host || 'hostel.dekut.site'}/hostel-details` + (h ? `?h=${encodeURIComponent(h)}` : '');
 
     if (h) {
@@ -109,7 +109,7 @@ module.exports = (req, res) => {
     const metaBlock = `
     <title>${escapeAttr(title)}</title>
     <meta name="description" content="${escapeAttr(description)}" />
-    <link rel="icon" type="image/png" href="https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png" />
+    <link rel="icon" type="image/png" href="https://hostel.dekut.site/shared/img/og-image-compressed.jpg" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${escapeAttr(url)}" />
     <meta property="og:title" content="${escapeAttr(title)}" />
