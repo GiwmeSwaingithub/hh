@@ -1,8 +1,8 @@
 (function () {
   'use strict';
 
-  const esc = s => (DKUT.app && DKUT.app.esc) ? DKUT.app.esc(s) : (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const WA = (DKUT.CONFIG && DKUT.CONFIG.SITE && DKUT.CONFIG.SITE.whatsapp) || '254769486775';
+  const esc = s => (window.DKUT && window.DKUT.app && window.DKUT.app.esc) ? window.DKUT.app.esc(s) : (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const WA = (window.DKUT && window.DKUT.CONFIG && window.DKUT.CONFIG.SITE && window.DKUT.CONFIG.SITE.whatsapp) || '254769486775';
   const WHATSAPP_URL = 'https://wa.me/' + WA;
   const username = "dekutconnect";
   const profileImg = "https://cdn.twet.link/profile/img/2025/09/07/SBhXu07249.jpg";
@@ -12,8 +12,14 @@
   let selectedImageBase64 = null;
   const now = new Date();
 
+  // DOM Elements (Selected after DOMContentLoaded)
+  let modeChips, panels;
+  let selectedReportMethod = 'anonymous';
+  let methodChips, formContainer, waContainer;
+  let cameraBtn, randomQuestionBtn, sendAnonBtn, anonMsgBox, imageInput, attachPreview, attachPreviewContainer;
+
   function normalizePhone(raw) {
-    if (DKUT.security && DKUT.security.normalizePhone) return DKUT.security.normalizePhone(raw);
+    if (window.DKUT && window.DKUT.security && window.DKUT.security.normalizePhone) return window.DKUT.security.normalizePhone(raw);
     const c = String(raw).replace(/[^\d+]/g, '');
     if (c.startsWith('0')) return '254' + c.slice(1);
     if (c.startsWith('+254')) return c.slice(1);
@@ -26,7 +32,7 @@
   }
 
   function isValidPhone(p) {
-    if (DKUT.security && DKUT.security.isValidPhone) return DKUT.security.isValidPhone(p);
+    if (window.DKUT && window.DKUT.security && window.DKUT.security.isValidPhone) return window.DKUT.security.isValidPhone(p);
     return /^254[17]\d{8}$/.test(normalizePhone(p));
   }
 
@@ -49,15 +55,8 @@
     }
   }
 
-  // --- Panels Toggle Logic ---
-  const modeChips = document.querySelectorAll('.mode-chip');
-  const panels = {
-    report: document.getElementById('panel-report'),
-    chat: document.getElementById('panel-chat'),
-    check: document.getElementById('panel-check')
-  };
-
   function setMode(mode) {
+    if (!modeChips || !panels) return;
     modeChips.forEach(c => c.classList.remove('selected'));
     const activeChip = document.querySelector(`.mode-chip[data-mode="${mode}"]`);
     if (activeChip) activeChip.classList.add('selected');
@@ -75,42 +74,11 @@
     }
   }
 
-  modeChips.forEach(chip => {
-    chip.addEventListener('click', function () {
-      setMode(this.dataset.mode);
-    });
-  });
-
-  // --- Report Scam Form & WhatsApp Toggle ---
-  let selectedReportMethod = 'anonymous';
-  const methodChips = document.querySelectorAll('#report-method-chips .chip');
-  const formContainer = document.getElementById('report-form-container');
-  const waContainer = document.getElementById('report-whatsapp-container');
-
-  methodChips.forEach(chip => {
-    chip.addEventListener('click', function () {
-      methodChips.forEach(c => c.classList.remove('selected'));
-      this.classList.add('selected');
-      selectedReportMethod = this.dataset.method;
-      if (selectedReportMethod === 'whatsapp') {
-        formContainer.style.display = 'none';
-        waContainer.style.display = 'block';
-      } else {
-        formContainer.style.display = 'block';
-        waContainer.style.display = 'none';
-      }
-    });
-  });
-
-  // WhatsApp direct button
-  document.getElementById('whatsapp-direct-btn')?.addEventListener('click', function () {
-    window.open(WHATSAPP_URL, '_blank');
-  });
-
-  // Phone checker & Firestore alerts
+  // Checker & Firestore alerts
   async function checkPhone(phone) {
     const norm = normalizePhone(phone);
     const result = document.getElementById('checker-result');
+    if (!result) return;
     result.hidden = false;
 
     if (!isValidPhone(phone)) {
@@ -120,9 +88,9 @@
     }
 
     let reports = [];
-    if (DKUT.db) {
+    if (window.DKUT && window.DKUT.db) {
       try {
-        const snap = await DKUT.db.collection('scamReports').where('phoneNumber', '==', norm).get();
+        const snap = await window.DKUT.db.collection('scamReports').where('phoneNumber', '==', norm).get();
         snap.forEach(doc => reports.push(doc.data()));
       } catch (_) {}
     }
@@ -138,11 +106,12 @@
 
   async function loadAlerts() {
     const grid = document.getElementById('scam-grid');
+    if (!grid) return;
     let items = [];
 
-    if (DKUT.db) {
+    if (window.DKUT && window.DKUT.db) {
       try {
-        const snap = await DKUT.db.collection('scamReports').orderBy('timestamp', 'desc').limit(20).get();
+        const snap = await window.DKUT.db.collection('scamReports').orderBy('timestamp', 'desc').limit(20).get();
         snap.forEach(doc => items.push(doc.data()));
       } catch (_) {}
     }
@@ -163,15 +132,6 @@
       </div>
     `).join('');
   }
-
-  // --- Anonymous Chat Logic ---
-  const cameraBtn = document.getElementById('cameraBtn');
-  const randomQuestionBtn = document.getElementById('randomQuestionBtn');
-  const sendAnonBtn = document.getElementById('sendAnonBtn');
-  const anonMsgBox = document.getElementById('anon-msg-box');
-  const imageInput = document.getElementById('imageInput');
-  const attachPreview = document.getElementById('attach-preview');
-  const attachPreviewContainer = document.getElementById('attach-preview-container');
 
   const fakeQuestions = [
     "a secret you kept from your parents",
@@ -299,29 +259,8 @@
     "whats ur fav movie"
   ];
 
-  cameraBtn?.addEventListener('click', () => {
-    imageInput.click();
-  });
-
-  imageInput?.addEventListener('change', function (e) {
-    const file = e.currentTarget.files[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      showToast('Please select a valid image file.', 'error');
-      return;
-    }
-
-    // Read and resize locally first
-    resizeImage(file, 700, 700, (base64) => {
-      selectedImageBase64 = base64;
-      renderAttachedImage();
-      updateAnonSendBtn();
-    });
-    imageInput.value = '';
-  });
-
   function renderAttachedImage() {
+    if (!attachPreviewContainer || !attachPreview || !cameraBtn) return;
     if (selectedImageBase64) {
       attachPreviewContainer.style.display = 'block';
       attachPreview.innerHTML = `
@@ -345,90 +284,20 @@
   }
 
   function updateAnonSendBtn() {
-    if (!sendAnonBtn) return;
+    if (!sendAnonBtn || !anonMsgBox) return;
     const hasText = anonMsgBox.value.trim().length >= 1;
     const hasImage = !!selectedImageBase64;
     sendAnonBtn.disabled = !(hasText || hasImage);
   }
 
-  anonMsgBox?.addEventListener('input', updateAnonSendBtn);
-
-  randomQuestionBtn?.addEventListener('click', () => {
-    const question = fakeQuestions[Math.floor(Math.random() * fakeQuestions.length)];
-    if (question) {
-      anonMsgBox.value = question;
-      updateAnonSendBtn();
-    }
-  });
-
-  sendAnonBtn?.addEventListener('click', async function () {
-    const text = anonMsgBox.value.trim();
-    if (text.length < 1 && !selectedImageBase64) {
-      showToast('Type a message or attach a photo.', 'error');
-      return;
-    }
-
-    isSendingMsg = true;
-    sendAnonBtn.classList.add('loading');
-    sendAnonBtn.disabled = true;
-
-    try {
-      let imageUrls = [];
-
-      // Upload image to proxy if one is selected
-      if (selectedImageBase64) {
-        const cleanBase64 = selectedImageBase64.replace(/^data:image\/[a-z]+;base64,/, "");
-        
-        const uploadRes = await $.ajax({
-          url: '/api/web/uploadImage',
-          type: "POST",
-          data: JSON.stringify({ image: cleanBase64 }),
-          contentType: 'application/json',
-        });
-
-        if (uploadRes && uploadRes.imageUrl) {
-          imageUrls.push(uploadRes.imageUrl);
-        }
-      }
-
-      // Send the message via proxy
-      await $.ajax({
-        url: '/api/web/sendMsg',
-        type: "POST",
-        data: JSON.stringify({
-          msg: text,
-          qid: "",
-          username: username,
-          images: imageUrls,
-        }),
-        contentType: 'application/json',
-      });
-
-      isSendingMsg = false;
-      sendAnonBtn.classList.remove('loading');
-      
-      // Show success screen
-      document.getElementById('anon-msg-card').style.display = 'none';
-      document.getElementById('anon-success-screen').style.display = 'block';
-      document.getElementById('anon-wall').style.display = 'none';
-      
-      showToast('Message sent anonymously!', 'success');
-
-    } catch (err) {
-      console.error(err);
-      isSendingMsg = false;
-      sendAnonBtn.classList.remove('loading');
-      sendAnonBtn.disabled = false;
-      showToast('Failed to send message. Please check your connection.', 'error');
-    }
-  });
-
   window.resetAnonForm = function () {
-    anonMsgBox.value = '';
+    if (anonMsgBox) anonMsgBox.value = '';
     selectedImageBase64 = null;
     renderAttachedImage();
-    document.getElementById('anon-success-screen').style.display = 'none';
-    document.getElementById('anon-msg-card').style.display = 'block';
+    const successScreen = document.getElementById('anon-success-screen');
+    const msgCard = document.getElementById('anon-msg-card');
+    if (successScreen) successScreen.style.display = 'none';
+    if (msgCard) msgCard.style.display = 'block';
     updateAnonSendBtn();
     loadWall();
   };
@@ -577,8 +446,48 @@
     }
   }
 
-  // --- Bind Form (Scam Alerts form & phone checking) ---
-  function bindForm() {
+  // --- Bind All Events (Executed after DOMContentLoaded) ---
+  function bindAllEvents() {
+    // Mode Chips Panels Toggle
+    modeChips = document.querySelectorAll('.mode-chip');
+    panels = {
+      report: document.getElementById('panel-report'),
+      chat: document.getElementById('panel-chat'),
+      check: document.getElementById('panel-check')
+    };
+
+    modeChips.forEach(chip => {
+      chip.addEventListener('click', function () {
+        setMode(this.dataset.mode);
+      });
+    });
+
+    // Report Scam Toggle Method
+    methodChips = document.querySelectorAll('#report-method-chips .chip');
+    formContainer = document.getElementById('report-form-container');
+    waContainer = document.getElementById('report-whatsapp-container');
+
+    methodChips.forEach(chip => {
+      chip.addEventListener('click', function () {
+        methodChips.forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedReportMethod = this.dataset.method;
+        if (selectedReportMethod === 'whatsapp') {
+          if (formContainer) formContainer.style.display = 'none';
+          if (waContainer) waContainer.style.display = 'block';
+        } else {
+          if (formContainer) formContainer.style.display = 'block';
+          if (waContainer) waContainer.style.display = 'none';
+        }
+      });
+    });
+
+    // WhatsApp direct click
+    document.getElementById('whatsapp-direct-btn')?.addEventListener('click', function () {
+      window.open(WHATSAPP_URL, '_blank');
+    });
+
+    // Scam report Firestore form & search checker
     document.getElementById('checker-btn')?.addEventListener('click', () => {
       const v = document.getElementById('checker-phone').value;
       if (v) checkPhone(v);
@@ -590,6 +499,8 @@
       const phone = document.getElementById('scam-phone').value.trim();
       const desc = document.getElementById('scam-desc').value.trim();
       const hostel = document.getElementById('scam-hostel').value.trim();
+
+      if (!status) return;
 
       if (!isValidPhone(phone)) {
         status.hidden = false;
@@ -606,16 +517,16 @@
 
       const report = {
         phoneNumber: normalizePhone(phone),
-        description: (DKUT.security && DKUT.security.sanitizeInput) ? DKUT.security.sanitizeInput(desc, 2000) : desc,
-        hostelAffected: (DKUT.security && DKUT.security.sanitizeInput) ? DKUT.security.sanitizeInput(hostel) : hostel,
+        description: (window.DKUT && window.DKUT.security && window.DKUT.security.sanitizeInput) ? window.DKUT.security.sanitizeInput(desc, 2000) : desc,
+        hostelAffected: (window.DKUT && window.DKUT.security && window.DKUT.security.sanitizeInput) ? window.DKUT.security.sanitizeInput(hostel) : hostel,
         timestamp: new Date().toISOString(),
         status: 'pending',
       };
 
       let ok = false;
-      if (DKUT.db) {
+      if (window.DKUT && window.DKUT.db) {
         try {
-          await DKUT.db.collection('scamReports').add(report);
+          await window.DKUT.db.collection('scamReports').add(report);
           ok = true;
         } catch (_) {}
       }
@@ -634,10 +545,115 @@
         status.textContent = 'Database unavailable. Opened WhatsApp fallback — please send your report there.';
       }
     });
+
+    // Anonymous Chat Selectors
+    cameraBtn = document.getElementById('cameraBtn');
+    randomQuestionBtn = document.getElementById('randomQuestionBtn');
+    sendAnonBtn = document.getElementById('sendAnonBtn');
+    anonMsgBox = document.getElementById('anon-msg-box');
+    imageInput = document.getElementById('imageInput');
+    attachPreview = document.getElementById('attach-preview');
+    attachPreviewContainer = document.getElementById('attach-preview-container');
+
+    cameraBtn?.addEventListener('click', () => {
+      imageInput.click();
+    });
+
+    imageInput?.addEventListener('change', function (e) {
+      const file = e.currentTarget.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        showToast('Please select a valid image file.', 'error');
+        return;
+      }
+
+      resizeImage(file, 700, 700, (base64) => {
+        selectedImageBase64 = base64;
+        renderAttachedImage();
+        updateAnonSendBtn();
+      });
+      imageInput.value = '';
+    });
+
+    anonMsgBox?.addEventListener('input', updateAnonSendBtn);
+
+    randomQuestionBtn?.addEventListener('click', () => {
+      const question = fakeQuestions[Math.floor(Math.random() * fakeQuestions.length)];
+      if (question) {
+        anonMsgBox.value = question;
+        updateAnonSendBtn();
+      }
+    });
+
+    sendAnonBtn?.addEventListener('click', async function () {
+      const text = anonMsgBox.value.trim();
+      if (text.length < 1 && !selectedImageBase64) {
+        showToast('Type a message or attach a photo.', 'error');
+        return;
+      }
+
+      isSendingMsg = true;
+      sendAnonBtn.classList.add('loading');
+      sendAnonBtn.disabled = true;
+
+      try {
+        let imageUrls = [];
+
+        // Upload image to proxy if one is selected
+        if (selectedImageBase64) {
+          const cleanBase64 = selectedImageBase64.replace(/^data:image\/[a-z]+;base64,/, "");
+          
+          const uploadRes = await $.ajax({
+            url: '/api/web/uploadImage',
+            type: "POST",
+            data: JSON.stringify({ image: cleanBase64 }),
+            contentType: 'application/json',
+          });
+
+          if (uploadRes && uploadRes.imageUrl) {
+            imageUrls.push(uploadRes.imageUrl);
+          }
+        }
+
+        // Send the message via proxy
+        await $.ajax({
+          url: '/api/web/sendMsg',
+          type: "POST",
+          data: JSON.stringify({
+            msg: text,
+            qid: "",
+            username: username,
+            images: imageUrls,
+          }),
+          contentType: 'application/json',
+        });
+
+        isSendingMsg = false;
+        sendAnonBtn.classList.remove('loading');
+        
+        // Show success screen
+        const msgCard = document.getElementById('anon-msg-card');
+        const successScreen = document.getElementById('anon-success-screen');
+        const wallContainer = document.getElementById('anon-wall');
+        if (msgCard) msgCard.style.display = 'none';
+        if (successScreen) successScreen.style.display = 'block';
+        if (wallContainer) wallContainer.style.display = 'none';
+        
+        showToast('Message sent anonymously!', 'success');
+
+      } catch (err) {
+        console.error(err);
+        isSendingMsg = false;
+        sendAnonBtn.classList.remove('loading');
+        sendAnonBtn.disabled = false;
+        showToast('Failed to send message. Please check your connection.', 'error');
+      }
+    });
   }
 
   async function init() {
-    bindForm();
+    bindAllEvents();
     updateLastSeen();
     setInterval(updateLastSeen, 60000);
     setMode('report'); // Default mode
