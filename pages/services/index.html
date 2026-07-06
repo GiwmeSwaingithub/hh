@@ -63,6 +63,49 @@
     }
   </script>
   <script src="../../shared/utils/security.js"></script>
+  <style>
+    @keyframes highlight-pulse {
+      0% {
+        box-shadow: 0 0 0 0px rgba(0, 122, 255, 0.7);
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 0 0 8px rgba(0, 122, 255, 0);
+        transform: scale(1.02);
+      }
+      100% {
+        box-shadow: 0 0 0 0px rgba(0, 122, 255, 0);
+        transform: scale(1);
+      }
+    }
+    .highlight-card {
+      animation: highlight-pulse 2.2s ease-in-out infinite;
+      border: 1.5px solid var(--accent-color, #007aff) !important;
+      z-index: 10;
+    }
+    .location-coverage strong {
+      color: var(--text-primary, #ffffff);
+    }
+    .location-coverage {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      width: fit-content;
+      margin-top: 8px;
+    }
+    .location-card-badge {
+      display: inline-block;
+      background: rgba(0, 122, 255, 0.15);
+      color: #007aff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-top: 6px;
+      border: 1px solid rgba(0, 122, 255, 0.3);
+    }
+  </style>
 </head>
 <body>
   <!-- Static Layout Elements -->
@@ -235,13 +278,20 @@
 
     <!-- Kuhama Transport Grid -->
     <ul class="locations-grid" id="transport-grid" style="display: none;">
-      <li class="project-item active">
+      <li class="project-item active" data-service-id="dekut-student-movers" data-locations="Gate A,Gate B,Embassy">
         <div class="macos-location-card">
           <img class="service-card-img" src="https://images.unsplash.com/photo-1516576885502-d4998ac2b6b0?w=500&auto=format&fit=crop&q=60" alt="DeKUT Student Movers Handcart/Truck" />
           <div>
             <h4 class="location-title">DeKUT Student Movers</h4>
             <span class="location-distance">Local Hostel Moving</span>
             <p class="location-desc">Affordable handcart and light truck moving specifically catering to students transferring between local areas (Embassy, Gate A, Gate B).</p>
+            <div class="location-coverage" style="font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+              <svg style="width: 14px; height: 14px; opacity: 0.8; flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span><strong>Coverage:</strong> Embassy, Gate A, Gate B</span>
+            </div>
           </div>
           <div class="location-footer">
             <span><strong>Price:</strong> KSh 800 - 1,500/move</span>
@@ -254,13 +304,20 @@
         </div>
       </li>
 
-      <li class="project-item active">
+      <li class="project-item active" data-service-id="nyeri-smart-movers" data-locations="Nyeri,Mweiga,Campus,Local">
         <div class="macos-location-card">
           <img class="service-card-img" src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=500&auto=format&fit=crop&q=60" alt="Nyeri Smart Movers Truck" />
           <div>
             <h4 class="location-title">Nyeri Smart Movers</h4>
             <span class="location-distance">Professional Moving Truck</span>
             <p class="location-desc">Full-service moving with packaging boxes, loading, and safe transit. Ideal for senior students moving full households to Nyeri town or Mweiga.</p>
+            <div class="location-coverage" style="font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+              <svg style="width: 14px; height: 14px; opacity: 0.8; flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span><strong>Coverage:</strong> Nyeri Town, Mweiga, Local Campus</span>
+            </div>
           </div>
           <div class="location-footer">
             <span><strong>Price:</strong> KSh 2,000 - 4,000/move</span>
@@ -273,13 +330,20 @@
         </div>
       </li>
 
-      <li class="project-item active">
+      <li class="project-item active" data-service-id="boda-cargo-services" data-locations="Gate A,Gate B,Embassy,Boma">
         <div class="macos-location-card">
           <img class="service-card-img" src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500&auto=format&fit=crop&q=60" alt="Boda Cargo Delivery Motorcycle" />
           <div>
             <h4 class="location-title">Boda Cargo Services</h4>
             <span class="location-distance">Quick Single Item Transport</span>
             <p class="location-desc">Fast boda-boda cargo services. Perfect for transferring single mattresses, gas cylinders, small boxes, or study desks instantly.</p>
+            <div class="location-coverage" style="font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
+              <svg style="width: 14px; height: 14px; opacity: 0.8; flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span><strong>Coverage:</strong> Gate A, Gate B, Embassy, Boma</span>
+            </div>
           </div>
           <div class="location-footer">
             <span><strong>Price:</strong> KSh 200 - 500/trip</span>

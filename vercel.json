@@ -27,8 +27,8 @@
     { "source": "/report-issue/", "destination": "/pages/report-issue" },
     { "source": "/legal", "destination": "/pages/legal" },
     { "source": "/legal/", "destination": "/pages/legal" },
-    { "source": "/services", "destination": "/pages/services" },
-    { "source": "/services/", "destination": "/pages/services" },
+    { "source": "/services", "destination": "/api/services" },
+    { "source": "/services/", "destination": "/api/services" },
     { "source": "/demo", "destination": "/pages/demo" },
     { "source": "/demo/", "destination": "/pages/demo" }
   ],
