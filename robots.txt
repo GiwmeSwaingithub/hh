@@ -1,0 +1,7 @@
+# Crawlers should not index the admin console
+User-agent: *
+Disallow: /olpot
+Disallow: /olpot/
+Disallow: /pages/olpot/
+Disallow: /api/admin-auth
+Disallow: /api/git-sync

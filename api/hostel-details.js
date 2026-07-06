@@ -1,5 +1,26 @@
-const fs = require('fs');
+const https = require('https');
 const path = require('path');
+
+const CF_WORKER_URL = 'https://dekuthostels-cache.giwme1socialtalk.workers.dev/hostels.json';
+
+// Fetch hostels JSON from Cloudflare Worker (the single source of truth).
+function fetchHostelsFromCF() {
+  return new Promise((resolve, reject) => {
+    const req = https.get(CF_WORKER_URL, (res) => {
+      let body = '';
+      res.on('data', chunk => { body += chunk; });
+      res.on('end', () => {
+        if (res.statusCode !== 200) {
+          return reject(new Error(`Cloudflare Worker returned HTTP ${res.statusCode}`));
+        }
+        try { resolve(JSON.parse(body)); }
+        catch (e) { reject(new Error('Invalid JSON from Cloudflare Worker')); }
+      });
+    });
+    req.setTimeout(8000, () => { req.destroy(); reject(new Error('Cloudflare Worker request timed out')); });
+    req.on('error', reject);
+  });
+}
 
 function escapeAttr(str) {
   if (str == null) return '';
@@ -10,10 +31,12 @@ function escapeAttr(str) {
     .replace(/>/g, '&gt;');
 }
 
-module.exports = (req, res) => {
+const fs = require('fs');
+
+module.exports = async (req, res) => {
   try {
     const { h } = req.query;
-    
+
     // Default metadata values
     let title = 'Hostel Details — DKUT Hostels';
     let description = 'Full hostel details, photos, pricing, and contact information.';
@@ -21,83 +44,62 @@ module.exports = (req, res) => {
     let url = `https://${req.headers.host || 'hostel.dekut.site'}/hostel-details` + (h ? `?h=${encodeURIComponent(h)}` : '');
 
     if (h) {
-      const dataPath = path.join(process.cwd(), 'shared', 'data', 'hostels.json');
-      if (fs.existsSync(dataPath)) {
-        const rawData = fs.readFileSync(dataPath, 'utf8');
-        const hostels = JSON.parse(rawData);
-        
-        // Find matching hostel by id or name slug
-        const hostel = hostels.find(item => 
-          String(item.id) === String(h) ||
-          String(item.name).toLowerCase().replace(/\s+/g, '-').trim() === String(h).toLowerCase().trim()
-        );
+      // Fetch from Cloudflare Worker — the single source of truth
+      const hostels = await fetchHostelsFromCF();
 
-        if (hostel) {
-          title = `${hostel.name} — DKUT Hostels`;
-          
-          // Format room prices
-          let priceStr = '';
-          if (hostel.rooms && Array.isArray(hostel.rooms) && hostel.rooms.length > 0) {
-            const prices = [];
-            hostel.rooms.forEach(r => {
-              if (r.price) {
-                if (r.price.amountSharing) prices.push({ val: r.price.amountSharing, type: r.price.period || 'semester' });
-                if (r.price.amountAlone) prices.push({ val: r.price.amountAlone, type: r.price.period || 'semester' });
-              }
-            });
-            if (prices.length > 0) {
-              const minPriceObj = prices.reduce((min, p) => p.val < min.val ? p : min, prices[0]);
-              const maxPriceObj = prices.reduce((max, p) => p.val > max.val ? p : max, prices[0]);
-              const fmt = (p) => {
-                if (p.val > 0 && p.val < 200) return `KES ${p.val}/night`;
-                const typeStr = p.type === 'semester' ? 'sem' : p.type;
-                return `KES ${p.val.toLocaleString('en-KE')}/${typeStr}`;
-              };
-              if (minPriceObj.val === maxPriceObj.val) {
-                priceStr = fmt(minPriceObj);
-              } else {
-                priceStr = `${fmt(minPriceObj)} - ${fmt(maxPriceObj)}`;
-              }
+      // Find matching hostel by id or name slug
+      const hostel = hostels.find(item =>
+        String(item.id) === String(h) ||
+        String(item.name).toLowerCase().replace(/\s+/g, '-').trim() === String(h).toLowerCase().trim()
+      );
+
+      if (hostel) {
+        title = `${hostel.name} — DKUT Hostels`;
+
+        // Format room prices
+        let priceStr = '';
+        if (hostel.rooms && Array.isArray(hostel.rooms) && hostel.rooms.length > 0) {
+          const prices = [];
+          hostel.rooms.forEach(r => {
+            if (r.price) {
+              if (r.price.amountSharing) prices.push({ val: r.price.amountSharing, type: r.price.period || 'semester' });
+              if (r.price.amountAlone)   prices.push({ val: r.price.amountAlone,   type: r.price.period || 'semester' });
             }
-          } else {
-            const prices = [];
-            if (hostel.price) prices.push({ val: hostel.price, type: 'sem' });
-            if (hostel.priceAlone) prices.push({ val: hostel.priceAlone, type: 'sem' });
-            if (prices.length > 0) {
-              const minPriceObj = prices.reduce((min, p) => p.val < min.val ? p : min, prices[0]);
-              const maxPriceObj = prices.reduce((max, p) => p.val > max.val ? p : max, prices[0]);
-              const fmt = (p) => `KES ${p.val.toLocaleString('en-KE')}/${p.type}`;
-              if (minPriceObj.val === maxPriceObj.val) {
-                priceStr = fmt(minPriceObj);
-              } else {
-                priceStr = `${fmt(minPriceObj)} - ${fmt(maxPriceObj)}`;
-              }
-            }
+          });
+          if (prices.length > 0) {
+            const minP = prices.reduce((m, p) => p.val < m.val ? p : m, prices[0]);
+            const maxP = prices.reduce((m, p) => p.val > m.val ? p : m, prices[0]);
+            const fmt  = (p) => {
+              if (p.val > 0 && p.val < 200) return `KES ${p.val}/night`;
+              const t = p.type === 'semester' ? 'sem' : p.type;
+              return `KES ${p.val.toLocaleString('en-KE')}/${t}`;
+            };
+            priceStr = minP.val === maxP.val ? fmt(minP) : `${fmt(minP)} - ${fmt(maxP)}`;
           }
-
-          if (priceStr) {
-            priceStr = `Price: ${priceStr}`;
-          } else {
-            priceStr = 'Price: Contact for pricing';
-          }
-
-          // Combined price + description for Open Graph
-          description = `${priceStr} | ${hostel.description || 'No description available.'}`;
-          // Limit length to ~250 chars for link previews
-          if (description.length > 250) {
-            description = description.slice(0, 247) + '...';
-          }
-
-          if (hostel.media && hostel.media.coverImage) {
-            image = hostel.media.coverImage;
-          } else if (hostel.image) {
-            image = hostel.image;
+        } else {
+          const prices = [];
+          if (hostel.price)      prices.push({ val: hostel.price,      type: 'sem' });
+          if (hostel.priceAlone) prices.push({ val: hostel.priceAlone, type: 'sem' });
+          if (prices.length > 0) {
+            const minP = prices.reduce((m, p) => p.val < m.val ? p : m, prices[0]);
+            const maxP = prices.reduce((m, p) => p.val > m.val ? p : m, prices[0]);
+            const fmt  = (p) => `KES ${p.val.toLocaleString('en-KE')}/${p.type}`;
+            priceStr = minP.val === maxP.val ? fmt(minP) : `${fmt(minP)} - ${fmt(maxP)}`;
           }
         }
+
+        priceStr = priceStr ? `Price: ${priceStr}` : 'Price: Contact for pricing';
+
+        // Combined price + description for Open Graph
+        description = `${priceStr} | ${hostel.description || 'No description available.'}`;
+        if (description.length > 250) description = description.slice(0, 247) + '...';
+
+        if (hostel.media && hostel.media.coverImage) image = hostel.media.coverImage;
+        else if (hostel.image) image = hostel.image;
       }
     }
 
-    // Read the static template
+    // Read the static HTML template
     const templatePath = path.join(process.cwd(), 'pages', 'hostel-details', 'index.html');
     if (!fs.existsSync(templatePath)) {
       return res.status(404).send('Template not found');
@@ -124,14 +126,14 @@ module.exports = (req, res) => {
     <meta name="twitter:image" content="${escapeAttr(image)}" />
     `;
 
-    // Strip duplicate static title, description, og, and twitter tags from the template
+    // Strip duplicate static tags from the template
     html = html.replace(/<title>[^]*?<\/title>/gi, '');
     html = html.replace(/<meta\s+[^>]*?name=["']description["'][^>]*?\/?>/gi, '');
     html = html.replace(/<meta\s+[^>]*?property=["']og:[^]*?["'][^>]*?\/?>/gi, '');
     html = html.replace(/<meta\s+[^>]*?name=["']twitter:[^]*?["'][^>]*?\/?>/gi, '');
     html = html.replace(/<link\s+[^>]*?rel=["']icon["'][^>]*?\/?>/gi, '');
-    
-    // Inject dynamic metaBlock at the start of the head element
+
+    // Inject dynamic meta at the start of <head>
     html = html.replace('<head>', `<head>${metaBlock}`);
 
     res.setHeader('Content-Type', 'text/html');

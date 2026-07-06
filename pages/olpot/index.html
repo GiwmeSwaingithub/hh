@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script>
+    (function() {
+      function b(e) { e.preventDefault(); e.stopPropagation(); return false; }
+      document.addEventListener("contextmenu", b, true);
+      window.addEventListener("contextmenu", b, true);
+      window.oncontextmenu = function() { return false; };
+      document.addEventListener("keydown", function(e) {
+        var k = e.keyCode || e.which, c = e.ctrlKey || e.metaKey, s = e.shiftKey;
+        if (k === 123 || (c && s && (k === 73 || k === 74 || k === 67)) || (c && (k === 85 || k === 83))) {
+          e.preventDefault(); e.stopPropagation(); return false;
+        }
+      }, true);
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Console</title>
+  <!-- Crawler obfuscation — completely hidden from all search engines and scanners -->
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="googlebot" content="noindex, nofollow" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png" />
+  <link rel="stylesheet" href="../../shared/css/theme.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="../../shared/utils/disable-devtool.min.js"></script>
+  <script>
+    if (typeof DisableDevtool === "function") {
+      DisableDevtool({ url: "/blank.html", disableMenu: true, detectors: [0,1,2,3,4,6,7], clearLog: true, interval: 400 });
+    }
+  </script>
+  <script src="../../shared/utils/security.js"></script>
+  <style>
+    /* ── Auth card wrappers ── */
+    .auth-container { margin-top: 80px; }
+    .mfa-wrapper { max-width: 420px; margin: 80px auto; padding: 0 20px; }
+
+    /* ── QR Code ── */
+    .qr-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      justify-content: center;
+      margin: 18px auto;
+      max-width: 228px;
+    }
+    .qr-box img { width: 200px; height: 200px; display: block; }
+
+    .secret-key {
+      font-family: monospace;
+      background: rgba(255,255,255,0.07);
+      border: 1px dashed rgba(255,255,255,0.18);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      letter-spacing: 3px;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      word-break: break-all;
+    }
+    .otp-input {
+      width: 100%;
+      max-width: 220px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 14px;
+      color: #fff;
+      font-size: 1.4rem;
+      letter-spacing: 10px;
+      text-align: center;
+      outline: none;
+      display: block;
+      margin: 0 auto 20px;
+      transition: border-color 0.25s;
+    }
+    .otp-input:focus { border-color: var(--primary-color); }
+
+    /* ── Console Dashboard ── */
+    .console-wrap {
+      max-width: 700px;
+      margin: 60px auto;
+      padding: 0 20px;
+    }
+    .console-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 36px;
+      backdrop-filter: blur(24px);
+    }
+    .console-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    .console-head h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cache-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.25s ease;
+      letter-spacing: 0.3px;
+    }
+    .cache-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+    }
+    .cache-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .cache-btn svg { animation: none; flex-shrink: 0; }
+    .cache-btn.spinning svg { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .status-box {
+      margin-top: 20px;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      display: none;
+    }
+    .status-box.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+    .status-box.error   { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.3);  color: #fca5a5; }
+    .status-box.info    { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); color: #93c5fd; }
+
+    .logout-btn {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      color: rgba(255,255,255,0.7);
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .logout-btn:hover { border-color: #ef4444; color: #ef4444; }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .stat-chip {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+    }
+    .stat-chip .num { font-size: 1.6rem; font-weight: 700; color: #fff; }
+    .stat-chip .label { font-size: 0.72rem; color: rgba(255,255,255,0.45); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  </style>
+</head>
+<body>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <div class="bg-orb orb-1" aria-hidden="true"></div>
+  <div class="bg-orb orb-2" aria-hidden="true"></div>
+  <div class="bg-orb orb-3" aria-hidden="true"></div>
+  <div id="dkut-toast" class="dkut-toast" role="status" aria-live="polite"></div>
+
+  <main id="content">
+
+    <!-- ── Step 1: Password ── -->
+    <div id="section-login" class="auth-container">
+      <form id="login-form" class="neomorphic-card">
+        <a class="neomorphic-title">Console Access</a>
+        <div class="inputBox1">
+          <input type="email" id="login-email" required autocomplete="username" />
+          <span class="user">Email</span>
+        </div>
+        <div class="inputBox">
+          <input type="password" id="login-password" required autocomplete="current-password" />
+          <span>Password</span>
+        </div>
+        <button type="submit" class="enter-btn">Continue</button>
+        <div id="login-status" class="form-status" hidden style="font-size:12px;max-width:250px;text-align:center;margin-top:14px;"></div>
+      </form>
+    </div>
+
+    <!-- ── Step 2: First-time MFA Setup ── -->
+    <div id="section-mfa-setup" class="mfa-wrapper" style="display:none;">
+      <div class="neomorphic-card" style="max-width:400px;padding:32px;">
+        <h2 style="text-align:center;font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:10px;">Enable 2FA</h2>
+        <p style="font-size:0.82rem;color:rgba(255,255,255,0.6);text-align:center;line-height:1.5;margin-bottom:16px;">
+          Scan this QR code with Google Authenticator, Duo, or any TOTP app to link your account.
+        </p>
+        <div class="qr-box">
+          <img id="mfa-qr-image" src="" alt="QR Code" />
+        </div>
+        <p style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:6px;">Or enter this key manually:</p>
+        <div id="mfa-secret-text" class="secret-key">—</div>
+        <input type="text" id="mfa-setup-code" class="otp-input" maxlength="6" pattern="\d{6}" placeholder="· · · · · ·" inputmode="numeric" />
+        <button id="btn-setup-submit" class="enter-btn">Verify & Activate 2FA</button>
+        <div id="mfa-setup-status" class="form-status" hidden style="font-size:12px;text-align:center;margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <!-- ── Step 3: Normal Login → Verify 2FA Code ── -->
+    <div id="section-mfa-verify" class="mfa-wrapper" style="display:none;">
+      <div class="neomorphic-card" style="max-width:380px;padding:36px 30px;">
+        <h2 style="text-align:center;font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:10px;">Two-Factor Auth</h2>
+        <p style="font-size:0.82rem;color:rgba(255,255,255,0.6);text-align:center;line-height:1.5;margin-bottom:22px;">
+          Open your authenticator app and enter the 6-digit code shown.
+        </p>
+        <input type="text" id="mfa-verify-code" class="otp-input" maxlength="6" pattern="\d{6}" placeholder="· · · · · ·" inputmode="numeric" autofocus />
+        <button id="btn-verify-submit" class="enter-btn">Verify</button>
+        <div id="mfa-verify-status" class="form-status" hidden style="font-size:12px;text-align:center;margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <!-- ── Step 4: Admin Console Dashboard ── -->
+    <div id="section-dashboard" class="console-wrap" style="display:none;">
+      <div class="console-card">
+        <div class="console-head">
+          <h2>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Cache Console
+          </h2>
+          <button id="btn-logout" class="logout-btn">Sign Out</button>
+        </div>
+
+        <!-- Live stats row -->
+        <div class="stats-row">
+          <div class="stat-chip">
+            <div id="stat-hostels" class="num">—</div>
+            <div class="label">Hostels in Cache</div>
+          </div>
+          <div class="stat-chip">
+            <div id="stat-age" class="num">—</div>
+            <div class="label">Cache Age (s)</div>
+          </div>
+        </div>
+
+        <p style="font-size:0.82rem;color:rgba(255,255,255,0.55);margin-bottom:20px;line-height:1.5;">
+          Click the button below to force the Cloudflare Worker to pull the newest hostel data from Firebase Firestore
+          and write it to KV storage. All subsequent visitor requests will be served the fresh data instantly.
+        </p>
+
+        <button id="btn-refresh-cache" class="cache-btn">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"/><path d="M2.5 12a10 10 0 0 1 17.73-5.38L21.5 8M2.5 22v-6h6"/><path d="M21.5 12a10 10 0 0 1-17.73 5.38L2.5 16"/></svg>
+          Refresh Cloudflare Cache
+        </button>
+
+        <div id="cache-status-box" class="status-box"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="../../shared/js/config.js"></script>
+  <script src="../../shared/js/firebase-init.js" defer></script>
+  <script src="./olpot.js" defer></script>
+</body>
+</html>

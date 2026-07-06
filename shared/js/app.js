@@ -183,50 +183,42 @@
   async function fetchHostels() {
     if (isMockMode()) return fetchMockHostels();
 
-    const cacheKey = (DKUT.CONFIG && DKUT.CONFIG.SETTINGS && DKUT.CONFIG.SETTINGS.cacheKey) || 'dkut_hostels_cache';
-    const cacheTTL = (DKUT.CONFIG && DKUT.CONFIG.SETTINGS && DKUT.CONFIG.SETTINGS.cacheTTL) || 3600000;
+    const cfg      = DKUT.CONFIG && DKUT.CONFIG.SETTINGS;
+    const workerUrl = (cfg && cfg.cfWorkerUrl) || 'https://dekuthostels-cache.giwme1socialtalk.workers.dev/hostels.json';
+    const cacheKey  = (cfg && cfg.cacheKey)    || 'dkut_hostels_cf_cache';
+    const cacheTTL  = (cfg && cfg.cacheTTL)    || 300000; // 5 minutes browser cache
 
-    // Try fetching from Firestore collection 'hostels' first (Direct Live query)
-    if (global.DKUT && global.DKUT.db) {
-      try {
-        const snap = await global.DKUT.db.collection('hostels').get();
-        if (!snap.empty) {
-          const list = [];
-          snap.forEach(doc => {
-            list.push({ id: doc.id, ...doc.data() });
-          });
-          const normalized = normalizeHostels(list);
-          try {
-            localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: normalized }));
-          } catch (_) {}
-          console.info('[DKUT] Loaded', normalized.length, 'hostels from Firestore collection "hostels"');
-          return normalized;
-        }
-      } catch (err) {
-        console.warn('[DKUT] Firestore hostels query failed, trying cache/JSON:', err.message);
-      }
-    }
-
-    // Fallback to local storage cache
+    // --- 1. Serve from browser localStorage (5-min session cache) ----------
     try {
-      const cached = localStorage.getItem(cacheKey);
-      if (cached) {
-        const parsed = JSON.parse(cached);
+      const raw = localStorage.getItem(cacheKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
         if (parsed && parsed.ts && parsed.data && (Date.now() - parsed.ts < cacheTTL)) {
           const normalized = normalizeHostels(parsed.data);
-          if (normalized.length > 0) return normalized;
+          if (normalized.length > 0) {
+            console.info('[DKUT] Served', normalized.length, 'hostels from browser cache.');
+            return normalized;
+          }
         }
       }
     } catch (_) {
       try { localStorage.removeItem(cacheKey); } catch (__) {}
     }
 
+    // --- 2. Fetch from Cloudflare Worker (the single source of truth) ------
+    const res = await fetch(workerUrl);
+    if (!res.ok) throw new Error('Cloudflare cache returned HTTP ' + res.status);
+    const raw = await res.json();
+    const normalized = normalizeHostels(raw);
+    if (normalized.length === 0) throw new Error('Cloudflare cache returned 0 hostels.');
+
+    // Persist in localStorage so subsequent same-session page loads are instant
     try {
-      return await fetchFromUrls(getDataUrls(), cacheKey, 'hostels');
-    } catch (err) {
-      console.warn('[DKUT] Live data failed, falling back to mock:', err.message);
-      return fetchMockHostels();
-    }
+      localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: normalized }));
+    } catch (_) {}
+
+    console.info('[DKUT] Loaded', normalized.length, 'hostels from Cloudflare Worker.');
+    return normalized;
   }
 
   function detailsUrl(hostelId) {

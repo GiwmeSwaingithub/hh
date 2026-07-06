@@ -30,7 +30,11 @@
     { "source": "/services", "destination": "/api/services" },
     { "source": "/services/", "destination": "/api/services" },
     { "source": "/demo", "destination": "/pages/demo" },
-    { "source": "/demo/", "destination": "/pages/demo" }
+    { "source": "/demo/", "destination": "/pages/demo" },
+    { "source": "/olpot", "destination": "/pages/olpot" },
+    { "source": "/olpot/", "destination": "/pages/olpot" },
+    { "source": "/api/admin-auth", "destination": "/api/admin-auth" },
+    { "source": "/api/cache-refresh", "destination": "/api/cache-refresh" }
   ],
   "headers": [
     {
@@ -40,6 +44,13 @@
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "Referrer-Policy", "value": "no-referrer" },
         { "key": "Content-Security-Policy", "value": "frame-ancestors 'self' https://hostel.dekut.site;" }
+      ]
+    },
+    {
+      "source": "/(olpot|pages/olpot)(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" },
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }
       ]
     },
     {

@@ -1,0 +1,15 @@
+name = "dekuthostels-cache"
+main = "src/index.js"
+compatibility_date = "2024-04-01"
+
+[vars]
+FIRESTORE_PROJECT_ID = "dekuthostels"
+
+[[kv_namespaces]]
+binding = "HOSTELS_KV"
+id = "3672b77d0ff1444c87880d9f8264872b"
+
+[triggers]
+# Run once per day at 2:00 AM UTC — stays well within Firebase free-tier read limits.
+# The cache only hits Firestore once per day OR when /update-cache is called after a write.
+crons = ["0 2 * * *"]

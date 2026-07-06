@@ -77,12 +77,16 @@
   };
 
   const SETTINGS = {
-    dataPath: '../../shared/data/hostels.json',
+    // Cloudflare Worker — the single source of truth for all hostel data.
+    cfWorkerUrl: 'https://dekuthostels-cache.giwme1socialtalk.workers.dev/hostels.json',
     mockDataPath: '../../shared/data/hostels.mock.json',
-    cacheKey: 'dkut_hostels_cache',
+    cacheKey: 'dkut_hostels_cf_cache',
     mockCacheKey: 'dkut_hostels_mock_cache',
     mockStorageKey: 'dkut_mock_mode',
-    cacheTTL: 3600000,
+    // Client-side browser cache TTL — 5 minutes. The real freshness is managed
+    // by the Cloudflare Worker (SWR + daily Firestore sync). This only prevents
+    // repeated CF requests within the same browsing session.
+    cacheTTL: 5 * 60 * 1000,
     pageSize: 12,
   };
 
