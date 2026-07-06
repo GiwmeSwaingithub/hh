@@ -3386,13 +3386,10 @@ a.project-date:hover {
   }
 }
 
-/* Raise the TTS float container when a wide contact bottom bar is present to prevent overlapping on mobile */
-body:has(.bottom-bar:not([hidden])) .tts-float-container {
-  bottom: 86px;
-}
-@media (min-width: 480px) {
-  body:has(.bottom-bar:not([hidden])) .tts-float-container {
-    bottom: 20px;
+/* Raise the TTS float container on mobile screens to prevent overlapping with the bottom nav bar (#nav-bar) */
+@media (max-width: 1023px) {
+  .tts-float-container {
+    bottom: 96px;
   }
 }
 
