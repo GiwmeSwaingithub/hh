@@ -27,6 +27,10 @@
   <meta property="og:title" content="Scam Alerts & Anonymous Reports — DKUT Hostels" />
   <meta property="og:description" content="Check phone numbers and report scams to protect DKUT students. Anonymous reporting available." />
   <meta property="og:image" content="https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:site_name" content="DKUT Hostels" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -89,8 +93,8 @@
         padding: 90px 16px 100px;
     }
 
-    .mode-chips { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; }
-    .mode-chip { padding: 12px 20px; border-radius: var(--radius-xl); font-weight: 700; font-size: 0.9rem; cursor: pointer; border: 2px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--text-secondary); transition: var(--transition); display: flex; align-items: center; gap: 8px; user-select: none; }
+    .mode-chips { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; position: relative; z-index: 10; }
+    .mode-chip { padding: 12px 20px; border-radius: var(--radius-xl); font-weight: 700; font-size: 0.9rem; cursor: pointer; border: 2px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--text-secondary); transition: var(--transition); display: flex; align-items: center; gap: 8px; user-select: none; position: relative; z-index: 10; }
     .mode-chip:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.06); color: #fff; }
     .mode-chip.selected { border-color: var(--accent); background: rgba(124,77,255,0.18); color: #fff; box-shadow: 0 0 22px var(--accent-glow); }
 
@@ -133,8 +137,8 @@
         to { transform: rotate(360deg); }
     }
 
-    .chip-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-    .chip { padding: 10px 18px; border-radius: var(--radius-xl); font-size: 0.82rem; font-weight: 600; cursor: pointer; border: 2px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--text-secondary); transition: var(--transition); display: flex; align-items: center; gap: 7px; user-select: none; }
+    .chip-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; position: relative; z-index: 10; }
+    .chip { padding: 10px 18px; border-radius: var(--radius-xl); font-size: 0.82rem; font-weight: 600; cursor: pointer; border: 2px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--text-secondary); transition: var(--transition); display: flex; align-items: center; gap: 7px; user-select: none; position: relative; z-index: 10; }
     .chip:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.06); color: #fff; }
     .chip.selected { border-color: var(--accent); background: rgba(124,77,255,0.18); color: #fff; box-shadow: 0 0 18px var(--accent-glow); }
     .chip.whatsapp-chip.selected { border-color: var(--whatsapp); background: rgba(0,215,87,0.15); box-shadow: 0 0 18px rgba(0,215,87,0.3); }
@@ -454,7 +458,7 @@
     <footer class="app-footer" role="contentinfo" style="margin-top: 40px;">
       <div class="footer-content">
         <div class="footer-left">
-          <p>&copy; 2026 DKUT Hostels. Verified accommodation services near Dedan Kimathi University of Technology.</p>
+          <p>&copy; 2026 <a href="https://www.dkut.ac.ke/" style="color:inherit;text-decoration:underline;">DKUT</a> Hostels. Verified accommodation services near <a href="https://www.dkut.ac.ke/" style="color:inherit;text-decoration:underline;">Dedan Kimathi</a> University of Technology.<br>Website built and managed by <a href="https://instagram.com/dekutconnect" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;">dekutconnect</a> community.</p>
         </div>
         <div class="footer-links">
           <a href="../home/">Home</a>
