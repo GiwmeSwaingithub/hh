@@ -1,7 +1,7 @@
 const BASE_PATH = self.location.pathname.substring(0, self.location.pathname.lastIndexOf('/') + 1);
 
-const CACHE_VERSION = 'dkut-hostel-v3';
-const DATA_CACHE = 'dkut-hostel-data-v1';
+const CACHE_VERSION = 'dkut-hostel-v4';
+const DATA_CACHE = 'dkut-hostel-data-v2';
 
 const STATIC_ASSETS = [
   BASE_PATH,
