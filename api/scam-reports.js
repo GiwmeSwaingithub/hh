@@ -15,7 +15,7 @@ module.exports = (req, res) => {
     const currentDomain = `${proto}://${host}`;
 
     // Meta tags to inject/replace dynamically
-    const dynamicOgImage = `${currentDomain}/shared/img/og-image-compressed.jpg`;
+    const dynamicOgImage = 'https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png';
     const dynamicOgUrl = `${currentDomain}/scam-reports`;
 
     // Strip duplicate static image and url tags from the template
