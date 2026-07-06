@@ -1,12 +1,12 @@
 (function () {
   'use strict';
 
-  const esc = s => (DKUT.security && DKUT.security.escapeHtml) ? DKUT.security.escapeHtml(s) : String(s || '');
-  const WA_NUMBER = (DKUT.CONFIG && DKUT.CONFIG.SITE && DKUT.CONFIG.SITE.whatsapp) || '254769486775';
+  const esc = s => (window.DKUT?.security && window.DKUT.security.escapeHtml) ? window.DKUT.security.escapeHtml(s) : String(s || '');
+  const WA_NUMBER = (window.DKUT?.CONFIG?.SITE?.whatsapp) || '254769486775';
   const WA_URL = 'https://wa.me/' + WA_NUMBER;
 
   function normalizePhone(raw) {
-    if (DKUT.security && DKUT.security.normalizePhone) return DKUT.security.normalizePhone(raw);
+    if (window.DKUT?.security?.normalizePhone) return window.DKUT.security.normalizePhone(raw);
     const c = String(raw).replace(/[^\d+]/g, '');
     if (c.startsWith('0') && c.length === 10) return '254' + c.slice(1);
     if (c.startsWith('+254')) return c.slice(1);
@@ -138,9 +138,9 @@
     };
 
     let ok = false;
-    if (DKUT.db) {
+    if (window.DKUT?.db) {
       try {
-        await DKUT.db.collection('scamReports').add(report);
+        await window.DKUT.db.collection('scamReports').add(report);
         ok = true;
       } catch (_) {}
     }
@@ -173,9 +173,9 @@
 
     const norm = normalizePhone(phone);
     let reports = [];
-    if (DKUT.db) {
+    if (window.DKUT?.db) {
       try {
-        const snap = await DKUT.db.collection('scamReports').where('phoneNumber', '==', norm).get();
+        const snap = await window.DKUT.db.collection('scamReports').where('phoneNumber', '==', norm).get();
         snap.forEach(doc => reports.push(doc.data()));
       } catch (_) {}
     }
@@ -198,9 +198,9 @@
     const grid = document.getElementById('scam-grid');
     let items = [];
 
-    if (DKUT.db) {
+    if (window.DKUT?.db) {
       try {
-        const snap = await DKUT.db.collection('scamReports').orderBy('timestamp', 'desc').limit(20).get();
+        const snap = await window.DKUT.db.collection('scamReports').orderBy('timestamp', 'desc').limit(20).get();
         snap.forEach(doc => items.push(doc.data()));
       } catch (_) {}
     }
