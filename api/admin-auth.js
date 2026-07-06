@@ -171,8 +171,15 @@ module.exports = async (req, res) => {
     if (action === 'verify-session') {
       const cookieHeader = req.headers.cookie || '';
       const match = cookieHeader.match(/dkut_admin_session=([^;]+)/);
-      if (!match) return res.status(401).json({ authenticated: false });
-      const payload = verifyToken(match[1]);
+      let token = match ? match[1] : null;
+
+      // Authorization header fallback
+      if (!token && req.headers.authorization) {
+        token = req.headers.authorization.replace(/^Bearer\s+/i, '').trim();
+      }
+
+      if (!token) return res.status(401).json({ authenticated: false });
+      const payload = verifyToken(token);
       if (!payload) return res.status(401).json({ authenticated: false });
       return res.status(200).json({ authenticated: true, uid: payload.uid });
     }
@@ -253,7 +260,7 @@ module.exports = async (req, res) => {
       // Generate session token
       const sessionToken = signToken({ uid, exp: Date.now() + 4 * 60 * 60 * 1000 }); // 4 hours
       res.setHeader('Set-Cookie', `dkut_admin_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=14400`);
-      return res.status(200).json({ success: true, message: 'MFA enabled successfully' });
+      return res.status(200).json({ success: true, token: sessionToken, message: 'MFA enabled successfully' });
     }
 
     // 6. Action: verify-mfa (Verify login code)
@@ -271,7 +278,7 @@ module.exports = async (req, res) => {
       // Generate session token
       const sessionToken = signToken({ uid, exp: Date.now() + 4 * 60 * 60 * 1000 }); // 4 hours
       res.setHeader('Set-Cookie', `dkut_admin_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=14400`);
-      return res.status(200).json({ success: true });
+      return res.status(200).json({ success: true, token: sessionToken });
     }
 
     return res.status(400).json({ error: 'Invalid action parameter' });

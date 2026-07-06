@@ -28,11 +28,17 @@ module.exports = async (req, res) => {
 
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
 
-  // Require a valid admin session cookie
+  // Require a valid admin session cookie or Authorization header
   const cookie = req.headers.cookie || '';
   const match = cookie.match(/dkut_admin_session=([^;]+)/);
-  if (!match) return res.status(401).json({ error: 'Unauthorized' });
-  const session = verifyToken(match[1]);
+  let token = match ? match[1] : null;
+
+  if (!token && req.headers.authorization) {
+    token = req.headers.authorization.replace(/^Bearer\s+/i, '').trim();
+  }
+
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  const session = verifyToken(token);
   if (!session) return res.status(401).json({ error: 'Session expired' });
 
   // Proxy to Cloudflare Worker — CACHE_SECRET never touches the browser

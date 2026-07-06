@@ -1,10 +1,27 @@
 (function () {
   'use strict';
 
-  const API_AUTH    = '/api/admin-auth';
-  const API_CACHE   = '/api/cache-refresh';
+  // --- API Base Config (Handles Local Dev vs Production Vercel Calls) ---
+  const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:')
+    ? 'https://hostel-gray-kappa.vercel.app'
+    : '';
 
-  let idToken = null; // Firebase ID token kept in memory only
+  const API_AUTH  = `${API_BASE}/api/admin-auth`;
+  const API_CACHE = `${API_BASE}/api/cache-refresh`;
+
+  // Try to load token from sessionStorage (preserves login across browser reloads)
+  let sessionToken = sessionStorage.getItem('dkut_admin_token') || null;
+  let idToken = null; // Firebase ID token in memory only
+
+  // --- Global Window Error Handler to show feedback directly on screen ---
+  window.addEventListener('error', function(event) {
+    const errorBox = document.getElementById('login-status') || document.getElementById('mfa-setup-status') || document.getElementById('mfa-verify-status');
+    if (errorBox) {
+      errorBox.hidden = false;
+      errorBox.className = 'form-status error';
+      errorBox.textContent = `Client Runtime Error: ${event.message}`;
+    }
+  });
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -28,13 +45,26 @@
   }
 
   async function post(action, data) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (sessionToken) {
+      headers['Authorization'] = `Bearer ${sessionToken}`;
+    }
     const res = await fetch(`${API_AUTH}?action=${action}`, {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers,
       body:    JSON.stringify(data)
     });
-    const body = await res.json();
-    if (!res.ok) throw new Error(body.error || `Error ${res.status}`);
+    
+    let body;
+    try {
+      body = await res.json();
+    } catch (e) {
+      throw new Error(`Failed to parse server response (Status ${res.status})`);
+    }
+
+    if (!res.ok) {
+      throw new Error(body.error || `Server Error ${res.status}`);
+    }
     return body;
   }
 
@@ -42,9 +72,19 @@
 
   async function checkSession() {
     try {
-      const r = await fetch(`${API_AUTH}?action=verify-session`, { method: 'POST' });
+      const headers = {};
+      if (sessionToken) {
+        headers['Authorization'] = `Bearer ${sessionToken}`;
+      }
+      const r = await fetch(`${API_AUTH}?action=verify-session`, {
+        method: 'POST',
+        headers: headers
+      });
       const b = await r.json();
-      if (b.authenticated) { showDashboard(); return; }
+      if (b.authenticated) {
+        showDashboard();
+        return;
+      }
     } catch (_) {}
     show('section-login');
   }
@@ -60,16 +100,23 @@
     const password = document.getElementById('login-password').value;
 
     try {
-      if (!window.DKUT?.auth) throw new Error('Firebase not ready.');
+      if (!window.DKUT?.auth) {
+        throw new Error('Firebase SDK not fully initialized on your browser yet. Please wait a second and retry.');
+      }
+      
+      setStatus(statusEl, 'Authenticating credentials...', 'info');
       const cred = await window.DKUT.auth.signInWithEmailAndPassword(email, password);
       idToken    = await cred.user.getIdToken();
 
+      setStatus(statusEl, 'Verifying 2FA status...', 'info');
       const check = await post('check-mfa', { idToken });
+      
       if (check.mfaEnabled) {
         show('section-mfa-verify');
         document.getElementById('mfa-verify-code').focus();
       } else {
-        // First time — generate secret + QR
+        // First time setup - generate QR and Secret key
+        setStatus(statusEl, 'Generating 2FA secret key...', 'info');
         const setup = await post('setup-mfa', { idToken });
         document.getElementById('mfa-qr-image').src  = setup.qrUrl;
         document.getElementById('mfa-secret-text').textContent =
@@ -77,8 +124,10 @@
         show('section-mfa-setup');
         document.getElementById('mfa-setup-code').focus();
       }
+      statusEl.hidden = true;
     } catch (err) {
-      setStatus(statusEl, err.message, 'error');
+      console.error(err);
+      setStatus(statusEl, err.message || 'Login failed. Incorrect email or password.', 'error');
     }
   });
 
@@ -88,10 +137,21 @@
     const statusEl = document.getElementById('mfa-setup-status');
     const code     = document.getElementById('mfa-setup-code').value.trim();
     const secret   = document.getElementById('mfa-secret-text').textContent.replace(/\s/g, '');
-    if (!/^\d{6}$/.test(code)) { toast('Enter a 6-digit code', 'error'); return; }
+    
+    if (!/^\d{6}$/.test(code)) {
+      toast('Enter a 6-digit code', 'error');
+      return;
+    }
     statusEl.hidden = true;
     try {
-      await post('enable-mfa', { idToken, code, secret });
+      setStatus(statusEl, 'Verifying code and storing 2FA secret...', 'info');
+      const res = await post('enable-mfa', { idToken, code, secret });
+      
+      if (res.token) {
+        sessionToken = res.token;
+        sessionStorage.setItem('dkut_admin_token', res.token);
+      }
+      
       toast('2FA activated — you are now signed in.', 'success');
       showDashboard();
     } catch (err) {
@@ -104,10 +164,21 @@
   document.getElementById('btn-verify-submit').addEventListener('click', async () => {
     const statusEl = document.getElementById('mfa-verify-status');
     const code     = document.getElementById('mfa-verify-code').value.trim();
-    if (!/^\d{6}$/.test(code)) { toast('Enter a 6-digit code', 'error'); return; }
+    
+    if (!/^\d{6}$/.test(code)) {
+      toast('Enter a 6-digit code', 'error');
+      return;
+    }
     statusEl.hidden = true;
     try {
-      await post('verify-mfa', { idToken, code });
+      setStatus(statusEl, 'Verifying 2FA code...', 'info');
+      const res = await post('verify-mfa', { idToken, code });
+      
+      if (res.token) {
+        sessionToken = res.token;
+        sessionStorage.setItem('dkut_admin_token', res.token);
+      }
+      
       toast('Authenticated.', 'success');
       showDashboard();
     } catch (err) {
@@ -150,7 +221,11 @@
     box.style.display = 'none';
 
     try {
-      const res  = await fetch(API_CACHE, { method: 'POST' });
+      const headers = {};
+      if (sessionToken) {
+        headers['Authorization'] = `Bearer ${sessionToken}`;
+      }
+      const res  = await fetch(API_CACHE, { method: 'POST', headers: headers });
       const body = await res.json();
       if (res.ok && body.success) {
         box.className = 'status-box success';
@@ -175,9 +250,15 @@
   // Logout
   document.getElementById('btn-logout').addEventListener('click', async () => {
     try {
-      await fetch(`${API_AUTH}?action=logout`, { method: 'POST' });
+      const headers = {};
+      if (sessionToken) {
+        headers['Authorization'] = `Bearer ${sessionToken}`;
+      }
+      await fetch(`${API_AUTH}?action=logout`, { method: 'POST', headers: headers });
       if (window.DKUT?.auth) await window.DKUT.auth.signOut();
     } catch (_) {}
+    sessionStorage.removeItem('dkut_admin_token');
+    sessionToken = null;
     location.reload();
   });
 
