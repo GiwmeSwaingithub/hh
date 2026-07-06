@@ -181,9 +181,40 @@
     location.reload();
   });
 
+  // ── Theme Selector Sync ───────────────────────────────────────────────────
+
+  function initThemeSelectors() {
+    const selLogin = document.getElementById('theme-toggle-select');
+    const selDash  = document.getElementById('theme-toggle-select-dash');
+    
+    if (window.DKUT && window.DKUT.app) {
+      const activeTheme = window.DKUT.app.getTheme();
+      if (selLogin) selLogin.value = activeTheme;
+      if (selDash)  selDash.value  = activeTheme;
+      
+      const changeHandler = e => {
+        window.DKUT.app.setTheme(e.target.value);
+        if (selLogin) selLogin.value = e.target.value;
+        if (selDash)  selDash.value  = e.target.value;
+      };
+      
+      if (selLogin) selLogin.addEventListener('change', changeHandler);
+      if (selDash)  selDash.addEventListener('change', changeHandler);
+
+      document.addEventListener('dkut-theme-change', () => {
+        const t = window.DKUT.app.getTheme();
+        if (selLogin) selLogin.value = t;
+        if (selDash)  selDash.value  = t;
+      });
+    }
+  }
+
   // ── Boot ──────────────────────────────────────────────────────────────────
 
-  function init() { checkSession(); }
+  function init() {
+    initThemeSelectors();
+    checkSession();
+  }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 

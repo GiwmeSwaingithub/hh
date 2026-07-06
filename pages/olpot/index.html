@@ -192,6 +192,14 @@
     <div id="section-login" class="auth-container">
       <form id="login-form" class="neomorphic-card">
         <a class="neomorphic-title">Console Access</a>
+        <div style="display:flex; justify-content:center; margin-bottom:18px;">
+          <select id="theme-toggle-select" class="glass-select theme-select" aria-label="Toggle Theme" style="max-width:140px; padding:6px 10px; font-size:0.8rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);">
+            <option value="system">System Theme</option>
+            <option value="light">Light Theme</option>
+            <option value="dark">Dark Theme</option>
+            <option value="high-contrast">Contrast Theme</option>
+          </select>
+        </div>
         <div class="inputBox1">
           <input type="email" id="login-email" required autocomplete="username" />
           <span class="user">Email</span>
@@ -244,7 +252,15 @@
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             Cache Console
           </h2>
-          <button id="btn-logout" class="logout-btn">Sign Out</button>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <select id="theme-toggle-select-dash" class="glass-select theme-select" aria-label="Toggle Theme" style="max-width:130px; padding:6px 8px; font-size:0.75rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);">
+              <option value="system">System Theme</option>
+              <option value="light">Light Theme</option>
+              <option value="dark">Dark Theme</option>
+              <option value="high-contrast">Contrast Theme</option>
+            </select>
+            <button id="btn-logout" class="logout-btn">Sign Out</button>
+          </div>
         </div>
 
         <!-- Live stats row -->
@@ -276,6 +292,7 @@
   </main>
 
   <script src="../../shared/js/config.js"></script>
+  <script src="../../shared/js/app.js"></script>
   <script src="../../shared/js/firebase-init.js" defer></script>
   <script src="./olpot.js" defer></script>
 </body>

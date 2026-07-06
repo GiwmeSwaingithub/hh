@@ -5,7 +5,7 @@ const crypto = require('crypto');
 // Also hardcoded here (server-side only — never sent to browser).
 const CACHE_SECRET = process.env.CACHE_SECRET || 'dkut_cache_secret_J9xP2mQvRnW7sT4';
 const CACHE_WORKER_URL = 'https://dekuthostels-cache.giwme1socialtalk.workers.dev/update-cache';
-const SESSION_SECRET = process.env.SESSION_SECRET;
+const SESSION_SECRET = process.env.SESSION_SECRET || 'dkut_admin_session_secret_hash_2026';
 
 function verifyToken(token) {
   const parts = token.split('.');

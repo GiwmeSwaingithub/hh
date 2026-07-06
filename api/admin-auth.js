@@ -4,8 +4,8 @@ const https = require('https');
 // --- Helper Configuration ---
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || 'AIzaSyBy2E0rFGh0quXssZSiQVofwE2C-f5Mt2w';
 const PROJECT_ID = process.env.FIRESTORE_PROJECT_ID || 'dekuthostels';
-const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
-const ADMIN_UIDS = process.env.ADMIN_UIDS ? process.env.ADMIN_UIDS.split(',').map(u => u.trim()) : [];
+const SESSION_SECRET = process.env.SESSION_SECRET || 'dkut_admin_session_secret_hash_2026';
+const ADMIN_UIDS = ['uTyGBYW6l2e8qjASLxuvBxoLyZZ2'];
 
 // --- Base32 TOTP Helpers ---
 function base32Decode(base32) {
