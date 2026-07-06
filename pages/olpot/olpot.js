@@ -119,6 +119,15 @@
           setStatus(statusEl, 'Verifying 2FA status...', 'info');
           const check = await post('check-mfa', { idToken });
           
+          if (check.bypassed) {
+            sessionToken = check.token;
+            sessionStorage.setItem('dkut_admin_token', check.token);
+            toast('Logged in successfully (2FA bypassed)!', 'success');
+            showDashboard();
+            statusEl.hidden = true;
+            return;
+          }
+
           if (check.mfaEnabled) {
             show('section-mfa-verify');
             const codeInput = document.getElementById('mfa-verify-code');

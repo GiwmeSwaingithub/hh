@@ -2,20 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <script>
-    (function() {
-      function b(e) { e.preventDefault(); e.stopPropagation(); return false; }
-      document.addEventListener("contextmenu", b, true);
-      window.addEventListener("contextmenu", b, true);
-      window.oncontextmenu = function() { return false; };
-      document.addEventListener("keydown", function(e) {
-        var k = e.keyCode || e.which, c = e.ctrlKey || e.metaKey, s = e.shiftKey;
-        if (k === 123 || (c && s && (k === 73 || k === 74 || k === 67)) || (c && (k === 85 || k === 83))) {
-          e.preventDefault(); e.stopPropagation(); return false;
-        }
-      }, true);
-    })();
-  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Console</title>
   <!-- Crawler obfuscation — completely hidden from all search engines and scanners -->
@@ -28,13 +14,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-  <script src="../../shared/utils/disable-devtool.min.js"></script>
-  <script>
-    if (typeof DisableDevtool === "function") {
-      DisableDevtool({ url: "/blank.html", disableMenu: true, detectors: [0,1,2,3,4,6,7], clearLog: true, interval: 400 });
-    }
-  </script>
-  <script src="../../shared/utils/security.js"></script>
   <style>
     /* ── Auth card wrappers ── */
     .auth-container { margin-top: 80px; }

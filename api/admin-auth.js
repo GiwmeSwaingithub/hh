@@ -217,12 +217,16 @@ module.exports = async (req, res) => {
     // Retrieve Admin Doc from Firestore
     const adminDoc = await getAdminDoc(uid, idToken);
 
-    // 3. Action: check-mfa
+    // 3. Action: check-mfa (Bypassed: directly log in user and set session token)
     if (action === 'check-mfa') {
+      const sessionToken = signToken({ uid, exp: Date.now() + 4 * 60 * 60 * 1000 }); // 4 hours
+      res.setHeader('Set-Cookie', `dkut_admin_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=14400`);
       return res.status(200).json({
         uid,
         email,
-        mfaEnabled: adminDoc.mfaEnabled
+        mfaEnabled: false,
+        token: sessionToken,
+        bypassed: true
       });
     }
 
