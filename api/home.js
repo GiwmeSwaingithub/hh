@@ -14,22 +14,61 @@ module.exports = (req, res) => {
     const proto = req.headers['x-forwarded-proto'] || 'https';
     const currentDomain = `${proto}://${host}`;
 
-    // Meta tags to inject/replace dynamically
-    const dynamicOgImage = 'https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png';
-    const dynamicOgUrl = `${currentDomain}/`;
+    const loc = (req.query.loc || '').trim().toLowerCase();
 
-    // Strip duplicate static image and url tags from the template
+    // Meta tags to inject/replace dynamically
+    let dynamicOgImage = 'https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png';
+    let dynamicOgUrl = `${currentDomain}/` + (loc ? `?loc=${encodeURIComponent(loc)}` : '');
+    let dynamicOgTitle = 'DKUT Hostels — Student Housing Near DeKUT';
+    let dynamicOgDesc = 'Find verified, affordable student hostels near Dedan Kimathi University of Technology in Nyeri, Kenya.';
+
+    if (loc === 'embassy') {
+      dynamicOgTitle = 'Embassy Area Hostels — Student Housing Near DeKUT';
+      dynamicOgDesc = 'Find the best verified student hostels in the popular Embassy Area, just a 1-3 mins walk to Dedan Kimathi University of Technology (DeKUT).';
+    } else if (loc) {
+      const locName = loc.replace(/-/g, ' ');
+      const formattedLoc = locName.charAt(0).toUpperCase() + locName.slice(1);
+      dynamicOgTitle = `${formattedLoc} Hostels — Student Housing Near DeKUT`;
+      dynamicOgDesc = `Find verified, affordable student hostels in ${formattedLoc} area near Dedan Kimathi University of Technology (DeKUT).`;
+    }
+
+    // Strip duplicate static image, url, title, description tags from the template
+    html = html.replace(/<title>[^]*?<\/title>/gi, '');
+    html = html.replace(/<meta\s+[^>]*?name=["']description["'][^>]*?\/?>/gi, '');
+    html = html.replace(/<meta\s+[^>]*?property=["']og:title["'][^>]*?\/?>/gi, '');
+    html = html.replace(/<meta\s+[^>]*?property=["']og:description["'][^>]*?\/?>/gi, '');
+    html = html.replace(/<meta\s+[^>]*?name=["']twitter:title["'][^>]*?\/?>/gi, '');
+    html = html.replace(/<meta\s+[^>]*?name=["']twitter:description["'][^>]*?\/?>/gi, '');
     html = html.replace(/<meta\s+[^>]*?property=["']og:image["'][^>]*?\/?>/gi, '');
     html = html.replace(/<meta\s+[^>]*?name=["']twitter:image["'][^>]*?\/?>/gi, '');
     html = html.replace(/<meta\s+[^>]*?property=["']og:url["'][^>]*?\/?>/gi, '');
     html = html.replace(/<meta\s+[^>]*?name=["']twitter:url["'][^>]*?\/?>/gi, '');
 
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "DKUT Hostels",
+      "url": `${currentDomain}/`,
+      "description": "Find verified, affordable student hostels near Dedan Kimathi University of Technology (DeKUT) in Nyeri, Kenya.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": `${currentDomain}/?q={search_term_string}`,
+        "query-input": "required name=search_term_string"
+      }
+    };
+    const jsonLdScript = `\n    <script type="application/ld+json">\n    ${JSON.stringify(jsonLd, null, 2)}\n    </script>\n`;
+
     const injectMeta = `
+    <title>${dynamicOgTitle}</title>
+    <meta name="description" content="${dynamicOgDesc}" />
     <meta property="og:url" content="${dynamicOgUrl}" />
+    <meta property="og:title" content="${dynamicOgTitle}" />
+    <meta property="og:description" content="${dynamicOgDesc}" />
     <meta property="og:image" content="${dynamicOgImage}" />
     <meta name="twitter:url" content="${dynamicOgUrl}" />
-    <meta name="twitter:image" content="${dynamicOgImage}" />
-    `;
+    <meta name="twitter:title" content="${dynamicOgTitle}" />
+    <meta name="twitter:description" content="${dynamicOgDesc}" />
+    <meta name="twitter:image" content="${dynamicOgImage}" />${jsonLdScript}`;
 
     // Inject dynamic meta tags at the start of the head element
     html = html.replace('<head>', `<head>${injectMeta}`);

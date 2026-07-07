@@ -21,36 +21,50 @@
 
   function renderContact(hostel) {
     const container = document.getElementById('contact-buttons');
-    const raw = hostel.contact || '';
-    if (!raw.trim()) {
-      container.innerHTML = '<p class="quickstart-note">No contact details available.</p>';
-      return;
-    }
-    container.innerHTML = raw.split(',').map(p => p.trim()).filter(Boolean).map(phone => {
-      const norm = normalizePhone(phone);
-      return `
-        <a class="enquire-btn" href="https://wa.me/${esc(norm)}" target="_blank" rel="noopener" style="width:100%;">
-          <em>WhatsApp ${esc(phone)}</em><i>&#10095;&#10095;</i>
-        </a>
-        <a class="macos-download-btn" href="tel:+${esc(norm)}" style="font-size:0.85rem;padding:10px 18px;justify-content:center;">Call ${esc(phone)}</a>
-      `;
-    }).join('');
+    const msg = encodeURIComponent(`Hello, I would like to request the caretaker's number for "${hostel.name}" (Hostel ID: ${hostel.id}).`);
+    container.innerHTML = `
+      <a class="enquire-btn" href="https://wa.me/254769486775?text=${msg}" target="_blank" rel="noopener" style="width:100%;">
+        <em>Request Caretaker Number</em><i>&#10095;&#10095;</i>
+      </a>
+      <span style="font-size:0.8rem; opacity:0.7; text-align:center; display:block; margin-top:4px;">For privacy, contact details are provided upon request.</span>
+    `;
   }
 
   function setupLightbox() {
     const lb = document.getElementById('lightbox');
-    const img = document.getElementById('lightbox-img');
-    document.getElementById('lightbox-close')?.addEventListener('click', () => lb.classList.remove('open'));
-    lb?.addEventListener('click', e => { if (e.target === lb) lb.classList.remove('open'); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
+    const canvas = document.getElementById('lightbox-canvas');
+    
+    const closeLb = () => {
+      if (lb) {
+        lb.classList.remove('open');
+        lb.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    };
+
+    document.getElementById('lightbox-close')?.addEventListener('click', closeLb);
+    lb?.addEventListener('click', e => { if (e.target === lb) closeLb(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+    
     document.getElementById('gallery-grid')?.addEventListener('click', e => {
       const target = e.target;
       if (target.tagName === 'IMG' || target.tagName === 'CANVAS') {
-        const actualImg = target.tagName === 'CANVAS' ? target.previousElementSibling : target;
-        if (actualImg && actualImg.tagName === 'IMG') {
-          img.src = actualImg.src;
-          img.alt = actualImg.alt;
+        const src = target.getAttribute('data-secure-src') || target.src || target._src;
+        if (src && canvas) {
           lb.classList.add('open');
+          lb.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+          if (window.DRMProtector) {
+            window.DRMProtector.loadSecureImage(canvas, src);
+          } else {
+            const img = new Image();
+            img.onload = () => {
+              canvas.width = img.naturalWidth;
+              canvas.height = img.naturalHeight;
+              canvas.getContext('2d').drawImage(img, 0, 0);
+            };
+            img.src = src;
+          }
         }
       }
     });
@@ -88,7 +102,35 @@
 
     const imgs = (Array.isArray(hostel.images) ? hostel.images : [hostel.image]).filter(Boolean);
     const hero = document.getElementById('hero-img');
-    if (hero && imgs[0]) { hero.src = imgs[0]; hero.alt = hostel.name; }
+    if (hero && imgs[0]) { 
+      hero.src = imgs[0]; 
+      hero.alt = hostel.name;
+      hero.style.cursor = 'pointer';
+      hero.addEventListener('click', () => {
+        if (typeof openLightbox === 'function') {
+          openLightbox(imgs[0]);
+        } else {
+          const lb = document.getElementById('lightbox');
+          const canvas = document.getElementById('lightbox-canvas');
+          if (lb && canvas) {
+            lb.classList.add('open');
+            lb.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            if (window.DRMProtector) {
+              window.DRMProtector.loadSecureImage(canvas, imgs[0]);
+            } else {
+              const img = new Image();
+              img.onload = () => {
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                canvas.getContext('2d').drawImage(img, 0, 0);
+              };
+              img.src = imgs[0];
+            }
+          }
+        }
+      });
+    }
 
     document.getElementById('hostel-name').textContent = hostel.name || 'Hostel';
     const locEl = document.getElementById('hostel-location');

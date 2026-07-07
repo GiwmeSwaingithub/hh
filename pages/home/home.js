@@ -14,7 +14,17 @@
   let page = 1;
   const PAGE_SIZE = 20;
   const MOCK_PAGE_SIZE = 50;
-  let filters = { query: '', location: 'all', gender: 'all', sort: 'id-asc', accessibility: 'all' };
+  let filters = {
+    query: '',
+    location: 'all',
+    gender: 'all',
+    sort: 'id-asc',
+    accessibility: 'all',
+    minPrice: '',
+    maxPrice: '',
+    roomType: 'all',
+    rentIncludes: []
+  };
   let started = false;
 
   const LOCATION_INFO = {
@@ -287,6 +297,10 @@
     filters.location = 'all';
     filters.gender = 'all';
     filters.accessibility = 'all';
+    filters.minPrice = '';
+    filters.maxPrice = '';
+    filters.roomType = 'all';
+    filters.rentIncludes = [];
     
     // Sync UI inputs if they exist
     const searchInput = document.getElementById('search-input');
@@ -295,6 +309,22 @@
     if (genderSelect) genderSelect.value = 'all';
     const accessSelect = document.getElementById('filter-accessibility');
     if (accessSelect) accessSelect.value = 'all';
+    
+    const minPriceEl = document.getElementById('filter-min-price');
+    if (minPriceEl) minPriceEl.value = '';
+    const maxPriceEl = document.getElementById('filter-max-price');
+    if (maxPriceEl) maxPriceEl.value = '';
+    const roomTypeEl = document.getElementById('filter-room-type');
+    if (roomTypeEl) roomTypeEl.value = 'all';
+
+    document.querySelectorAll('.filter-amenity-checkbox').forEach(cb => {
+      cb.checked = false;
+    });
+
+    // Clear highlights from location chips
+    document.querySelectorAll('.location-chip').forEach(c => {
+      c.classList.remove('active');
+    });
 
     // Clear highlights from carousel
     const carouselCards = document.querySelectorAll('#locations-carousel-track .location-card-wrapper');
@@ -308,7 +338,18 @@
   }
 
   function applyAndRender() {
-    filtered = DKUT.app.filterHostels(allHostels, filters.query, filters.location, filters.gender, filters.sort, filters.accessibility);
+    filtered = DKUT.app.filterHostels(
+      allHostels,
+      filters.query,
+      filters.location,
+      filters.gender,
+      filters.sort,
+      filters.accessibility,
+      filters.minPrice,
+      filters.maxPrice,
+      filters.roomType,
+      filters.rentIncludes
+    );
     const countEl = document.getElementById('results-count');
     const empty = document.getElementById('hostel-empty');
     const list = document.getElementById('hostel-list');
@@ -472,6 +513,21 @@
         filters.gender = genderEl ? genderEl.value : 'all';
         filters.sort = sortEl ? sortEl.value : 'id-asc';
         filters.accessibility = accessibilityEl ? accessibilityEl.value : 'all';
+
+        const minPriceEl = document.getElementById('filter-min-price');
+        const maxPriceEl = document.getElementById('filter-max-price');
+        const roomTypeEl = document.getElementById('filter-room-type');
+        
+        filters.minPrice = minPriceEl ? minPriceEl.value : '';
+        filters.maxPrice = maxPriceEl ? maxPriceEl.value : '';
+        filters.roomType = roomTypeEl ? roomTypeEl.value : 'all';
+        
+        const includes = [];
+        if (document.getElementById('filter-inc-water')?.checked) includes.push('water');
+        if (document.getElementById('filter-inc-electricity')?.checked) includes.push('electricity');
+        if (document.getElementById('filter-inc-wifi')?.checked) includes.push('wifi');
+        filters.rentIncludes = includes;
+
         page = 1;
         applyAndRender();
         document.getElementById('filter-panel')?.setAttribute('hidden', '');
@@ -557,6 +613,18 @@
       if (filters.location && filters.location !== 'all') url.searchParams.set('loc', filters.location);
       else url.searchParams.delete('loc');
 
+      if (filters.minPrice) url.searchParams.set('minPrice', filters.minPrice);
+      else url.searchParams.delete('minPrice');
+
+      if (filters.maxPrice) url.searchParams.set('maxPrice', filters.maxPrice);
+      else url.searchParams.delete('maxPrice');
+
+      if (filters.roomType && filters.roomType !== 'all') url.searchParams.set('roomType', filters.roomType);
+      else url.searchParams.delete('roomType');
+
+      if (filters.rentIncludes && filters.rentIncludes.length > 0) url.searchParams.set('rentIncludes', filters.rentIncludes.join(','));
+      else url.searchParams.delete('rentIncludes');
+
       history.replaceState(null, '', url.toString());
     } catch (_) {}
   }
@@ -581,6 +649,25 @@
             
             const accessibilityEl = document.getElementById('filter-accessibility');
             if (accessibilityEl) accessibilityEl.value = filters.accessibility || 'all';
+
+            const minPriceEl = document.getElementById('filter-min-price');
+            if (minPriceEl) minPriceEl.value = filters.minPrice || '';
+
+            const maxPriceEl = document.getElementById('filter-max-price');
+            if (maxPriceEl) maxPriceEl.value = filters.maxPrice || '';
+
+            const roomTypeEl = document.getElementById('filter-room-type');
+            if (roomTypeEl) roomTypeEl.value = filters.roomType || 'all';
+
+            if (document.getElementById('filter-inc-water')) {
+              document.getElementById('filter-inc-water').checked = (filters.rentIncludes || []).includes('water');
+            }
+            if (document.getElementById('filter-inc-electricity')) {
+              document.getElementById('filter-inc-electricity').checked = (filters.rentIncludes || []).includes('electricity');
+            }
+            if (document.getElementById('filter-inc-wifi')) {
+              document.getElementById('filter-inc-wifi').checked = (filters.rentIncludes || []).includes('wifi');
+            }
           }
           if (state.page) page = state.page;
           if (state.scroll != null) window.__pendingScroll = state.scroll;
@@ -595,6 +682,33 @@
       if (input) input.value = filters.query;
     }
     if (params.get('loc')) filters.location = params.get('loc');
+    if (params.get('minPrice')) {
+      filters.minPrice = params.get('minPrice');
+      const el = document.getElementById('filter-min-price');
+      if (el) el.value = filters.minPrice;
+    }
+    if (params.get('maxPrice')) {
+      filters.maxPrice = params.get('maxPrice');
+      const el = document.getElementById('filter-max-price');
+      if (el) el.value = filters.maxPrice;
+    }
+    if (params.get('roomType')) {
+      filters.roomType = params.get('roomType');
+      const el = document.getElementById('filter-room-type');
+      if (el) el.value = filters.roomType;
+    }
+    if (params.get('rentIncludes')) {
+      filters.rentIncludes = params.get('rentIncludes').split(',').filter(Boolean);
+      if (document.getElementById('filter-inc-water')) {
+        document.getElementById('filter-inc-water').checked = filters.rentIncludes.includes('water');
+      }
+      if (document.getElementById('filter-inc-electricity')) {
+        document.getElementById('filter-inc-electricity').checked = filters.rentIncludes.includes('electricity');
+      }
+      if (document.getElementById('filter-inc-wifi')) {
+        document.getElementById('filter-inc-wifi').checked = filters.rentIncludes.includes('wifi');
+      }
+    }
   }
 
   function bindGridLayout() {

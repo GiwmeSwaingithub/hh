@@ -17,6 +17,8 @@
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google-site-verification" content="5Ftu-EYfFIgXItlAGIKFSXIbau6nYeo3B-pEikSDi2s" />
+  <meta name="msvalidate.01" content="B52FFBBDB0E42736E1F6D0AB0766338C" />
   <title>DKUT Hostels — Student Housing Near DeKUT</title>
   <meta name="description" content="Find verified, affordable student hostels near Dedan Kimathi University of Technology in Nyeri, Kenya." />
   <link rel="icon" type="image/png" href="https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png" />
@@ -63,7 +65,7 @@
       });
     }
   </script>
-  <script src="../../shared/utils/security.js"></script>
+  <script src="../../shared/utils/security.js?v=7"></script>
 </head>
 <body>
   <!-- Static Layout Elements -->
@@ -176,6 +178,36 @@
           <option value="price-desc">Price: High to Low</option>
           <option value="name-asc">Name A–Z</option>
         </select>
+      <div class="filter-row">
+        <label for="filter-room-type">Room Type</label>
+        <select id="filter-room-type" class="glass-select">
+          <option value="all">Any Type</option>
+          <option value="single">Single Room</option>
+          <option value="sharing">Sharing Room</option>
+          <option value="bedsitter">Bedsitter</option>
+          <option value="one-bedroom">1 Bedroom</option>
+        </select>
+      </div>
+      <div class="filter-row">
+        <label>Price Range (per Sem)</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="number" id="filter-min-price" placeholder="Min KES" class="glass-select" style="width: 50%; padding: 10px; border-radius: 8px; font-size: 0.9rem;" />
+          <input type="number" id="filter-max-price" placeholder="Max KES" class="glass-select" style="width: 50%; padding: 10px; border-radius: 8px; font-size: 0.9rem;" />
+        </div>
+      </div>
+      <div class="filter-row">
+        <label>Amenities Included in Rent</label>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: normal; color: inherit;">
+            <input type="checkbox" id="filter-inc-water" class="filter-amenity-checkbox" style="accent-color: var(--accent); cursor: pointer;" /> Water Included
+          </label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: normal; color: inherit;">
+            <input type="checkbox" id="filter-inc-electricity" class="filter-amenity-checkbox" style="accent-color: var(--accent); cursor: pointer;" /> Electricity Included
+          </label>
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; font-weight: normal; color: inherit;">
+            <input type="checkbox" id="filter-inc-wifi" class="filter-amenity-checkbox" style="accent-color: var(--accent); cursor: pointer;" /> WiFi Included
+          </label>
+        </div>
       </div>
       <button type="button" class="macos-download-btn" id="apply-filters-btn" style="margin-top:12px;width:100%;justify-content:center;">Apply Filters</button>
     </div>

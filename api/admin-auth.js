@@ -149,14 +149,14 @@ async function saveAdminDoc(uid, idToken, mfaEnabled, totpSecret) {
 module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   // Parse action from query
   const { action } = req.query;
 
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     return res.status(204).end();
   }
 
@@ -209,27 +209,33 @@ module.exports = async (req, res) => {
     const uid = user.localId;
     const email = user.email;
 
-    // Check if user is in authorized ADMIN_UIDS list (Temporarily bypassed for debugging!)
-    /*
+    // Check if user is in authorized ADMIN_UIDS list
     if (ADMIN_UIDS.length > 0 && !ADMIN_UIDS.includes(uid)) {
       return res.status(403).json({ error: 'Access denied: not an authorized admin UID' });
     }
-    */
 
     // Retrieve Admin Doc from Firestore
     const adminDoc = await getAdminDoc(uid, idToken);
 
-    // 3. Action: check-mfa (Bypassed: directly log in user and set session token)
+    // 3. Action: check-mfa
     if (action === 'check-mfa') {
-      const sessionToken = signToken({ uid, exp: Date.now() + 4 * 60 * 60 * 1000 }); // 4 hours
-      res.setHeader('Set-Cookie', `dkut_admin_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=14400`);
-      return res.status(200).json({
-        uid,
-        email,
-        mfaEnabled: false,
-        token: sessionToken,
-        bypassed: true
-      });
+      const isMfa = adminDoc.mfaEnabled === true;
+      if (isMfa) {
+        return res.status(200).json({
+          uid,
+          email,
+          mfaEnabled: true
+        });
+      } else {
+        const sessionToken = signToken({ uid, exp: Date.now() + 4 * 60 * 60 * 1000 }); // 4 hours
+        res.setHeader('Set-Cookie', `dkut_admin_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=14400`);
+        return res.status(200).json({
+          uid,
+          email,
+          mfaEnabled: false,
+          token: sessionToken
+        });
+      }
     }
 
     // 4. Action: setup-mfa (Get secret & QR Code URL)
@@ -285,6 +291,18 @@ module.exports = async (req, res) => {
       const sessionToken = signToken({ uid, exp: Date.now() + 4 * 60 * 60 * 1000 }); // 4 hours
       res.setHeader('Set-Cookie', `dkut_admin_session=${sessionToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=14400`);
       return res.status(200).json({ success: true, token: sessionToken });
+    }
+
+    // 7. Action: disable-mfa
+    if (action === 'disable-mfa') {
+      if (!adminDoc.mfaEnabled) {
+        return res.status(400).json({ error: 'MFA is not enabled for this account' });
+      }
+      const saved = await saveAdminDoc(uid, idToken, false, '');
+      if (!saved) {
+        return res.status(500).json({ error: 'Failed to disable MFA' });
+      }
+      return res.status(200).json({ success: true, message: 'MFA disabled' });
     }
 
     return res.status(400).json({ error: 'Invalid action parameter' });

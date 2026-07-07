@@ -1446,6 +1446,7 @@
 .form-status { margin-top: 12px; font-size: 0.85rem; padding: 10px; border-radius: 8px; }
 .form-status.error { background: rgba(239,68,68,0.15); color: #fca5a5; }
 .form-status.success { background: rgba(11,218,131,0.15); color: #6ee7b7; }
+.form-status.info { background: rgba(59,130,246,0.12); color: #93c5fd; }
 
 .type-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
 .type-card {

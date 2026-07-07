@@ -3,6 +3,26 @@
    XSS protection, rate limiting, input validation, sanitization
    ============================================================ */
 
+// Force clear old service worker cache if v7 is not active
+if (!sessionStorage.getItem('dkut_sw_cleared_v7')) {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for (let registration of registrations) {
+        registration.unregister();
+      }
+    });
+  }
+  if ('caches' in window) {
+    caches.keys().then(function(keys) {
+      keys.forEach(key => caches.delete(key));
+    });
+  }
+  sessionStorage.setItem('dkut_sw_cleared_v7', 'true');
+  setTimeout(() => {
+    window.location.reload();
+  }, 150);
+}
+
 (function (global) {
   'use strict';
 
@@ -276,45 +296,34 @@
       return 'hostel.dekut.site';
     }
 
-    // Draw prominent repeating diagonal watermarks with hostel.dekut.site branding
+    // Draw faint repeating diagonal watermarks over and over the image
     function drawWatermark(canvas, ctx) {
       const text = getWatermarkText();
       ctx.save();
 
-      const shortSide = Math.min(canvas.width, canvas.height);
-      const fontSize = Math.max(13, Math.floor(shortSide * 0.055));
-
-      // --- Pass 1: dark shadow layer for contrast on bright images ---
+      const width = canvas.width;
+      const height = canvas.height;
+      const shortSide = Math.min(width, height);
+      
+      // Determine font size based on short side of the image
+      const fontSize = Math.max(10, Math.floor(shortSide * 0.042));
       ctx.font = `bold ${fontSize}px 'Arial', sans-serif`;
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.0)';
-      ctx.lineWidth = 0;
+      
+      // Faint white text with faint green glow/accent outline
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.strokeStyle = 'rgba(11, 218, 131, 0.07)';
+      ctx.lineWidth = 1;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.shadowColor = 'transparent';
-      ctx.shadowBlur = 0;
 
+      // Rotate to draw diagonally
       const angle = -28 * Math.PI / 180;
       ctx.rotate(angle);
 
-      const stepX = fontSize * 10;
-      const stepY = fontSize * 4.5;
-      const limit = Math.max(canvas.width, canvas.height) * 2;
-
-      for (let x = -limit; x < limit; x += stepX) {
-        for (let y = -limit; y < limit; y += stepY) {
-          ctx.fillText(text, x + 1, y + 1);
-        }
-      }
-
-      // --- Pass 2: bright white text layer ---
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.52)';
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-      ctx.lineWidth = 0.5;
-      ctx.shadowColor = 'rgba(0,0,0,0.5)';
-      ctx.shadowBlur = 4;
-      ctx.shadowOffsetX = 1;
-      ctx.shadowOffsetY = 1;
+      // Determine repeating steps
+      const stepX = fontSize * 7.5;
+      const stepY = fontSize * 3.8;
+      const limit = Math.max(width, height) * 2;
 
       for (let x = -limit; x < limit; x += stepX) {
         for (let y = -limit; y < limit; y += stepY) {
@@ -324,22 +333,11 @@
       }
 
       ctx.restore();
-
-      // --- Persistent corner stamp ---
-      ctx.save();
-      const stampFontSize = Math.max(10, Math.floor(shortSide * 0.038));
-      ctx.font = `bold ${stampFontSize}px 'Arial', sans-serif`;
-      ctx.fillStyle = 'rgba(0,0,0,0.55)';
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'bottom';
-      ctx.fillText(text, canvas.width - 6, canvas.height - 4);
-      ctx.fillStyle = 'rgba(255,255,255,0.75)';
-      ctx.fillText(text, canvas.width - 7, canvas.height - 5);
-      ctx.restore();
     }
 
     // Main Image Decryption & Rendering pipeline
     async function loadSecureImage(canvas, src, passphrase = PASSPHRASE) {
+      canvas._src = src; // Store original source for lightbox retrieval
       try {
         const res = await fetch(src);
         if (!res.ok) throw new Error('Fetch failed');
@@ -357,6 +355,7 @@
         
         return new Promise((resolve, reject) => {
           const img = new Image();
+          img.crossOrigin = 'anonymous';
           img.onload = function() {
             canvas.width = img.naturalWidth;
             canvas.height = img.naturalHeight;
@@ -463,49 +462,40 @@
     }
 
     function protectSingleImage(img) {
-      if (img.classList.contains('secure-shielded')) return;
+      if (img.classList.contains('secure-shielded') || img.classList.contains('secure-canvas')) return;
       img.classList.add('secure-shielded');
 
-      // Block drag/clicks on the image itself
-      img.setAttribute('draggable', 'false');
-      img.addEventListener('dragstart', e => e.preventDefault(), true);
-      img.addEventListener('contextmenu', e => e.preventDefault(), true);
+      // Skip logos, icons, and small layout details
+      if (img.classList.contains('logo-img') || img.classList.contains('icon-img')) return;
+      if (img.naturalWidth > 0 && img.naturalWidth < 40) return;
+      if (img.width > 0 && img.width < 40) return;
+
+      const src = img.src || img.getAttribute('src') || '';
+      if (!src || src.includes('data:image/svg+xml') || src.endsWith('.svg') || src.includes('favicon')) return;
 
       const parent = img.parentElement;
       if (!parent) return;
 
-      // Ensure the parent is positioned relatively or absolutely
-      const style = window.getComputedStyle(parent);
-      if (style.position === 'static') {
-        parent.style.position = 'relative';
-      }
+      // Create a secure canvas element to replace the img
+      const canvas = document.createElement('canvas');
+      canvas.className = img.className + ' secure-canvas';
+      
+      // Preserve styles, classes, and identifier
+      if (img.id) canvas.id = img.id;
+      canvas.setAttribute('style', img.getAttribute('style') || '');
+      canvas.style.userSelect = 'none';
+      canvas.style.webkitUserSelect = 'none';
 
-      // Check if a shield already exists in this parent
-      let shield = parent.querySelector(':scope > .protection-shield');
-      if (!shield) {
-        shield = document.createElement('div');
-        shield.className = 'protection-shield';
-        shield.setAttribute('oncontextmenu', 'return false;');
-        
-        shield.addEventListener('contextmenu', e => {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }, true);
-        shield.addEventListener('dragstart', e => {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }, true);
-        shield.addEventListener('selectstart', e => {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }, true);
+      // Copy width, height, and accessibility label
+      if (img.alt) canvas.setAttribute('aria-label', img.alt);
+      if (img.hasAttribute('width')) canvas.setAttribute('width', img.getAttribute('width'));
+      if (img.hasAttribute('height')) canvas.setAttribute('height', img.getAttribute('height'));
 
-        // Insert shield directly after the image
-        img.parentNode.insertBefore(shield, img.nextSibling);
-      }
+      // Swap the elements in the DOM
+      parent.replaceChild(canvas, img);
+
+      // Load image on the secure canvas DRM pipeline
+      loadSecureImage(canvas, src);
     }
 
     function deployProtectionShields() {
@@ -541,7 +531,7 @@
       const style = document.createElement('style');
       style.id = 'sec-styles';
       style.innerHTML = `
-        .card-hero-img, .location-photo-img, .service-card-img, #lightbox-img, .secure-img, .secure-canvas, .secure-canvas-sync {
+        .card-hero-img, .location-photo-img, .service-card-img, #lightbox-img, .secure-img, .secure-canvas-sync {
           -webkit-touch-callout: none !important;
           -webkit-user-select: none !important;
           -khtml-user-select: none !important;
@@ -552,6 +542,29 @@
           user-drag: none !important;
           pointer-events: none !important;
         }
+        .secure-canvas {
+          -webkit-touch-callout: none !important;
+          -webkit-user-select: none !important;
+          -khtml-user-select: none !important;
+          -moz-user-select: none !important;
+          -ms-user-select: none !important;
+          user-select: none !important;
+          -webkit-user-drag: none !important;
+          user-drag: none !important;
+        }
+        .gallery-grid canvas {
+          width: 100% !important;
+          aspect-ratio: 4/3 !important;
+          object-fit: contain !important;
+          border-radius: 10px !important;
+          cursor: pointer !important;
+          background: #1a1a2e !important;
+          transition: transform 0.2s !important;
+          pointer-events: auto !important;
+        }
+        .gallery-grid canvas:hover {
+          transform: scale(1.03) !important;
+        }
         .protection-shield {
           position: absolute !important;
           top: 0 !important;
@@ -560,8 +573,6 @@
           height: 100% !important;
           z-index: 99 !important;
           pointer-events: all !important;
-          background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='120'><text x='80' y='60' fill='rgba(255,255,255,0.22)' stroke='rgba(0,0,0,0.18)' stroke-width='0.5' font-size='13' font-family='Arial, sans-serif' font-weight='bold' text-anchor='middle' transform='rotate(-28 80 60)'>hostel.dekut.site</text></svg>") !important;
-          background-repeat: repeat !important;
           user-select: none !important;
           -webkit-user-drag: none !important;
         }
@@ -789,7 +800,7 @@
       overlay.style.display = 'flex';
       
       // Blur all protected assets
-      document.querySelectorAll('canvas.secure-canvas, canvas.secure-canvas-sync, img, .card-hero-wrap, .carousel-card, .lightbox').forEach(el => {
+      document.querySelectorAll('canvas.secure-canvas, canvas.secure-canvas-sync, img, .card-hero-wrap, .carousel-card').forEach(el => {
         el.classList.add('screenshot-blurred');
       });
       
@@ -797,7 +808,7 @@
         overlay.style.display = 'none';
         blackoutActive = false;
         if (document.hasFocus()) {
-          document.querySelectorAll('canvas.secure-canvas, canvas.secure-canvas-sync, img, .card-hero-wrap, .carousel-card, .lightbox').forEach(el => {
+          document.querySelectorAll('canvas.secure-canvas, canvas.secure-canvas-sync, img, .card-hero-wrap, .carousel-card').forEach(el => {
             el.classList.remove('screenshot-blurred');
           });
         }
@@ -828,36 +839,7 @@
       `;
       (document.head || document.documentElement).appendChild(style);
 
-      const blurAssets = () => {
-        document.querySelectorAll('canvas.secure-canvas, canvas.secure-canvas-sync, img, .card-hero-wrap, .carousel-card, .lightbox').forEach(el => {
-          el.classList.add('screenshot-blurred');
-        });
-      };
-
-      const unblurAssets = () => {
-        if (!blackoutActive) {
-          document.querySelectorAll('canvas.secure-canvas, canvas.secure-canvas-sync, img, .card-hero-wrap, .carousel-card, .lightbox').forEach(el => {
-            el.classList.remove('screenshot-blurred');
-          });
-        }
-      };
-
-      window.addEventListener('blur', blurAssets);
-      window.addEventListener('focus', unblurAssets);
-
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-          blurAssets();
-        } else {
-          unblurAssets();
-        }
-      });
-
-      // Mouse leave detection to protect assets when cursor is outside viewport (desktop only)
-      if (window.matchMedia("(hover: hover)").matches) {
-        document.addEventListener('mouseleave', blurAssets);
-        document.addEventListener('mouseenter', unblurAssets);
-      }
+      // No aggressive background/focus blurring listeners to ensure pristine viewing on mobile/dev panels
     }
 
     function setupAuthListener() {

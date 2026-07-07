@@ -5,14 +5,15 @@
     { "source": "/pages/:path*", "destination": "/:path*", "permanent": true }
   ],
   "rewrites": [
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
     { "source": "/api/web/uploadImage", "destination": "/api/uploadImage" },
     { "source": "/api/web/sendMsg", "destination": "/api/sendMsg" },
     { "source": "/api/web/getWall", "destination": "/api/getWall" },
     { "source": "/", "destination": "/api/home" },
     { "source": "/home", "destination": "/api/home" },
     { "source": "/home/", "destination": "/api/home" },
-    { "source": "/:path(home|hostel-details|locations|scam-reports|report-issue|login|signup|legal|services|demo).js", "destination": "/pages/:path/:path.js" },
-    { "source": "/:dir(home|hostel-details|locations|scam-reports|report-issue|login|signup|legal|services|demo)/:file.js", "destination": "/pages/:dir/:file.js" },
+    { "source": "/:path(home|hostel-details|locations|scam-reports|report-issue|login|signup|legal|services|demo|olpot).js", "destination": "/pages/:path/:path.js" },
+    { "source": "/:dir(home|hostel-details|locations|scam-reports|report-issue|login|signup|legal|services|demo|olpot)/:file.js", "destination": "/pages/:dir/:file.js" },
     { "source": "/login", "destination": "/pages/login" },
     { "source": "/login/", "destination": "/pages/login" },
     { "source": "/signup", "destination": "/pages/signup" },

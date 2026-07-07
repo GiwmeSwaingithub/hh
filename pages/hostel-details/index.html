@@ -791,7 +791,7 @@
       });
     }
   </script>
-  <script src="../../shared/utils/security.js"></script>
+  <script src="../../shared/utils/security.js?v=7"></script>
 </head>
     <!-- Static Layout Elements -->
     <div class="bg-layer" aria-hidden="true"></div>
@@ -957,7 +957,7 @@
             <div class="detail-section">
                 <h3>Location</h3>
                 <p id="hostel-coords" class="quickstart-note"></p>
-                <div class="map-embed-container" style="margin-top: 15px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); aspect-ratio: 16/9; width: 100%;">
+                <div class="map-embed-container" style="margin-top: 15px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); aspect-ratio: 16/9; width: 100%; max-width: 720px;">
                     <iframe id="map-iframe" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                 </div>
                 <a id="map-link" class="macos-download-btn" target="_blank" rel="noopener" style="display:inline-flex;margin-top:12px;font-size:0.85rem;padding:10px 20px;">Open in Google Maps</a>
@@ -988,7 +988,7 @@
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
         <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
-        <img id="lightbox-img" alt="" />
+        <canvas id="lightbox-canvas" class="secure-canvas" style="max-width: 90vw; max-height: 85vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); display: block; margin: auto;"></canvas>
     </div>
 
     <!-- Bottom bar -->
@@ -1007,7 +1007,7 @@
     <script src="../../shared/js/firebase-init.js" defer></script>
     <script src="../../shared/js/auth-state.js" defer></script>
     <script src="../../shared/js/layout.js" defer></script>
-    <script src="./hostel-details.js" defer></script>
+    <script src="./hostel-details.js?v=7" defer></script>
 
     <!-- ========== 3D CAROUSEL SCRIPT (stable, debounced, correct positions) ========== -->
     <script>
@@ -1021,7 +1021,7 @@
             const arrowRight = document.getElementById('carousel-arrow-right');
             const galleryGrid = document.getElementById('gallery-grid');
             const lightbox = document.getElementById('lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxCanvas = document.getElementById('lightbox-canvas');
             const lightboxClose = document.getElementById('lightbox-close');
             const counterCurrent = document.getElementById('carousel-current-num');
             const counterTotal = document.getElementById('carousel-total-num');
@@ -1215,20 +1215,33 @@
                         }
                     } else {
                         card.classList.add('image-loading');
-                        const img = document.createElement('img');
-                        img.src = url;
-                        img.alt = 'Hostel photo ' + (i + 1);
-                        img.loading = 'lazy';
-                        img.addEventListener('load', () => {
-                            card.classList.remove('image-loading');
-                        });
-                        img.addEventListener('error', () => {
-                            card.classList.remove('image-loading');
-                        });
-                        if (img.complete) {
-                            card.classList.remove('image-loading');
+                        const canvas = document.createElement('canvas');
+                        canvas.className = 'secure-canvas';
+                        canvas.setAttribute('role', 'img');
+                        canvas.setAttribute('aria-label', 'Hostel photo ' + (i + 1));
+                        
+                        if (window.DRMProtector) {
+                            window.DRMProtector.loadSecureImage(canvas, url).then(() => {
+                                card.classList.remove('image-loading');
+                            }).catch(() => {
+                                card.classList.remove('image-loading');
+                            });
+                        } else {
+                            // Fallback if DRMProtector is not loaded yet
+                            const img = new Image();
+                            img.onload = () => {
+                                canvas.width = img.naturalWidth;
+                                canvas.height = img.naturalHeight;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0);
+                                card.classList.remove('image-loading');
+                            };
+                            img.onerror = () => {
+                                card.classList.remove('image-loading');
+                            };
+                            img.src = url;
                         }
-                        card.appendChild(img);
+                        card.appendChild(canvas);
                     }
 
                     card.addEventListener('click', function(e) {
@@ -1341,15 +1354,28 @@
              * Lightbox handlers.
              */
             function openLightbox(url) {
-                if (!lightbox || !lightboxImg) return;
-                lightboxImg.src = url;
+                if (!lightbox || !lightboxCanvas) return;
+                lightbox.classList.add('open');
                 lightbox.style.display = 'flex';
                 lightbox.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';
+                if (window.DRMProtector) {
+                    window.DRMProtector.loadSecureImage(lightboxCanvas, url);
+                } else {
+                    const img = new Image();
+                    img.onload = () => {
+                        lightboxCanvas.width = img.naturalWidth;
+                        lightboxCanvas.height = img.naturalHeight;
+                        const ctx = lightboxCanvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                    };
+                    img.src = url;
+                }
             }
 
             function closeLightbox() {
                 if (!lightbox) return;
+                lightbox.classList.remove('open');
                 lightbox.style.display = 'none';
                 lightbox.setAttribute('aria-hidden', 'true');
                 document.body.style.overflow = '';

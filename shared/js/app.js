@@ -260,8 +260,8 @@
     const utils = h.utilities || [];
     const imgs = h.images && h.images.length ? h.images : (h.image ? [h.image] : []);
     const thumb = imgs[0] || h.image || FALLBACK_IMG;
-    const contact = h.contact ? String(h.contact).split(',')[0].trim() : '';
-    const whatsapp = contact ? 'https://wa.me/254' + contact.replace(/^0/, '') : '';
+    const reqMsg = encodeURIComponent(`Hello, I would like to request the caretaker's number for "${h.name}" (Hostel ID: ${hostelId}).`);
+    const whatsapp = 'https://wa.me/254769486775?text=' + reqMsg;
     const detailHref = detailsUrl(hostelId);
     const desc = String(h.description || '');
     const descShort = desc.length > 120 ? desc.slice(0, 120) + '…' : desc;
@@ -334,7 +334,7 @@
     t._t = setTimeout(() => t.classList.remove('show'), dur || 3000);
   }
 
-  function filterHostels(hostels, query, location, gender, sort, accessibility) {
+  function filterHostels(hostels, query, location, gender, sort, accessibility, minPrice, maxPrice, roomType, rentIncludes) {
     let list = Array.isArray(hostels) ? [...hostels] : [];
     const q = (query || '').trim().toLowerCase();
 
@@ -383,6 +383,60 @@
           return utils.includes('special needs approved') || desc.includes('special needs');
         }
         return true;
+      });
+    }
+
+    // Price Range Filter
+    if (minPrice != null && minPrice !== '') {
+      const min = Number(minPrice);
+      list = list.filter(h => {
+        const p = h.price || 0;
+        const pa = h.priceAlone || 0;
+        return (p > 0 && p >= min) || (pa > 0 && pa >= min);
+      });
+    }
+    if (maxPrice != null && maxPrice !== '') {
+      const max = Number(maxPrice);
+      list = list.filter(h => {
+        const p = h.price || 0;
+        const pa = h.priceAlone || 0;
+        const effectivePrice = p > 0 ? (pa > 0 ? Math.min(p, pa) : p) : pa;
+        return effectivePrice > 0 && effectivePrice <= max;
+      });
+    }
+
+    // Room Type Filter
+    if (roomType && roomType !== 'all') {
+      list = list.filter(h => {
+        const rt = (h.roomType || '').toLowerCase();
+        const desc = (h.description || '').toLowerCase();
+        const name = (h.name || '').toLowerCase();
+        const hasRoomInArray = h.rooms && h.rooms.some(r => (r.name || '').toLowerCase().includes(roomType.toLowerCase()));
+        
+        if (roomType === 'bedsitter') {
+          return rt.includes('bedsitter') || desc.includes('bedsitter') || name.includes('bedsitter') || hasRoomInArray;
+        } else if (roomType === 'single') {
+          return rt.includes('single') || desc.includes('single') || name.includes('single') || hasRoomInArray;
+        } else if (roomType === 'sharing') {
+          return rt.includes('sharing') || rt.includes('shared') || desc.includes('sharing') || desc.includes('shared') || name.includes('sharing') || hasRoomInArray;
+        } else if (roomType === 'one-bedroom') {
+          return rt.includes('1 bedroom') || rt.includes('one bedroom') || desc.includes('1 bedroom') || desc.includes('one bedroom') || hasRoomInArray;
+        }
+        
+        return rt.includes(roomType.toLowerCase()) || hasRoomInArray;
+      });
+    }
+
+    // Rent Includes Utilities Filter
+    if (Array.isArray(rentIncludes) && rentIncludes.length > 0) {
+      list = list.filter(h => {
+        const utils = (h.utilities || []).map(u => u.toLowerCase());
+        return rentIncludes.every(amenity => {
+          if (amenity === 'water') return utils.includes('free water');
+          if (amenity === 'electricity') return utils.includes('free electricity');
+          if (amenity === 'wifi') return utils.includes('free wifi');
+          return false;
+        });
       });
     }
 

@@ -4,66 +4,44 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Console</title>
-  <!-- Crawler obfuscation — completely hidden from all search engines and scanners -->
+  <!-- Crawler obfuscation -->
   <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
   <meta name="googlebot" content="noindex, nofollow" />
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
   <link rel="icon" type="image/png" href="https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png" />
   <link rel="stylesheet" href="/shared/css/theme.css" />
+
+  <!-- Global Diagnostic Error Logger -->
+  <script>
+    window.onerror = function(msg, url, line, col, error) {
+      var container = document.getElementById('section-loading');
+      if (container) {
+        container.style.marginTop = '40px';
+        container.innerHTML = '<div style="color:#fca5a5;font-family:monospace;padding:24px;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);border-radius:12px;font-size:0.85rem;line-height:1.6;max-width:650px;margin:20px auto;word-break:break-all;text-align:left;box-shadow:0 8px 32px rgba(0,0,0,0.5);backdrop-filter:blur(10px);">' +
+          '<h3 style="margin:0 0 12px 0;font-size:1.05rem;color:#f87171;display:flex;align-items:center;gap:8px;">' +
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' +
+          'Console Load Failure</h3>' +
+          '<strong>Error:</strong> ' + msg + '<br>' +
+          '<strong>Source:</strong> ' + (url ? url.split('/').pop() : 'unknown') + ':' + line + ':' + col +
+          (error && error.stack ? '<br><br><strong>Stack Trace:</strong><br><pre style="margin:8px 0 0 0;white-space:pre-wrap;font-size:0.78rem;color:rgba(255,255,255,0.7);">' + error.stack + '</pre>' : '') +
+          '</div>';
+      }
+      return false;
+    };
+  </script>
+
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
   <style>
     /* ── Auth card wrappers ── */
     .auth-container { margin-top: 80px; }
-    .mfa-wrapper { max-width: 420px; margin: 80px auto; padding: 0 20px; }
-
-    /* ── QR Code ── */
-    .qr-box {
-      background: #fff;
-      border-radius: 12px;
-      padding: 14px;
-      display: flex;
-      justify-content: center;
-      margin: 18px auto;
-      max-width: 228px;
-    }
-    .qr-box img { width: 200px; height: 200px; display: block; }
-
-    .secret-key {
-      font-family: monospace;
-      background: rgba(255,255,255,0.07);
-      border: 1px dashed rgba(255,255,255,0.18);
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-      letter-spacing: 3px;
-      font-size: 1rem;
-      margin-bottom: 20px;
-      word-break: break-all;
-    }
-    .otp-input {
-      width: 100%;
-      max-width: 220px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 8px;
-      padding: 14px;
-      color: #fff;
-      font-size: 1.4rem;
-      letter-spacing: 10px;
-      text-align: center;
-      outline: none;
-      display: block;
-      margin: 0 auto 20px;
-      transition: border-color 0.25s;
-    }
-    .otp-input:focus { border-color: var(--primary-color); }
 
     /* ── Console Dashboard ── */
     .console-wrap {
       max-width: 700px;
-      margin: 60px auto;
+      margin: 60px auto 40px;
       padding: 0 20px;
     }
     .console-card {
@@ -72,6 +50,7 @@
       border-radius: 18px;
       padding: 36px;
       backdrop-filter: blur(24px);
+      margin-bottom: 20px;
     }
     .console-head {
       display: flex;
@@ -108,10 +87,7 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 24px rgba(99,102,241,0.35);
     }
-    .cache-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+    .cache-btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .cache-btn svg { animation: none; flex-shrink: 0; }
     .cache-btn.spinning svg { animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -153,8 +129,293 @@
       padding: 14px;
       text-align: center;
     }
-    .stat-chip .num { font-size: 1.6rem; font-weight: 700; color: #fff; }
+    .stat-chip .num   { font-size: 1.6rem; font-weight: 700; color: #fff; }
     .stat-chip .label { font-size: 0.72rem; color: rgba(255,255,255,0.45); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .user-info-bar {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 16px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      word-break: break-all;
+    }
+    .user-info-bar strong { color: rgba(255,255,255,0.7); }
+
+    /* ── MFA Warning Banner ── */
+    .mfa-warning-bar {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.35);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 0.82rem;
+      color: #fcd34d;
+    }
+    .mfa-warning-bar.visible { display: flex; }
+    .mfa-warning-bar span { flex: 1; }
+    .mfa-enroll-btn {
+      background: rgba(245,158,11,0.2);
+      border: 1px solid rgba(245,158,11,0.5);
+      color: #fcd34d;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .mfa-enroll-btn:hover { background: rgba(245,158,11,0.35); }
+
+    /* ── Account Settings (Always Open Header) ── */
+    .settings-header {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.9);
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .settings-panel {
+      display: block;
+    }
+
+    .settings-section {
+      padding: 22px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .settings-section:last-child { border-bottom: none; }
+
+    .settings-section h4 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: rgba(255,255,255,0.4);
+      margin: 0 0 14px;
+    }
+
+    .inline-field {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .inline-field input {
+      flex: 1;
+      min-width: 160px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      color: #fff;
+      padding: 9px 12px;
+      font-size: 0.84rem;
+    }
+    .inline-field input:focus { outline: 1px solid var(--accent,#6366f1); border-color: transparent; }
+    .inline-field input::placeholder { color: rgba(255,255,255,0.3); }
+
+    .action-btn {
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: none;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .action-btn.primary { background: linear-gradient(135deg,#3b82f6,#6366f1); color: #fff; }
+    .action-btn.primary:hover { opacity: 0.88; transform: translateY(-1px); }
+    .action-btn.danger  { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.35); color: #fca5a5; }
+    .action-btn.danger:hover  { background: rgba(239,68,68,0.25); }
+    .action-btn.success { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.35); color: #6ee7b7; }
+    .action-btn.success:hover { background: rgba(16,185,129,0.25); }
+    .action-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+    .settings-msg {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      border-radius: 6px;
+      padding: 7px 10px;
+      display: none;
+    }
+    .settings-msg.error   { background: rgba(239,68,68,0.1);  color: #fca5a5; display: block; }
+    .settings-msg.success { background: rgba(16,185,129,0.1); color: #6ee7b7; display: block; }
+    .settings-msg.info    { background: rgba(59,130,246,0.1); color: #93c5fd; display: block; }
+
+    /* ── MFA Status chip ── */
+    .mfa-status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      margin-bottom: 14px;
+    }
+    .mfa-status-chip.enabled  { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+    .mfa-status-chip.disabled { background: rgba(239,68,68,0.1);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
+
+    /* ── TOTP Setup panel ── */
+    .totp-setup-panel {
+      display: none;
+      margin-top: 16px;
+      padding: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+    }
+    .totp-setup-panel.visible { display: block; }
+    .totp-qr { display: block; margin: 12px auto; border-radius: 8px; border: 3px solid #fff; }
+    .totp-secret-label {
+      text-align: center;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 4px;
+    }
+    .totp-secret-box {
+      font-family: monospace;
+      font-size: 0.85rem;
+      letter-spacing: 3px;
+      text-align: center;
+      background: rgba(255,255,255,0.05);
+      border-radius: 6px;
+      padding: 8px;
+      color: #c4b5fd;
+      margin-bottom: 14px;
+      word-break: break-all;
+    }
+    .totp-verify-row { display: flex; gap: 10px; }
+    .totp-verify-row input {
+      flex: 1;
+      text-align: center;
+      letter-spacing: 6px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      color: #fff;
+      padding: 10px;
+    }
+
+    /* ── Login helpers ── */
+    .forgot-link {
+      display: block;
+      text-align: center;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+      margin-top: 10px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .forgot-link:hover { color: var(--primary-color,#818cf8); }
+
+    /* Loading Spinner */
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: 120px;
+      gap: 16px;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-left-color: #6366f1;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    .loading-text {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 500;
+    }
+
+    /* ── Light Theme Overrides ── */
+    [data-theme="light"] .console-card {
+      background: #ffffff !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      color: #1e1b24 !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04) !important;
+    }
+    [data-theme="light"] .console-head h2 {
+      color: #1e1b24 !important;
+    }
+    [data-theme="light"] .user-info-bar {
+      background: rgba(0, 0, 0, 0.03) !important;
+      color: #4f475e !important;
+    }
+    [data-theme="light"] .user-info-bar strong {
+      color: #1e1b24 !important;
+    }
+    [data-theme="light"] .stat-chip {
+      background: rgba(0, 0, 0, 0.02) !important;
+      border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    }
+    [data-theme="light"] .stat-chip .num {
+      color: #1e1b24 !important;
+    }
+    [data-theme="light"] .stat-chip .label {
+      color: #7a7288 !important;
+    }
+    [data-theme="light"] .settings-header {
+      background: rgba(0, 0, 0, 0.02) !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+      color: #1e1b24 !important;
+    }
+    [data-theme="light"] .settings-section {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    }
+    [data-theme="light"] .settings-section h4 {
+      color: #7a7288 !important;
+    }
+    [data-theme="light"] .inline-field input {
+      background: rgba(0, 0, 0, 0.03) !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      color: #1e1b24 !important;
+    }
+    [data-theme="light"] .inline-field input::placeholder {
+      color: rgba(0, 0, 0, 0.4) !important;
+    }
+    [data-theme="light"] .totp-secret-box {
+      background: rgba(0, 0, 0, 0.03) !important;
+      color: #6366f1 !important;
+    }
+    [data-theme="light"] .totp-verify-row input {
+      background: rgba(0, 0, 0, 0.03) !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      color: #1e1b24 !important;
+    }
+    [data-theme="light"] .logout-btn {
+      border: 1px solid rgba(0, 0, 0, 0.15) !important;
+      color: #4f475e !important;
+    }
+    [data-theme="light"] .logout-btn:hover {
+      border-color: #ef4444 !important;
+      color: #ef4444 !important;
+    }
+    [data-theme="light"] .loading-text {
+      color: #4f475e !important;
+    }
+    [data-theme="light"] .spinner {
+      border-color: rgba(0, 0, 0, 0.1) !important;
+      border-left-color: #6366f1 !important;
+    }
   </style>
 </head>
 <body>
@@ -166,8 +427,14 @@
 
   <main id="content">
 
-    <!-- ── Step 1: Password ── -->
-    <div id="section-login" class="auth-container">
+    <!-- Loading Spinner (shown initially to prevent login flicker) -->
+    <div id="section-loading" class="loading-container">
+      <div class="spinner"></div>
+      <div class="loading-text">Loading Console...</div>
+    </div>
+
+    <!-- Login Form -->
+    <div id="section-login" class="auth-container" style="display:none;">
       <form id="login-form" class="neomorphic-card">
         <a class="neomorphic-title">Console Access</a>
         <div style="display:flex; justify-content:center; margin-bottom:18px;">
@@ -186,75 +453,51 @@
           <input type="password" id="login-password" required autocomplete="current-password" />
           <span>Password</span>
         </div>
-        <button type="submit" class="enter-btn">Continue</button>
-        <div id="login-status" class="form-status" hidden style="font-size:12px;max-width:250px;text-align:center;margin-top:14px;"></div>
-        <p style="text-align:center;font-size:0.75rem;margin-top:16px;color:rgba(255,255,255,0.5);margin-bottom:0;">
-          Don't have an account? <a href="#" id="link-show-register" style="color:var(--primary-color);text-decoration:underline;">Register</a>
-        </p>
+        <button type="submit" class="enter-btn" id="btn-login-submit">Continue</button>
+        <div id="login-status" class="form-status" hidden style="font-size:12px;max-width:280px;text-align:center;margin-top:14px;"></div>
+        <a href="#" id="link-show-forgot" class="forgot-link">Forgot password?</a>
       </form>
     </div>
 
-    <!-- ── Step 1b: Register Account (Debug helper) ── -->
-    <div id="section-register" class="auth-container" style="display:none;">
-      <form id="register-form" class="neomorphic-card">
-        <a class="neomorphic-title">Console Sign Up</a>
-        <div style="display:flex; justify-content:center; margin-bottom:18px;">
-          <select id="theme-toggle-select-reg" class="glass-select theme-select" aria-label="Toggle Theme" style="max-width:140px; padding:6px 10px; font-size:0.8rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);">
-            <option value="system">System Theme</option>
-            <option value="light">Light Theme</option>
-            <option value="dark">Dark Theme</option>
-            <option value="high-contrast">Contrast Theme</option>
-          </select>
-        </div>
+    <!-- Forgot Password Form -->
+    <div id="section-forgot" class="auth-container" style="display:none;">
+      <form id="forgot-form" class="neomorphic-card">
+        <a class="neomorphic-title">Reset Password</a>
+        <p style="text-align:center;font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:18px;">Enter your email and we will send a reset link.</p>
         <div class="inputBox1">
-          <input type="email" id="register-email" required autocomplete="username" />
+          <input type="email" id="forgot-email" required autocomplete="email" />
           <span class="user">Email</span>
         </div>
-        <div class="inputBox">
-          <input type="password" id="register-password" required autocomplete="new-password" />
-          <span>Password</span>
-        </div>
-        <button type="submit" class="enter-btn">Register & Log In</button>
-        <div id="register-status" class="form-status" hidden style="font-size:12px;max-width:250px;text-align:center;margin-top:14px;"></div>
+        <button type="submit" class="enter-btn" id="btn-forgot-submit">Send Reset Link</button>
+        <div id="forgot-status" class="form-status" hidden style="font-size:12px;max-width:280px;text-align:center;margin-top:14px;"></div>
         <p style="text-align:center;font-size:0.75rem;margin-top:16px;color:rgba(255,255,255,0.5);margin-bottom:0;">
-          Already have an account? <a href="#" id="link-show-login" style="color:var(--primary-color);text-decoration:underline;">Sign In</a>
+          <a href="#" id="link-back-login" style="color:var(--primary-color);text-decoration:underline;">Back to Sign In</a>
         </p>
       </form>
     </div>
 
-    <!-- ── Step 2: First-time MFA Setup ── -->
-    <div id="section-mfa-setup" class="mfa-wrapper" style="display:none;">
-      <div class="neomorphic-card" style="max-width:400px;padding:32px;">
-        <h2 style="text-align:center;font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:10px;">Enable 2FA</h2>
-        <p style="font-size:0.82rem;color:rgba(255,255,255,0.6);text-align:center;line-height:1.5;margin-bottom:16px;">
-          Scan this QR code with Google Authenticator, Duo, or any TOTP app to link your account.
+    <!-- MFA Challenge Form -->
+    <div id="section-mfa-challenge" class="auth-container" style="display:none;">
+      <form id="mfa-challenge-form" class="neomorphic-card">
+        <a class="neomorphic-title">MFA Challenge</a>
+        <p style="text-align:center;font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:18px;">
+          Enter the 6-digit verification code from your authenticator app.
         </p>
-        <div class="qr-box">
-          <img id="mfa-qr-image" src="" alt="QR Code" />
+        <div class="inputBox">
+          <input type="tel" id="mfa-login-code" maxlength="6" placeholder="000000" inputmode="numeric" required autocomplete="one-time-code" style="text-align:center;letter-spacing:6px;font-size:1.2rem;font-weight:700;" />
         </div>
-        <p style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:6px;">Or enter this key manually:</p>
-        <div id="mfa-secret-text" class="secret-key">—</div>
-        <input type="text" id="mfa-setup-code" class="otp-input" maxlength="6" pattern="\d{6}" placeholder="· · · · · ·" inputmode="numeric" />
-        <button id="btn-setup-submit" class="enter-btn">Verify & Activate 2FA</button>
-        <div id="mfa-setup-status" class="form-status" hidden style="font-size:12px;text-align:center;margin-top:12px;"></div>
-      </div>
-    </div>
-
-    <!-- ── Step 3: Normal Login → Verify 2FA Code ── -->
-    <div id="section-mfa-verify" class="mfa-wrapper" style="display:none;">
-      <div class="neomorphic-card" style="max-width:380px;padding:36px 30px;">
-        <h2 style="text-align:center;font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:10px;">Two-Factor Auth</h2>
-        <p style="font-size:0.82rem;color:rgba(255,255,255,0.6);text-align:center;line-height:1.5;margin-bottom:22px;">
-          Open your authenticator app and enter the 6-digit code shown.
+        <button type="submit" class="enter-btn" id="btn-mfa-verify-submit">Verify &amp; Continue</button>
+        <div id="mfa-login-status" class="form-status" hidden style="font-size:12px;max-width:280px;text-align:center;margin-top:14px;"></div>
+        <p style="text-align:center;font-size:0.75rem;margin-top:16px;color:rgba(255,255,255,0.5);margin-bottom:0;">
+          <a href="#" id="link-mfa-cancel" style="color:var(--primary-color);text-decoration:underline;">Cancel</a>
         </p>
-        <input type="text" id="mfa-verify-code" class="otp-input" maxlength="6" pattern="\d{6}" placeholder="· · · · · ·" inputmode="numeric" autofocus />
-        <button id="btn-verify-submit" class="enter-btn">Verify</button>
-        <div id="mfa-verify-status" class="form-status" hidden style="font-size:12px;text-align:center;margin-top:12px;"></div>
-      </div>
+      </form>
     </div>
 
-    <!-- ── Step 4: Admin Console Dashboard ── -->
+    <!-- Admin Console Dashboard -->
     <div id="section-dashboard" class="console-wrap" style="display:none;">
+
+      <!-- Cache card -->
       <div class="console-card">
         <div class="console-head">
           <h2>
@@ -272,37 +515,255 @@
           </div>
         </div>
 
-        <!-- Live stats row -->
+        <div class="user-info-bar">
+          Signed in as: <strong id="dash-user-email">--</strong>
+          &nbsp;|&nbsp; UID: <strong id="dash-user-uid">--</strong>
+        </div>
+
+        <!-- MFA warning banner -->
+        <div id="mfa-warning-bar" class="mfa-warning-bar" role="alert">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Two-factor authentication is not enabled. Your account is less secure.</span>
+          <button class="mfa-enroll-btn" id="btn-mfa-warning-enroll">Enable MFA</button>
+        </div>
+
+        <!-- Stats -->
         <div class="stats-row">
           <div class="stat-chip">
-            <div id="stat-hostels" class="num">—</div>
+            <div id="stat-hostels" class="num">--</div>
             <div class="label">Hostels in Cache</div>
           </div>
           <div class="stat-chip">
-            <div id="stat-age" class="num">—</div>
-            <div class="label">Cache Age (s)</div>
+            <div id="stat-age" class="num">--</div>
+            <div class="label">Cache Age</div>
           </div>
         </div>
 
         <p style="font-size:0.82rem;color:rgba(255,255,255,0.55);margin-bottom:20px;line-height:1.5;">
-          Click the button below to force the Cloudflare Worker to pull the newest hostel data from Firebase Firestore
-          and write it to KV storage. All subsequent visitor requests will be served the fresh data instantly.
+          Click the button below to force the Cloudflare Worker to pull the newest hostel data from Firebase Firestore and write it to KV storage.
         </p>
 
         <button id="btn-refresh-cache" class="cache-btn">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"/><path d="M2.5 12a10 10 0 0 1 17.73-5.38L21.5 8M2.5 22v-6h6"/><path d="M21.5 12a10 10 0 0 1-17.73 5.38L2.5 16"/></svg>
           Refresh Cloudflare Cache
         </button>
-
         <div id="cache-status-box" class="status-box"></div>
       </div>
-    </div>
 
+      <!-- Hostel Management card -->
+      <div class="console-card" style="padding:0; overflow:hidden;">
+        <div class="settings-header">
+          <span style="display:flex;align-items:center;gap:10px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Hostel Management
+          </span>
+          <span id="hostel-mode-badge" style="font-size:0.7rem; padding:4px 8px; border-radius:12px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.6);">Loading...</span>
+        </div>
+        
+        <div style="padding:22px 24px;">
+          <!-- Selection & Actions Row -->
+          <div class="settings-section" style="padding:0 0 20px 0; border-bottom:1px solid rgba(255,255,255,0.06);">
+            <h4>Select Hostel</h4>
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; width:100%;">
+              <select id="hostel-select" class="glass-select" style="flex:1; min-width:200px; padding:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:#fff;">
+                <option value="">Choose a hostel to edit...</option>
+              </select>
+              <button type="button" class="action-btn success" id="btn-add-hostel-trigger">Add New Hostel</button>
+            </div>
+          </div>
+
+          <!-- Hostel Editor Panel -->
+          <div id="hostel-editor-panel" style="display:none; margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <h3 id="editor-title" style="font-size:1rem; margin:0; color:#fff;">Edit Hostel</h3>
+              <span id="hostel-id-indicator" style="font-family:monospace; font-size:0.8rem; color:rgba(255,255,255,0.5);">ID: --</span>
+            </div>
+
+            <!-- Tab Headers -->
+            <div style="display:flex; gap:10px; border-bottom:1px solid rgba(255,255,255,0.06); margin-bottom:18px;">
+              <button type="button" id="tab-visual" class="action-btn" style="background:transparent; color:#fff; border-bottom:2px solid var(--accent); border-radius:0; padding:8px 12px; font-weight:600;">Basic Form</button>
+              <button type="button" id="tab-json" class="action-btn" style="background:transparent; color:rgba(255,255,255,0.5); border-bottom:2px solid transparent; border-radius:0; padding:8px 12px; font-weight:600;">Full JSON</button>
+            </div>
+
+            <!-- Visual Form Fields -->
+            <div id="editor-visual-section">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="inline-field" style="flex-direction:column; gap:6px;">
+                  <label for="hostel-name" style="font-size:0.75rem; color:rgba(255,255,255,0.5);">Hostel Name</label>
+                  <input type="text" id="hostel-name" placeholder="Name" style="width:100%;" />
+                </div>
+                <div class="inline-field" style="flex-direction:column; gap:6px;">
+                  <label for="hostel-gate" style="font-size:0.75rem; color:rgba(255,255,255,0.5);">Location Gate</label>
+                  <select id="hostel-gate" class="glass-select" style="width:100%; padding:9px 12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:#fff; font-size:0.84rem;">
+                    <option value="Gate A">Gate A</option>
+                    <option value="Gate B">Gate B</option>
+                    <option value="Gate C">Gate C</option>
+                    <option value="Gate D">Gate D</option>
+                    <option value="Inside Main Campus">Inside Main Campus</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="inline-field" style="flex-direction:column; gap:6px;">
+                  <label for="hostel-lat" style="font-size:0.75rem; color:rgba(255,255,255,0.5);">Latitude</label>
+                  <input type="number" id="hostel-lat" step="any" placeholder="e.g. -0.397" style="width:100%;" />
+                </div>
+                <div class="inline-field" style="flex-direction:column; gap:6px;">
+                  <label for="hostel-lng" style="font-size:0.75rem; color:rgba(255,255,255,0.5);">Longitude</label>
+                  <input type="number" id="hostel-lng" step="any" placeholder="e.g. 36.96" style="width:100%;" />
+                </div>
+              </div>
+
+              <div class="inline-field" style="flex-direction:column; gap:6px; margin-bottom:16px;">
+                <label for="hostel-desc" style="font-size:0.75rem; color:rgba(255,255,255,0.5);">Description</label>
+                <textarea id="hostel-desc" rows="3" style="width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:#fff; padding:9px 12px; font-size:0.84rem; font-family:inherit; resize:vertical;"></textarea>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                <div class="inline-field" style="flex-direction:column; gap:6px;">
+                  <label for="hostel-phones" style="font-size:0.75rem; color:rgba(255,255,255,0.5);">Contact Phones (comma separated)</label>
+                  <input type="text" id="hostel-phones" placeholder="e.g. 0712345678, 0787654321" style="width:100%;" />
+                </div>
+                <div class="inline-field" style="flex-direction:column; gap:6px;">
+                  <label for="hostel-whatsapp" style="font-size:0.75rem; color:rgba(255,255,255,0.5);">WhatsApp Number</label>
+                  <input type="text" id="hostel-whatsapp" placeholder="e.g. 0712345678" style="width:100%;" />
+                </div>
+              </div>
+
+              <div class="inline-field" style="flex-direction:column; gap:6px; margin-bottom:16px;">
+                <label for="hostel-cover" style="font-size:0.75rem; color:rgba(255,255,255,0.5);">Cover Image URL</label>
+                <input type="text" id="hostel-cover" placeholder="https://..." style="width:100%;" />
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; align-items:center;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <input type="checkbox" id="hostel-vacancies" style="width:18px; height:18px; cursor:pointer;" />
+                  <label for="hostel-vacancies" style="font-size:0.85rem; color:#fff; cursor:pointer; user-select:none;">Vacancies Available</label>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <input type="checkbox" id="hostel-wheelchair" style="width:18px; height:18px; cursor:pointer;" />
+                  <label for="hostel-wheelchair" style="font-size:0.85rem; color:#fff; cursor:pointer; user-select:none;">Wheelchair Accessible</label>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; margin-bottom:16px; padding:10px; background:rgba(255,255,255,0.02); border-radius:8px;">
+                <div style="display:flex; align-items:center; gap:6px; flex-direction:column;">
+                  <label for="hostel-cctv" style="font-size:0.7rem; color:rgba(255,255,255,0.5);">CCTV</label>
+                  <input type="checkbox" id="hostel-cctv" style="width:16px; height:16px; cursor:pointer;" />
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; flex-direction:column;">
+                  <label for="hostel-guard" style="font-size:0.7rem; color:rgba(255,255,255,0.5);">Guard</label>
+                  <input type="checkbox" id="hostel-guard" style="width:16px; height:16px; cursor:pointer;" />
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; flex-direction:column;">
+                  <label for="hostel-fenced" style="font-size:0.7rem; color:rgba(255,255,255,0.5);">Fenced</label>
+                  <input type="checkbox" id="hostel-fenced" style="width:16px; height:16px; cursor:pointer;" />
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; flex-direction:column;">
+                  <label for="hostel-fingerprint" style="font-size:0.7rem; color:rgba(255,255,255,0.5);">Fingerprint</label>
+                  <input type="checkbox" id="hostel-fingerprint" style="width:16px; height:16px; cursor:pointer;" />
+                </div>
+              </div>
+            </div>
+
+            <!-- JSON Editor Section -->
+            <div id="editor-json-section" style="display:none;">
+              <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                <label for="hostel-json" style="font-size:0.75rem; color:rgba(255,255,255,0.5);">Edit raw JSON data (includes rooms, utilities, rules, etc.):</label>
+                <button type="button" class="action-btn" id="btn-format-json" style="padding:4px 8px; font-size:0.72rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:#fff;">Format JSON</button>
+              </div>
+              <textarea id="hostel-json" rows="18" style="width:100%; font-family:monospace; font-size:0.78rem; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:#c4b5fd; padding:12px; box-sizing:border-box; resize:vertical; line-height:1.4;"></textarea>
+            </div>
+
+            <!-- Actions row -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.06);">
+              <button type="button" class="action-btn danger" id="btn-cancel-hostel">Cancel</button>
+              <button type="button" class="action-btn primary" id="btn-save-hostel">Save Hostel</button>
+            </div>
+            
+            <div id="hostel-editor-msg" class="settings-msg" style="margin-top:14px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Settings card -->
+      <div class="console-card" style="padding:0; overflow:hidden;">
+        <div class="settings-header">
+          <span style="display:flex;align-items:center;gap:10px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
+            Account Settings
+          </span>
+        </div>
+        <div id="settings-panel" class="settings-panel">
+
+          <!-- Change Email -->
+          <div class="settings-section">
+            <h4>Change Email</h4>
+            <div class="inline-field">
+              <input type="email" id="new-email" placeholder="New email address" autocomplete="off" />
+              <input type="password" id="reauth-email-password" placeholder="Current password" autocomplete="current-password" />
+              <button type="button" class="action-btn primary" id="btn-change-email">Update Email</button>
+            </div>
+            <div id="email-change-msg" class="settings-msg"></div>
+          </div>
+
+          <!-- Change Password -->
+          <div class="settings-section">
+            <h4>Change Password</h4>
+            <div class="inline-field">
+              <input type="password" id="reauth-current-password" placeholder="Current password" autocomplete="current-password" />
+              <input type="password" id="new-password" placeholder="New password (min 8 chars)" autocomplete="new-password" />
+              <button type="button" class="action-btn primary" id="btn-change-password">Update Password</button>
+            </div>
+            <div id="password-change-msg" class="settings-msg"></div>
+          </div>
+
+          <!-- Send Reset Email -->
+          <div class="settings-section">
+            <h4>Password Reset Email</h4>
+            <p style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin:0 0 12px;">Send a reset link to your current email address.</p>
+            <button type="button" class="action-btn primary" id="btn-send-reset">Send Reset Link</button>
+            <div id="reset-msg" class="settings-msg"></div>
+          </div>
+
+          <!-- MFA Management -->
+          <div class="settings-section">
+            <h4>Two-Factor Authentication (TOTP)</h4>
+            <div id="mfa-status-chip" class="mfa-status-chip disabled">&#9679; Not Enrolled</div>
+            <div id="mfa-actions" style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button type="button" class="action-btn success" id="btn-setup-mfa">Enroll MFA</button>
+              <button type="button" class="action-btn danger"  id="btn-disable-mfa" style="display:none;">Disable MFA</button>
+            </div>
+            <div id="mfa-action-msg" class="settings-msg"></div>
+
+            <!-- TOTP Setup inline panel -->
+            <div id="totp-setup-panel" class="totp-setup-panel">
+              <p style="font-size:0.8rem;color:rgba(255,255,255,0.6);text-align:center;margin-bottom:10px;">
+                Scan this QR code with Google Authenticator, Authy, or any TOTP app.
+              </p>
+              <img id="totp-qr-img" class="totp-qr" width="160" height="160" alt="TOTP QR Code" src="" />
+              <p class="totp-secret-label">Or enter this secret manually:</p>
+              <div id="totp-secret-box" class="totp-secret-box"></div>
+              <p style="font-size:0.78rem;color:rgba(255,255,255,0.45);text-align:center;margin-bottom:12px;">
+                Enter the 6-digit code from your app to verify and activate:
+              </p>
+              <div class="totp-verify-row">
+                <input type="tel" id="totp-code-input" maxlength="6" placeholder="000000" inputmode="numeric" autocomplete="one-time-code" />
+                <button type="button" class="action-btn primary" id="btn-verify-totp">Verify &amp; Enable</button>
+              </div>
+              <div id="totp-verify-msg" class="settings-msg"></div>
+            </div>
+          </div>
+
+        </div><!-- /settings-panel -->
+      </div><!-- /settings card -->
+
+    </div><!-- /section-dashboard -->
   </main>
 
   <script src="/shared/js/config.js"></script>
   <script src="/shared/js/app.js"></script>
-  <script src="/shared/js/firebase-init.js" defer></script>
-  <script src="/pages/olpot/olpot.js" defer></script>
+  <script src="/olpot/olpot.js" defer></script>
 </body>
 </html>

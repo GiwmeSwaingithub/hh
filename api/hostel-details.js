@@ -43,6 +43,8 @@ module.exports = async (req, res) => {
     let image = 'https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png';
     let url = `https://${req.headers.host || 'hostel.dekut.site'}/hostel-details` + (h ? `?h=${encodeURIComponent(h)}` : '');
 
+    let jsonLdScript = '';
+
     if (h) {
       // Fetch from Cloudflare Worker — the single source of truth
       const hostels = await fetchHostelsFromCF();
@@ -96,6 +98,51 @@ module.exports = async (req, res) => {
 
         if (hostel.media && hostel.media.coverImage) image = hostel.media.coverImage;
         else if (hostel.image) image = hostel.image;
+
+        // Build JSON-LD
+        const jsonLd = {
+          "@context": "https://schema.org",
+          "@type": "Accommodation",
+          "name": hostel.name || 'Hostel',
+          "description": hostel.description || 'Student housing near Dedan Kimathi University of Technology',
+          "image": image,
+          "url": url,
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Nyeri",
+            "addressRegion": "Nyeri County",
+            "addressCountry": "KE"
+          },
+          "location": {
+            "@type": "Place",
+            "name": (hostel.location && typeof hostel.location === 'object' ? hostel.location.gate : hostel.location) || 'Nyeri'
+          }
+        };
+
+        let priceVal = 0;
+        if (hostel.rooms && Array.isArray(hostel.rooms) && hostel.rooms.length > 0) {
+          const prices = [];
+          hostel.rooms.forEach(r => {
+            if (r.price) {
+              if (r.price.amountSharing) prices.push(r.price.amountSharing);
+              if (r.price.amountAlone)   prices.push(r.price.amountAlone);
+            }
+          });
+          if (prices.length > 0) {
+            priceVal = Math.min(...prices.filter(p => p > 0));
+          }
+        } else {
+          priceVal = hostel.price || hostel.priceAlone || 0;
+        }
+
+        if (priceVal > 0) {
+          jsonLd.offers = {
+            "@type": "Offer",
+            "price": priceVal,
+            "priceCurrency": "KES"
+          };
+        }
+        jsonLdScript = `\n    <script type="application/ld+json">\n    ${JSON.stringify(jsonLd, null, 2)}\n    </script>\n`;
       }
     }
 
@@ -123,7 +170,7 @@ module.exports = async (req, res) => {
     <meta name="twitter:url" content="${escapeAttr(url)}" />
     <meta name="twitter:title" content="${escapeAttr(title)}" />
     <meta name="twitter:description" content="${escapeAttr(description)}" />
-    <meta name="twitter:image" content="${escapeAttr(image)}" />
+    <meta name="twitter:image" content="${escapeAttr(image)}" />${jsonLdScript}
     `;
 
     // Strip duplicate static tags from the template
