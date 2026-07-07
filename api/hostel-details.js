@@ -119,29 +119,57 @@ module.exports = async (req, res) => {
           }
         };
 
+        jsonLd.telephone = "+254769486775";
+
         let priceVal = 0;
+        let offers = [];
+
         if (hostel.rooms && Array.isArray(hostel.rooms) && hostel.rooms.length > 0) {
           const prices = [];
           hostel.rooms.forEach(r => {
             if (r.price) {
-              if (r.price.amountSharing) prices.push(r.price.amountSharing);
-              if (r.price.amountAlone)   prices.push(r.price.amountAlone);
+              const period = r.price.period || 'semester';
+              const rName = r.name || 'Room';
+              if (r.price.amountSharing > 0) {
+                prices.push(r.price.amountSharing);
+                offers.push({
+                  "@type": "Offer",
+                  "name": `${rName} (Sharing, per ${period})`,
+                  "price": r.price.amountSharing,
+                  "priceCurrency": "KES"
+                });
+              }
+              if (r.price.amountAlone > 0) {
+                prices.push(r.price.amountAlone);
+                offers.push({
+                  "@type": "Offer",
+                  "name": `${rName} (Single, per ${period})`,
+                  "price": r.price.amountAlone,
+                  "priceCurrency": "KES"
+                });
+              }
             }
           });
           if (prices.length > 0) {
-            priceVal = Math.min(...prices.filter(p => p > 0));
+            priceVal = Math.min(...prices);
           }
         } else {
           priceVal = hostel.price || hostel.priceAlone || 0;
+          if (priceVal > 0) {
+             offers.push({
+               "@type": "Offer",
+               "name": "Base Rate",
+               "price": priceVal,
+               "priceCurrency": "KES"
+             });
+          }
         }
 
         if (priceVal > 0) {
           jsonLd.priceRange = `KES ${priceVal}+`;
-          jsonLd.offers = {
-            "@type": "Offer",
-            "price": priceVal,
-            "priceCurrency": "KES"
-          };
+        }
+        if (offers.length > 0) {
+          jsonLd.offers = offers;
         }
         jsonLdScript = `\n    <script type="application/ld+json">\n    ${JSON.stringify(jsonLd, null, 2)}\n    </script>\n`;
       }
