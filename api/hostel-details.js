@@ -102,7 +102,7 @@ module.exports = async (req, res) => {
         // Build JSON-LD
         const jsonLd = {
           "@context": "https://schema.org",
-          "@type": "Accommodation",
+          "@type": "Hostel",
           "name": hostel.name || 'Hostel',
           "description": hostel.description || 'Student housing near Dedan Kimathi University of Technology',
           "image": image,
@@ -136,6 +136,7 @@ module.exports = async (req, res) => {
         }
 
         if (priceVal > 0) {
+          jsonLd.priceRange = `KES ${priceVal}+`;
           jsonLd.offers = {
             "@type": "Offer",
             "price": priceVal,
