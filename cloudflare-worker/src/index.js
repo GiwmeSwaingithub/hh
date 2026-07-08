@@ -60,12 +60,13 @@ function parseDocument(doc) {
 
 // ─── Firestore Fetch ──────────────────────────────────────────────────────────
 
-async function fetchFromFirestore(projectId, apiKey) {
+async function fetchFromFirestore(projectId, idToken) {
   // Fetch up to 300 documents in one round-trip
-  // Pass API key to bypass Firestore security rules for server-side reads
-  const keyParam = apiKey ? `&key=${encodeURIComponent(apiKey)}` : '';
-  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/hostels?pageSize=300${keyParam}`;
-  const res = await fetch(url, { cf: { cacheTtl: 0 } }); // bypass CF cache for this internal request
+  // Use the admin Firebase ID Token as Bearer to authenticate Firestore REST reads
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/hostels?pageSize=300`;
+  const headers = { 'Content-Type': 'application/json' };
+  if (idToken) headers['Authorization'] = `Bearer ${idToken}`;
+  const res = await fetch(url, { method: 'GET', headers, cf: { cacheTtl: 0 } });
 
   if (!res.ok) {
     throw new Error(`Firestore REST returned ${res.status}: ${await res.text()}`);
@@ -88,14 +89,13 @@ async function fetchFromFirestore(projectId, apiKey) {
 
 // ─── Cache Refresh ────────────────────────────────────────────────────────────
 
-async function refreshCache(env) {
+async function refreshCache(env, idToken) {
   const projectId = env.FIRESTORE_PROJECT_ID || 'dekuthostels';
-  const apiKey = env.FIREBASE_API_KEY || '';
   console.log('[Refresh] Fetching from Firestore…');
 
   let hostels;
   try {
-    hostels = await fetchFromFirestore(projectId, apiKey);
+    hostels = await fetchFromFirestore(projectId, idToken);
   } catch (err) {
     // Release lock on failure so the next request can retry sooner
     await env.HOSTELS_KV.delete('lock:hostels_refresh').catch(() => {});
@@ -124,10 +124,11 @@ async function refreshCache(env) {
 
 // ─── Services Cache Refresh ───────────────────────────────────────────────────
 
-async function fetchServicesFromFirestore(projectId, apiKey) {
-  const keyParam = apiKey ? `&key=${encodeURIComponent(apiKey)}` : '';
-  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/services?pageSize=300${keyParam}`;
-  const res = await fetch(url, { cf: { cacheTtl: 0 } });
+async function fetchServicesFromFirestore(projectId, idToken) {
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/services?pageSize=300`;
+  const headers = { 'Content-Type': 'application/json' };
+  if (idToken) headers['Authorization'] = `Bearer ${idToken}`;
+  const res = await fetch(url, { method: 'GET', headers, cf: { cacheTtl: 0 } });
 
   if (!res.ok) {
     throw new Error(`Firestore REST returned ${res.status}: ${await res.text()}`);
@@ -143,14 +144,13 @@ async function fetchServicesFromFirestore(projectId, apiKey) {
   return parsed;
 }
 
-async function refreshServicesCache(env) {
+async function refreshServicesCache(env, idToken) {
   const projectId = env.FIRESTORE_PROJECT_ID || 'dekuthostels';
-  const apiKey = env.FIREBASE_API_KEY || '';
   console.log('[Refresh Services] Fetching from Firestore…');
 
   let services;
   try {
-    services = await fetchServicesFromFirestore(projectId, apiKey);
+    services = await fetchServicesFromFirestore(projectId, idToken);
   } catch (err) {
     await env.HOSTELS_KV.delete('lock:services_refresh').catch(() => {});
     throw err;
@@ -208,10 +208,13 @@ export default {
         return json({ error: 'Unauthorized' }, 401);
       }
 
+      // Extract forwarded admin Firebase ID token (sent by Vercel api/cache-refresh.js)
+      const idToken = request.headers.get('X-Firebase-Id-Token') || '';
+
       try {
         const [ { meta: hMeta }, { meta: sMeta } ] = await Promise.all([
-          refreshCache(env),
-          refreshServicesCache(env)
+          refreshCache(env, idToken),
+          refreshServicesCache(env, idToken)
         ]);
         return json({
           success: true,

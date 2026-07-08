@@ -63,7 +63,10 @@ module.exports = async (req, res) => {
     const result = await new Promise((resolve, reject) => {
       const r = https.request(CACHE_WORKER_URL, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${CACHE_SECRET}` }
+        headers: { 
+          'Authorization': `Bearer ${CACHE_SECRET}`,
+          'X-Firebase-Id-Token': idToken
+        }
       }, (response) => {
         let body = '';
         response.on('data', c => body += c);
