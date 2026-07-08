@@ -15627,6 +15627,26 @@
           "refundable": true
         },
         "available": true
+      },
+      {
+        "id": "bedsitter_large",
+        "name": "Bedsitter (Large)",
+        "occupancy": {
+          "minimumPeople": 1,
+          "maximumPeople": 1
+        },
+        "price": {
+          "amountAlone": 9000,
+          "amountSharing": 9000,
+          "currency": "KES",
+          "period": "month"
+        },
+        "deposit": {
+          "required": true,
+          "amount": 9000,
+          "refundable": true
+        },
+        "available": true
       }
     ],
     "utilities": {

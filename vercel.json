@@ -35,7 +35,11 @@
     { "source": "/olpot", "destination": "/pages/olpot" },
     { "source": "/olpot/", "destination": "/pages/olpot" },
     { "source": "/api/admin-auth", "destination": "/api/admin-auth" },
-    { "source": "/api/cache-refresh", "destination": "/api/cache-refresh" }
+    { "source": "/api/cache-refresh", "destination": "/api/cache-refresh" },
+    { "source": "/api/uploadImage", "destination": "/api/uploadImage" },
+    { "source": "/api/sendMsg", "destination": "/api/sendMsg" },
+    { "source": "/api/getWall", "destination": "/api/getWall" },
+    { "source": "/api/sitemap", "destination": "/api/sitemap" }
   ],
   "headers": [
     {
@@ -56,6 +60,12 @@
     },
     {
       "source": "/(.*)\\.(html|js|json)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }
       ]

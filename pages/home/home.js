@@ -301,7 +301,13 @@
     filters.maxPrice = '';
     filters.roomType = 'all';
     filters.rentIncludes = [];
+    filters.sort = 'id-asc';
     
+    // Clear sessionStorage
+    try {
+      sessionStorage.removeItem('dkut_home_state');
+    } catch (_) {}
+
     // Sync UI inputs if they exist
     const searchInput = document.getElementById('search-input');
     if (searchInput) searchInput.value = '';
@@ -321,9 +327,9 @@
       cb.checked = false;
     });
 
-    // Clear highlights from location chips
+    // Clear highlights from location chips and activate 'all'
     document.querySelectorAll('.location-chip').forEach(c => {
-      c.classList.remove('active');
+      c.classList.toggle('active', c.dataset.location === 'all');
     });
 
     // Clear highlights from carousel
@@ -630,6 +636,7 @@
   }
 
   function restoreState() {
+    let hasSavedState = false;
     try {
       const saved = sessionStorage.getItem('dkut_home_state');
       if (saved) {
@@ -637,6 +644,7 @@
         if (state) {
           if (state.filters) {
             filters = state.filters;
+            hasSavedState = true;
             
             const input = document.getElementById('search-input');
             if (input) input.value = filters.query || '';
@@ -675,38 +683,40 @@
       }
     } catch (_) {}
 
-    const params = new URLSearchParams(location.search);
-    if (params.get('q')) {
-      filters.query = params.get('q');
-      const input = document.getElementById('search-input');
-      if (input) input.value = filters.query;
-    }
-    if (params.get('loc')) filters.location = params.get('loc');
-    if (params.get('minPrice')) {
-      filters.minPrice = params.get('minPrice');
-      const el = document.getElementById('filter-min-price');
-      if (el) el.value = filters.minPrice;
-    }
-    if (params.get('maxPrice')) {
-      filters.maxPrice = params.get('maxPrice');
-      const el = document.getElementById('filter-max-price');
-      if (el) el.value = filters.maxPrice;
-    }
-    if (params.get('roomType')) {
-      filters.roomType = params.get('roomType');
-      const el = document.getElementById('filter-room-type');
-      if (el) el.value = filters.roomType;
-    }
-    if (params.get('rentIncludes')) {
-      filters.rentIncludes = params.get('rentIncludes').split(',').filter(Boolean);
-      if (document.getElementById('filter-inc-water')) {
-        document.getElementById('filter-inc-water').checked = filters.rentIncludes.includes('water');
+    if (!hasSavedState) {
+      const params = new URLSearchParams(location.search);
+      if (params.get('q')) {
+        filters.query = params.get('q');
+        const input = document.getElementById('search-input');
+        if (input) input.value = filters.query;
       }
-      if (document.getElementById('filter-inc-electricity')) {
-        document.getElementById('filter-inc-electricity').checked = filters.rentIncludes.includes('electricity');
+      if (params.get('loc')) filters.location = params.get('loc');
+      if (params.get('minPrice')) {
+        filters.minPrice = params.get('minPrice');
+        const el = document.getElementById('filter-min-price');
+        if (el) el.value = filters.minPrice;
       }
-      if (document.getElementById('filter-inc-wifi')) {
-        document.getElementById('filter-inc-wifi').checked = filters.rentIncludes.includes('wifi');
+      if (params.get('maxPrice')) {
+        filters.maxPrice = params.get('maxPrice');
+        const el = document.getElementById('filter-max-price');
+        if (el) el.value = filters.maxPrice;
+      }
+      if (params.get('roomType')) {
+        filters.roomType = params.get('roomType');
+        const el = document.getElementById('filter-room-type');
+        if (el) el.value = filters.roomType;
+      }
+      if (params.get('rentIncludes')) {
+        filters.rentIncludes = params.get('rentIncludes').split(',').filter(Boolean);
+        if (document.getElementById('filter-inc-water')) {
+          document.getElementById('filter-inc-water').checked = filters.rentIncludes.includes('water');
+        }
+        if (document.getElementById('filter-inc-electricity')) {
+          document.getElementById('filter-inc-electricity').checked = filters.rentIncludes.includes('electricity');
+        }
+        if (document.getElementById('filter-inc-wifi')) {
+          document.getElementById('filter-inc-wifi').checked = filters.rentIncludes.includes('wifi');
+        }
       }
     }
   }

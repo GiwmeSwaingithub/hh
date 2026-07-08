@@ -6,7 +6,7 @@ const DATA_CACHE = 'dkut-hostel-data-v2';
 const STATIC_ASSETS = [
   BASE_PATH,
   BASE_PATH + 'manifest.json',
-  BASE_PATH + 'shared/css/theme.css',
+  BASE_PATH + 'shared/css/theme.min.css',
   BASE_PATH + 'shared/js/config.js',
   BASE_PATH + 'shared/js/app.js',
   BASE_PATH + 'shared/js/layout.js',
@@ -61,7 +61,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  if (url.pathname.includes('hostels.json')) {
+  if (url.pathname.includes('hostels.json') || url.pathname.includes('services.json')) {
     event.respondWith(
       fetch(event.request).then(response => {
         const clone = response.clone();

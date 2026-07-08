@@ -42,17 +42,15 @@
   <meta name="twitter:image" content="https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png" />
   <meta name="theme-color" content="#08080b" />
   <link rel="manifest" href="../../manifest.json" />
-  <link rel="stylesheet" href="../../shared/css/theme.css" />
+  <link rel="stylesheet" href="../../shared/css/theme.min.css" />
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
   <!-- Security: prevent caching and enforce strict policies -->
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta name="referrer" content="no-referrer" />
-  <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://hostel.dekut.site;" />
   <script src="../../shared/utils/disable-devtool.min.js"></script>
   <script>
     if (typeof DisableDevtool === "function") {
@@ -160,25 +158,7 @@
           <option value="female">Female</option>
         </select>
       </div>
-      <div class="filter-row">
-        <label for="filter-accessibility">Accessibility</label>
-        <select id="filter-accessibility" class="glass-select">
-          <option value="all">Any</option>
-          <option value="wheelchair">Wheelchair Accessible</option>
-          <option value="ground-floor">Ground Floor Available</option>
-          <option value="special-needs">Special Needs Approved</option>
-        </select>
-      </div>
-      <div class="filter-row">
-        <label for="filter-sort">Sort</label>
-        <select id="filter-sort" class="glass-select">
-          <option value="default">Default (by ID)</option>
-          <option value="id-asc">ID: Low to High</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-          <option value="name-asc">Name A–Z</option>
-        </select>
-      </div>
+
       <div class="filter-row">
         <label for="filter-room-type">Room Type</label>
         <select id="filter-room-type" class="glass-select">

@@ -958,6 +958,7 @@
             overflow: hidden;
             color: #0c0202;
             cursor: default;
+            background-color: rgba(15, 12, 22, 0.65);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35),
                 0 0 0 1px rgba(255, 255, 255, 0.08),
                 0 0 40px rgba(100, 70, 160, 0.15);
@@ -1589,7 +1590,7 @@
 }
 
 .grid-layout-btn.active {
-  color: #fff;
+  color: #0c0d12;
   background: var(--accent, #0bda83);
   box-shadow: 0 2px 8px color-mix(in srgb, var(--accent, #0bda83) 40%, transparent);
 }
@@ -1607,7 +1608,7 @@
   background: rgba(0, 0, 0, 0.04);
 }
 [data-theme="light"] .grid-layout-btn.active {
-  color: #fff;
+  color: #0c0d12;
   background: var(--accent, #0bda83);
 }
 
@@ -2005,9 +2006,22 @@ body.mock-mode-active #content { padding-top: calc(var(--topbar-h) + 44px + 24px
 [data-theme="light"][data-accent="green"] .liquidGlass-text a.active {
     color: #0b9a63 !important;
 }
+[data-theme="light"] .nav-icon-btn {
+    color: #4a4556 !important;
+}
+[data-theme="light"] .nav-icon-btn:hover {
+    color: #1e1b24 !important;
+}
 [data-theme="light"] .nav-icon-btn.active {
-    background: rgba(0, 0, 0, 0.07) !important;
+    color: #1e1b24 !important;
+    background: rgba(0, 0, 0, 0.08) !important;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.04) !important;
+}
+[data-theme="light"] .see-all-link {
+    color: #4a4556 !important;
+}
+[data-theme="light"] .see-all-link:hover {
+    color: #1e1b24 !important;
 }
 [data-theme="light"] .app-footer {
     background: rgba(244, 243, 246, 0.6);
@@ -2241,6 +2255,17 @@ body.mock-mode-active #content { padding-top: calc(var(--topbar-h) + 44px + 24px
     background: #ffffff !important;
     color: #000000 !important;
     border-radius: 2px;
+}
+[data-theme="high-contrast"] .nav-icon-btn {
+    color: #ffffff !important;
+}
+[data-theme="high-contrast"] .nav-icon-btn:hover {
+    background: #ffffff !important;
+    color: #000000 !important;
+}
+[data-theme="high-contrast"] .nav-icon-btn.active {
+    background: #ffffff !important;
+    color: #000000 !important;
 }
 [data-theme="high-contrast"] .app-footer {
     background: #000000;
@@ -3113,12 +3138,12 @@ a.project-date:hover {
   border-radius: 8px;
   border: none;
   background: #ddad81;
-  color: #634647;
+  color: #4d3233;
   transition: all 0.25s ease;
 }
 
 .cookie-popup-accept-btn:hover {
-  background: #634647;
+  background: #4d3233;
   color: #ddad81;
 }
 

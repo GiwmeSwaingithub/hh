@@ -1,6 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 
+function escapeAttr(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 module.exports = (req, res) => {
   try {
     const templatePath = path.join(process.cwd(), 'pages', 'scam-reports', 'index.html');
@@ -14,25 +23,38 @@ module.exports = (req, res) => {
     const proto = req.headers['x-forwarded-proto'] || 'https';
     const currentDomain = `${proto}://${host}`;
 
-    // Meta tags to inject/replace dynamically
-    const dynamicOgImage = 'https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png';
-    const dynamicOgUrl = `${currentDomain}/scam-reports`;
+    const title = 'Scam Alerts — DKUT Hostels';
+    const description = 'Check phone numbers and view reported scam alerts for DKUT student hostels.';
+    const image = 'https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png';
+    const url = `${currentDomain}/scam-reports`;
 
-    // Strip duplicate static image and url tags from the template
-    html = html.replace(/<meta\s+[^>]*?property=["']og:image["'][^>]*?\/?>/gi, '');
-    html = html.replace(/<meta\s+[^>]*?name=["']twitter:image["'][^>]*?\/?>/gi, '');
-    html = html.replace(/<meta\s+[^>]*?property=["']og:url["'][^>]*?\/?>/gi, '');
-    html = html.replace(/<meta\s+[^>]*?name=["']twitter:url["'][^>]*?\/?>/gi, '');
-
-    const injectMeta = `
-    <meta property="og:url" content="${dynamicOgUrl}" />
-    <meta property="og:image" content="${dynamicOgImage}" />
-    <meta name="twitter:url" content="${dynamicOgUrl}" />
-    <meta name="twitter:image" content="${dynamicOgImage}" />
+    const metaBlock = `
+    <title>${escapeAttr(title)}</title>
+    <meta name="description" content="${escapeAttr(description)}" />
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="${escapeAttr(url)}" />
+    <meta property="og:title" content="${escapeAttr(title)}" />
+    <meta property="og:description" content="${escapeAttr(description)}" />
+    <meta property="og:image" content="${escapeAttr(image)}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="${escapeAttr(url)}" />
+    <meta name="twitter:title" content="${escapeAttr(title)}" />
+    <meta name="twitter:description" content="${escapeAttr(description)}" />
+    <meta name="twitter:image" content="${escapeAttr(image)}" />
     `;
 
-    // Inject dynamic meta tags at the start of the head element
-    html = html.replace('<head>', `<head>${injectMeta}`);
+    // Strip duplicate static title, description, og, and twitter tags from the template
+    html = html.replace(/<title>[^]*?<\/title>/gi, '');
+    html = html.replace(/<meta\s+[^>]*?name=["']description["'][^>]*?\/?>/gi, '');
+    html = html.replace(/<meta\s+[^>]*?property=["']og:[^>]*?["'][^>]*?\/?>/gi, '');
+    html = html.replace(/<meta\s+[^>]*?name=["']twitter:[^>]*?["'][^>]*?\/?>/gi, '');
+    html = html.replace(/<link\s+[^>]*?rel=["']icon["'][^>]*?\/?>/gi, '');
+
+    // Inject dynamic metaBlock at the start of the head element
+    html = html.replace('<head>', `<head>${metaBlock}`);
 
     res.setHeader('Content-Type', 'text/html');
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');

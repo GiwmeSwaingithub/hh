@@ -205,8 +205,8 @@ module.exports = async (req, res) => {
     // Strip duplicate static tags from the template
     html = html.replace(/<title>[^]*?<\/title>/gi, '');
     html = html.replace(/<meta\s+[^>]*?name=["']description["'][^>]*?\/?>/gi, '');
-    html = html.replace(/<meta\s+[^>]*?property=["']og:[^]*?["'][^>]*?\/?>/gi, '');
-    html = html.replace(/<meta\s+[^>]*?name=["']twitter:[^]*?["'][^>]*?\/?>/gi, '');
+    html = html.replace(/<meta\s+[^>]*?property=["']og:[^>]*?["'][^>]*?\/?>/gi, '');
+    html = html.replace(/<meta\s+[^>]*?name=["']twitter:[^>]*?["'][^>]*?\/?>/gi, '');
     html = html.replace(/<link\s+[^>]*?rel=["']icon["'][^>]*?\/?>/gi, '');
 
     // Inject dynamic meta at the start of <head>

@@ -929,7 +929,17 @@
         });
       })
       .then(function (res) {
-        return res.json().then(function (body) { return { ok: res.ok, body: body }; });
+        var contentType = res.headers.get('content-type') || '';
+        if (contentType.indexOf('application/json') !== -1) {
+          return res.json().then(function (body) { return { ok: res.ok, body: body }; });
+        } else {
+          return res.text().then(function (text) {
+            return {
+              ok: false,
+              body: { error: 'Server returned non-JSON response (Status ' + res.status + '): ' + (text.substring(0, 150) || 'Empty response') }
+            };
+          });
+        }
       })
       .then(function (r) {
         if (r.ok && r.body.success) {

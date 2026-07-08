@@ -60,9 +60,11 @@ function parseDocument(doc) {
 
 // ─── Firestore Fetch ──────────────────────────────────────────────────────────
 
-async function fetchFromFirestore(projectId) {
+async function fetchFromFirestore(projectId, apiKey) {
   // Fetch up to 300 documents in one round-trip
-  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/hostels?pageSize=300`;
+  // Pass API key to bypass Firestore security rules for server-side reads
+  const keyParam = apiKey ? `&key=${encodeURIComponent(apiKey)}` : '';
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/hostels?pageSize=300${keyParam}`;
   const res = await fetch(url, { cf: { cacheTtl: 0 } }); // bypass CF cache for this internal request
 
   if (!res.ok) {
@@ -88,11 +90,12 @@ async function fetchFromFirestore(projectId) {
 
 async function refreshCache(env) {
   const projectId = env.FIRESTORE_PROJECT_ID || 'dekuthostels';
+  const apiKey = env.FIREBASE_API_KEY || '';
   console.log('[Refresh] Fetching from Firestore…');
 
   let hostels;
   try {
-    hostels = await fetchFromFirestore(projectId);
+    hostels = await fetchFromFirestore(projectId, apiKey);
   } catch (err) {
     // Release lock on failure so the next request can retry sooner
     await env.HOSTELS_KV.delete('lock:hostels_refresh').catch(() => {});
@@ -117,6 +120,55 @@ async function refreshCache(env) {
 
   console.log(`[Refresh] Done. ${hostels.length} hostels cached. Next refresh ~${Math.round((meta.nextTtl) / 3600000)}h.`);
   return { hostels, meta };
+}
+
+// ─── Services Cache Refresh ───────────────────────────────────────────────────
+
+async function fetchServicesFromFirestore(projectId, apiKey) {
+  const keyParam = apiKey ? `&key=${encodeURIComponent(apiKey)}` : '';
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/services?pageSize=300${keyParam}`;
+  const res = await fetch(url, { cf: { cacheTtl: 0 } });
+
+  if (!res.ok) {
+    throw new Error(`Firestore REST returned ${res.status}: ${await res.text()}`);
+  }
+
+  const json = await res.json();
+  if (!json.documents || !Array.isArray(json.documents)) {
+    return [];
+  }
+
+  const parsed = json.documents.map(parseDocument);
+  parsed.sort((a, b) => (a.order || 99) - (b.order || 99));
+  return parsed;
+}
+
+async function refreshServicesCache(env) {
+  const projectId = env.FIRESTORE_PROJECT_ID || 'dekuthostels';
+  const apiKey = env.FIREBASE_API_KEY || '';
+  console.log('[Refresh Services] Fetching from Firestore…');
+
+  let services;
+  try {
+    services = await fetchServicesFromFirestore(projectId, apiKey);
+  } catch (err) {
+    await env.HOSTELS_KV.delete('lock:services_refresh').catch(() => {});
+    throw err;
+  }
+
+  const jitter = (Math.random() - 0.5) * 2 * JITTER_MS; // ±JITTER_MS
+  const meta = {
+    timestamp: Date.now(),
+    count: services.length,
+    nextTtl: SOFT_TTL_MS + jitter,
+  };
+
+  await env.HOSTELS_KV.put('services_data',     JSON.stringify(services));
+  await env.HOSTELS_KV.put('services_meta',     JSON.stringify(meta));
+  await env.HOSTELS_KV.delete('lock:services_refresh');
+
+  console.log(`[Refresh Services] Done. ${services.length} services cached.`);
+  return { services, meta };
 }
 
 // ─── Request Handler ──────────────────────────────────────────────────────────
@@ -145,7 +197,7 @@ export default {
       return new Response(null, { headers: CORS });
     }
 
-    // ── /update-cache  (webhook — called by Firebase Function or manually) ──
+    // ── /update-cache  (webhook — force refresh both caches) ──────────────────
     if (pathname === '/update-cache' || pathname === '/purge') {
       const authHeader = request.headers.get('Authorization') || '';
       const token = authHeader.replace(/^Bearer\s+/i, '').trim()
@@ -157,87 +209,156 @@ export default {
       }
 
       try {
-        const { meta } = await refreshCache(env);
-        return json({ success: true, count: meta.count, updated_at: meta.timestamp });
+        const [ { meta: hMeta }, { meta: sMeta } ] = await Promise.all([
+          refreshCache(env),
+          refreshServicesCache(env)
+        ]);
+        return json({
+          success: true,
+          hostels_count: hMeta.count,
+          services_count: sMeta.count,
+          updated_at: Date.now()
+        });
       } catch (err) {
         return json({ error: err.message }, 502);
       }
     }
 
-    // ── /hostels.json  (and common alias paths clients might request) ────────
+    // Paths lists
     const hostelPaths = new Set(['/', '/hostels.json', '/shared/data/hostels.json', '/hostel/shared/data/hostels.json']);
-    if (!hostelPaths.has(pathname)) {
-      return json({ error: 'Not Found' }, 404);
-    }
+    const servicePaths = new Set(['/services.json', '/shared/data/services.json', '/hostel/shared/data/services.json']);
 
-    // Read cache from KV
-    const [rawData, rawMeta] = await Promise.all([
-      env.HOSTELS_KV.get('hostels_data'),
-      env.HOSTELS_KV.get('hostels_meta'),
-    ]);
+    // ── /hostels.json ────────────────────────────────────────────────────────
+    if (hostelPaths.has(pathname)) {
+      // Read cache from KV
+      const [rawData, rawMeta] = await Promise.all([
+        env.HOSTELS_KV.get('hostels_data'),
+        env.HOSTELS_KV.get('hostels_meta'),
+      ]);
 
-    let meta = null;
-    try { if (rawMeta) meta = JSON.parse(rawMeta); } catch (_) {}
+      let meta = null;
+      try { if (rawMeta) meta = JSON.parse(rawMeta); } catch (_) {}
 
-    // ── Cold start: cache is empty — load synchronously (only happens once) ──
-    if (!rawData || !meta) {
-      console.log('[Cache] Cold start — loading synchronously…');
-      try {
-        const { hostels, meta: newMeta } = await refreshCache(env);
-        return new Response(JSON.stringify(hostels), {
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
-            'X-Cache-Status': 'MISS',
-            'X-Cache-Age-Seconds': '0',
-            ...CORS,
-          },
-        });
-      } catch (err) {
-        return json({ error: `Cache cold start failed: ${err.message}` }, 502);
+      // Cold start: cache is empty
+      if (!rawData || !meta) {
+        console.log('[Cache] Cold start — loading synchronously…');
+        try {
+          const { hostels, meta: newMeta } = await refreshCache(env);
+          return new Response(JSON.stringify(hostels), {
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
+              'X-Cache-Status': 'MISS',
+              'X-Cache-Age-Seconds': '0',
+              ...CORS,
+            },
+          });
+        } catch (err) {
+          return json({ error: `Cache cold start failed: ${err.message}` }, 502);
+        }
       }
-    }
 
-    // ── Stale-While-Revalidate ────────────────────────────────────────────────
-    const age   = Date.now() - meta.timestamp;
-    const ttl   = meta.nextTtl || SOFT_TTL_MS;
-    const stale = age > ttl;
+      // Stale-While-Revalidate
+      const age   = Date.now() - meta.timestamp;
+      const ttl   = meta.nextTtl || SOFT_TTL_MS;
+      const stale = age > ttl;
 
-    if (stale) {
-      const lock = await env.HOSTELS_KV.get('lock:hostels_refresh');
-      if (!lock) {
-        // Acquire distributed lock, then refresh in background
-        await env.HOSTELS_KV.put('lock:hostels_refresh', '1', { expirationTtl: LOCK_TTL_SEC });
-        ctx.waitUntil(
-          refreshCache(env)
-            .then(() => console.log('[SWR] Background refresh done.'))
-            .catch(err => console.error('[SWR] Background refresh failed:', err.message))
-        );
-      } else {
-        console.log('[SWR] Refresh already running (locked). Serving stale.');
+      if (stale) {
+        const lock = await env.HOSTELS_KV.get('lock:hostels_refresh');
+        if (!lock) {
+          await env.HOSTELS_KV.put('lock:hostels_refresh', '1', { expirationTtl: LOCK_TTL_SEC });
+          ctx.waitUntil(
+            refreshCache(env)
+              .then(() => console.log('[SWR] Background refresh done.'))
+              .catch(err => console.error('[SWR] Background refresh failed:', err.message))
+          );
+        }
       }
+
+      return new Response(rawData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
+          'X-Cache-Status': stale ? 'STALE' : 'HIT',
+          'X-Cache-Age-Seconds': Math.round(age / 1000).toString(),
+          'X-Hostel-Count': meta.count?.toString() ?? '',
+          ...CORS,
+        },
+      });
     }
 
-    // Serve cached data immediately — always < 10 ms
-    return new Response(rawData, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
-        'X-Cache-Status': stale ? 'STALE' : 'HIT',
-        'X-Cache-Age-Seconds': Math.round(age / 1000).toString(),
-        'X-Hostel-Count': meta.count?.toString() ?? '',
-        ...CORS,
-      },
-    });
+    // ── /services.json ────────────────────────────────────────────────────────
+    if (servicePaths.has(pathname)) {
+      // Read cache from KV
+      const [rawData, rawMeta] = await Promise.all([
+        env.HOSTELS_KV.get('services_data'),
+        env.HOSTELS_KV.get('services_meta'),
+      ]);
+
+      let meta = null;
+      try { if (rawMeta) meta = JSON.parse(rawMeta); } catch (_) {}
+
+      // Cold start: cache is empty
+      if (!rawData || !meta) {
+        console.log('[Cache Services] Cold start — loading synchronously…');
+        try {
+          const { services, meta: newMeta } = await refreshServicesCache(env);
+          return new Response(JSON.stringify(services), {
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
+              'X-Cache-Status': 'MISS',
+              'X-Cache-Age-Seconds': '0',
+              ...CORS,
+            },
+          });
+        } catch (err) {
+          return json({ error: `Cache services cold start failed: ${err.message}` }, 502);
+        }
+      }
+
+      // Stale-While-Revalidate
+      const age   = Date.now() - meta.timestamp;
+      const ttl   = meta.nextTtl || SOFT_TTL_MS;
+      const stale = age > ttl;
+
+      if (stale) {
+        const lock = await env.HOSTELS_KV.get('lock:services_refresh');
+        if (!lock) {
+          await env.HOSTELS_KV.put('lock:services_refresh', '1', { expirationTtl: LOCK_TTL_SEC });
+          ctx.waitUntil(
+            refreshServicesCache(env)
+              .then(() => console.log('[SWR Services] Background refresh done.'))
+              .catch(err => console.error('[SWR Services] Background refresh failed:', err.message))
+          );
+        }
+      }
+
+      return new Response(rawData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
+          'X-Cache-Status': stale ? 'STALE' : 'HIT',
+          'X-Cache-Age-Seconds': Math.round(age / 1000).toString(),
+          'X-Service-Count': meta.count?.toString() ?? '',
+          ...CORS,
+        },
+      });
+    }
+
+    return json({ error: 'Not Found' }, 404);
   },
 
-  // ── Cron — once per day to stay within Firebase free tier ─────────────────
+  // ── Cron — daily warm up ──────────────────────────────────────────────────
   async scheduled(event, env, ctx) {
     console.log('[Cron] Daily cache warm-up triggered.');
-    // Acquire lock then warm
     await env.HOSTELS_KV.put('lock:hostels_refresh', '1', { expirationTtl: LOCK_TTL_SEC });
+    await env.HOSTELS_KV.put('lock:services_refresh', '1', { expirationTtl: LOCK_TTL_SEC });
     ctx.waitUntil(
-      refreshCache(env)
+      Promise.all([
+        refreshCache(env),
+        refreshServicesCache(env)
+      ])
         .then(() => console.log('[Cron] Warm-up complete.'))
         .catch(err => console.error('[Cron] Warm-up failed:', err.message))
     );

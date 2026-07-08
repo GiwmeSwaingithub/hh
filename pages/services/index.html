@@ -39,17 +39,15 @@
   <meta name="twitter:description" content="Browse local student services near Dedan Kimathi University of Technology: Wi-Fi, moving transport, laundry." />
   <meta name="twitter:image" content="https://i.postimg.cc/rFY2qLtR/Gemini-Generated-Image-ie2z3kie2z3kie2z.png" />
   <meta name="theme-color" content="#08080b" />
-  <link rel="stylesheet" href="../../shared/css/theme.css" />
+  <link rel="stylesheet" href="../../shared/css/theme.min.css" />
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
   <!-- Security: prevent caching and enforce strict policies -->
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta name="referrer" content="no-referrer" />
-  <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://hostel.dekut.site;" />
   <script src="../../shared/utils/disable-devtool.min.js"></script>
   <script>
     if (typeof DisableDevtool === "function") {
@@ -199,222 +197,17 @@
 
     <!-- Wi-Fi Providers Grid -->
     <ul class="locations-grid" id="wifi-grid">
-      <li class="project-item active">
-        <div class="macos-location-card">
-          <img class="service-card-img" src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=500&auto=format&fit=crop&q=60" alt="Liquid Intelligent Technologies Fiber" />
-          <div>
-            <h4 class="location-title">Liquid Intelligent Technologies</h4>
-            <span class="location-distance">Premium Student Fiber</span>
-            <p class="location-desc">High-speed, reliable student fiber packages. Best for heavy video streaming, research, and seamless zoom/online class sessions.</p>
-          </div>
-          <div class="location-footer">
-            <span><strong>Price:</strong> KSh 2,500 - 5,000/month</span>
-            <div class="location-tags">
-              <span class="project-tag">Fiber Wifi</span>
-              <span class="project-tag">Unlimited</span>
-              <span class="project-tag">Call: 0712345678</span>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="project-item active">
-        <div class="macos-location-card">
-          <img class="service-card-img" src="https://images.unsplash.com/photo-1563986768609-322da13575f3?w=500&auto=format&fit=crop&q=60" alt="Deltalink Broadband Wireless" />
-          <div>
-            <h4 class="location-title">Deltalink Broadband</h4>
-            <span class="location-distance">Affordable Student Packages</span>
-            <p class="location-desc">Highly popular internet provider near Gate A and Embassy. Offers customized budget student packages with steady bandwidth speeds.</p>
-          </div>
-          <div class="location-footer">
-            <span><strong>Price:</strong> KSh 1,500 - 3,000/month</span>
-            <div class="location-tags">
-              <span class="project-tag">Student Plan</span>
-              <span class="project-tag">Gate A / Embassy</span>
-              <span class="project-tag">Call: 0722345678</span>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="project-item active">
-        <div class="macos-location-card">
-          <img class="service-card-img" src="https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=500&auto=format&fit=crop&q=60" alt="Mawingu Wi-Fi Hotspot" />
-          <div>
-            <h4 class="location-title">Mawingu Wi-Fi</h4>
-            <span class="location-distance">Pay-As-You-Use Hotspot</span>
-            <p class="location-desc">Widely accessible hotspot internet coverage. Allows purchasing daily, weekly, or monthly cheap tokens matching student budgets.</p>
-          </div>
-          <div class="location-footer">
-            <span><strong>Price:</strong> KSh 50/day — KSh 1,000/month</span>
-            <div class="location-tags">
-              <span class="project-tag">Hotspot</span>
-              <span class="project-tag">Daily Tokens</span>
-              <span class="project-tag">Call: 0732345678</span>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="project-item active">
-        <div class="macos-location-card">
-          <img class="service-card-img" src="https://images.unsplash.com/photo-1601972599720-36938d4ecd31?w=500&auto=format&fit=crop&q=60" alt="Safani Net Wireless" />
-          <div>
-            <h4 class="location-title">Safani Net</h4>
-            <span class="location-distance">Fast Wireless Unlimited</span>
-            <p class="location-desc">Wireless high-performance internet provider covering Gate B and Boma. Excellent support desk and fast connection installations.</p>
-          </div>
-          <div class="location-footer">
-            <span><strong>Price:</strong> KSh 2,000 - 4,000/month</span>
-            <div class="location-tags">
-              <span class="project-tag">Wireless Net</span>
-              <span class="project-tag">Boma / Gate B</span>
-              <span class="project-tag">Call: 0742345678</span>
-            </div>
-          </div>
-        </div>
-      </li>
+      <!-- Loaded dynamically from Cloudflare Worker -->
     </ul>
 
     <!-- Kuhama Transport Grid -->
     <ul class="locations-grid" id="transport-grid" style="display: none;">
-      <li class="project-item active" data-service-id="dekut-student-movers" data-locations="Gate A,Gate B,Embassy">
-        <div class="macos-location-card">
-          <img class="service-card-img" src="https://images.unsplash.com/photo-1516576885502-d4998ac2b6b0?w=500&auto=format&fit=crop&q=60" alt="DeKUT Student Movers Handcart/Truck" />
-          <div>
-            <h4 class="location-title">DeKUT Student Movers</h4>
-            <span class="location-distance">Local Hostel Moving</span>
-            <p class="location-desc">Affordable handcart and light truck moving specifically catering to students transferring between local areas (Embassy, Gate A, Gate B).</p>
-            <div class="location-coverage" style="font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
-              <svg style="width: 14px; height: 14px; opacity: 0.8; flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-              </svg>
-              <span><strong>Coverage:</strong> Embassy, Gate A, Gate B</span>
-            </div>
-          </div>
-          <div class="location-footer">
-            <span><strong>Price:</strong> KSh 800 - 1,500/move</span>
-            <div class="location-tags">
-              <span class="project-tag">Student Rate</span>
-              <span class="project-tag">Luggage Helpers</span>
-              <span class="project-tag">Call: 0752345678</span>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="project-item active" data-service-id="nyeri-smart-movers" data-locations="Nyeri,Mweiga,Campus,Local">
-        <div class="macos-location-card">
-          <img class="service-card-img" src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=500&auto=format&fit=crop&q=60" alt="Nyeri Smart Movers Truck" />
-          <div>
-            <h4 class="location-title">Nyeri Smart Movers</h4>
-            <span class="location-distance">Professional Moving Truck</span>
-            <p class="location-desc">Full-service moving with packaging boxes, loading, and safe transit. Ideal for senior students moving full households to Nyeri town or Mweiga.</p>
-            <div class="location-coverage" style="font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
-              <svg style="width: 14px; height: 14px; opacity: 0.8; flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-              </svg>
-              <span><strong>Coverage:</strong> Nyeri Town, Mweiga, Local Campus</span>
-            </div>
-          </div>
-          <div class="location-footer">
-            <span><strong>Price:</strong> KSh 2,000 - 4,000/move</span>
-            <div class="location-tags">
-              <span class="project-tag">Pickup Truck</span>
-              <span class="project-tag">Full Wrap Services</span>
-              <span class="project-tag">Call: 0762345678</span>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="project-item active" data-service-id="boda-cargo-services" data-locations="Gate A,Gate B,Embassy,Boma">
-        <div class="macos-location-card">
-          <img class="service-card-img" src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500&auto=format&fit=crop&q=60" alt="Boda Cargo Delivery Motorcycle" />
-          <div>
-            <h4 class="location-title">Boda Cargo Services</h4>
-            <span class="location-distance">Quick Single Item Transport</span>
-            <p class="location-desc">Fast boda-boda cargo services. Perfect for transferring single mattresses, gas cylinders, small boxes, or study desks instantly.</p>
-            <div class="location-coverage" style="font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;">
-              <svg style="width: 14px; height: 14px; opacity: 0.8; flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-              </svg>
-              <span><strong>Coverage:</strong> Gate A, Gate B, Embassy, Boma</span>
-            </div>
-          </div>
-          <div class="location-footer">
-            <span><strong>Price:</strong> KSh 200 - 500/trip</span>
-            <div class="location-tags">
-              <span class="project-tag">Motorbike Cargo</span>
-              <span class="project-tag">Instant Delivery</span>
-              <span class="project-tag">Call: 0772345678</span>
-            </div>
-          </div>
-        </div>
-      </li>
+      <!-- Loaded dynamically from Cloudflare Worker -->
     </ul>
 
     <!-- Laundry & Cleaning Grid -->
     <ul class="locations-grid" id="cleaning-grid" style="display: none;">
-      <li class="project-item active">
-        <div class="macos-location-card">
-          <img class="service-card-img" src="https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?w=500&auto=format&fit=crop&q=60" alt="Clean & Bright Laundry Shop" />
-          <div>
-            <h4 class="location-title">Clean &amp; Bright Laundry</h4>
-            <span class="location-distance">Wash, Dry &amp; Fold</span>
-            <p class="location-desc">Quick-turnaround laundry service located opposite Gate A. Features high-grade washing machines, tumble dry, and neat garment folding.</p>
-          </div>
-          <div class="location-footer">
-            <span><strong>Price:</strong> KSh 120 - 150/Kg</span>
-            <div class="location-tags">
-              <span class="project-tag">Machine Wash</span>
-              <span class="project-tag">Gate A Area</span>
-              <span class="project-tag">Call: 0782345678</span>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="project-item active">
-        <div class="macos-location-card">
-          <img class="service-card-img" src="https://images.unsplash.com/photo-1521563565961-87e224e398d5?w=500&auto=format&fit=crop&q=60" alt="Fresh Student Laundry Ironing" />
-          <div>
-            <h4 class="location-title">Fresh Student Laundry</h4>
-            <span class="location-distance">Wash &amp; Steam Press</span>
-            <p class="location-desc">Premium student laundry services at Gate B. Clothes are washed, ironed, steam-pressed, and wrapped on hangers ready for pickup.</p>
-          </div>
-          <div class="location-footer">
-            <span><strong>Price:</strong> KSh 140 - 180/Kg</span>
-            <div class="location-tags">
-              <span class="project-tag">Washing &amp; Ironing</span>
-              <span class="project-tag">Gate B Area</span>
-              <span class="project-tag">Call: 0792345678</span>
-            </div>
-          </div>
-        </div>
-      </li>
-
-      <li class="project-item active">
-        <div class="macos-location-card">
-          <img class="service-card-img" src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=500&auto=format&fit=crop&q=60" alt="Sparkle Cleaning Supplies" />
-          <div>
-            <h4 class="location-title">Sparkle Cleaning Services</h4>
-            <span class="location-distance">Hostel Room Deep Clean</span>
-            <p class="location-desc">Professional cleaning helpers specializing in scrubbing hostel floors, bathrooms, windows, and dusting. Perfect for moving-in or moving-out deep cleans.</p>
-          </div>
-          <div class="location-footer">
-            <span><strong>Price:</strong> KSh 500 - 800/room</span>
-            <div class="location-tags">
-              <span class="project-tag">Deep Cleaning</span>
-              <span class="project-tag">Disinfection</span>
-              <span class="project-tag">Call: 0702345678</span>
-            </div>
-          </div>
-        </div>
-      </li>
+      <!-- Loaded dynamically from Cloudflare Worker -->
     </ul>
 
     <!-- Footer -->

@@ -216,7 +216,7 @@
             <path fill="#644647" d="M33.129 29.18l-2.803 1.065a.953.953 0 00-.053 1.764.957.957 0 00.73.022l2.803-1.065a.953.953 0 00-.677-1.783v-.003zm24.373-3.628l-2.167.823a.956.956 0 00-.054 1.764.954.954 0 00.73.021l2.169-.823a.954.954 0 10-.678-1.784v-.001z"></path>
           </svg>
         </span>
-        <h5 class="cookie-popup-title">Your privacy is important to us</h5>
+        <h2 class="cookie-popup-title">Your privacy is important to us</h2>
         <p class="cookie-popup-desc">
           We process your personal information to measure and improve our sites and services, to assist our campaigns and to provide personalised content.
           <br>
@@ -264,7 +264,7 @@
           </button>
         </div>
         <div class="tts-slider-wrap">
-          <span>Speed: <label id="tts-speed-val">1x</label></span>
+          <label for="tts-speed-slider">Speed: <span id="tts-speed-val">1x</span></label>
           <input type="range" id="tts-speed-slider" min="0.5" max="2" step="0.1" value="1">
         </div>
       </div>

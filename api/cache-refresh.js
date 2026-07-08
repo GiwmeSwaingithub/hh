@@ -74,7 +74,20 @@ module.exports = async (req, res) => {
       r.end();
     });
 
-    const data = JSON.parse(result.body);
+    let data;
+    try {
+      data = JSON.parse(result.body);
+    } catch (parseErr) {
+      return res.status(502).json({
+        error: `Cloudflare Worker returned non-JSON response (Status ${result.status}): ${result.body.substring(0, 150) || 'Empty'}`
+      });
+    }
+
+    if (data && data.success) {
+      if (data.count === undefined && data.hostels_count !== undefined) {
+        data.count = data.hostels_count;
+      }
+    }
     return res.status(result.status).json(data);
   } catch (err) {
     return res.status(502).json({ error: err.message });

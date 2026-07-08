@@ -4,6 +4,10 @@ compatibility_date = "2024-04-01"
 
 [vars]
 FIRESTORE_PROJECT_ID = "dekuthostels"
+# FIREBASE_API_KEY must be set as a Worker Secret (not a plain var) for production:
+# wrangler secret put FIREBASE_API_KEY
+# Value: AIzaSyBy2E0rFGh0quXssZSiQVofwE2C-f5Mt2w
+FIREBASE_API_KEY = "AIzaSyBy2E0rFGh0quXssZSiQVofwE2C-f5Mt2w"
 
 [[kv_namespaces]]
 binding = "HOSTELS_KV"
