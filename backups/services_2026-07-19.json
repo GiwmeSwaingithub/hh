@@ -1,0 +1,115 @@
+[
+  {
+    "id": "liquid-fiber",
+    "type": 1,
+    "title": "Liquid Intelligent Technologies",
+    "subtitle": "Premium Student Fiber",
+    "description": "High-speed, reliable student fiber packages. Best for heavy video streaming, research, and seamless zoom/online class sessions.",
+    "price": "KSh 2,500 - 5,000/month",
+    "image": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=500&auto=format&fit=crop&q=60",
+    "tags": ["Fiber Wifi", "Unlimited", "Call: 0712345678"],
+    "order": 1
+  },
+  {
+    "id": "deltalink-broadband",
+    "type": 1,
+    "title": "Deltalink Broadband",
+    "subtitle": "Affordable Student Packages",
+    "description": "Highly popular internet provider near Gate A and Embassy. Offers customized budget student packages with steady bandwidth speeds.",
+    "price": "KSh 1,500 - 3,000/month",
+    "image": "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=500&auto=format&fit=crop&q=60",
+    "tags": ["Student Plan", "Gate A / Embassy", "Call: 0722345678"],
+    "order": 2
+  },
+  {
+    "id": "mawingu-wifi",
+    "type": 1,
+    "title": "Mawingu Wi-Fi",
+    "subtitle": "Pay-As-You-Use Hotspot",
+    "description": "Widely accessible hotspot internet coverage. Allows purchasing daily, weekly, or monthly cheap tokens matching student budgets.",
+    "price": "KSh 50/day — KSh 1,000/month",
+    "image": "https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=500&auto=format&fit=crop&q=60",
+    "tags": ["Hotspot", "Daily Tokens", "Call: 0732345678"],
+    "order": 3
+  },
+  {
+    "id": "safani-net",
+    "type": 1,
+    "title": "Safani Net",
+    "subtitle": "Fast Wireless Unlimited",
+    "description": "Wireless high-performance internet provider covering Gate B and Boma. Excellent support desk and fast connection installations.",
+    "price": "KSh 2,000 - 4,000/month",
+    "image": "https://images.unsplash.com/photo-1601972599720-36938d4ecd31?w=500&auto=format&fit=crop&q=60",
+    "tags": ["Wireless Net", "Boma / Gate B", "Call: 0742345678"],
+    "order": 4
+  },
+  {
+    "id": "dekut-student-movers",
+    "type": 2,
+    "title": "DeKUT Student Movers",
+    "subtitle": "Local Hostel Moving",
+    "description": "Affordable handcart and light truck moving specifically catering to students transferring between local areas (Embassy, Gate A, Gate B).",
+    "price": "KSh 800 - 1,500/move",
+    "image": "https://images.unsplash.com/photo-1516576885502-d4998ac2b6b0?w=500&auto=format&fit=crop&q=60",
+    "tags": ["Student Rate", "Luggage Helpers", "Call: 0752345678"],
+    "coverage": "Embassy, Gate A, Gate B",
+    "order": 1
+  },
+  {
+    "id": "nyeri-smart-movers",
+    "type": 2,
+    "title": "Nyeri Smart Movers",
+    "subtitle": "Professional Moving Truck",
+    "description": "Full-service moving with packaging boxes, loading, and safe transit. Ideal for senior students moving full households to Nyeri town or Mweiga.",
+    "price": "KSh 2,000 - 4,000/move",
+    "image": "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=500&auto=format&fit=crop&q=60",
+    "tags": ["Pickup Truck", "Full Wrap Services", "Call: 0762345678"],
+    "coverage": "Nyeri Town, Mweiga, Local Campus",
+    "order": 2
+  },
+  {
+    "id": "boda-cargo-services",
+    "type": 2,
+    "title": "Boda Cargo Services",
+    "subtitle": "Quick Single Item Transport",
+    "description": "Fast boda-boda cargo services. Perfect for transferring single mattresses, gas cylinders, small boxes, or study desks instantly.",
+    "price": "KSh 200 - 500/trip",
+    "image": "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500&auto=format&fit=crop&q=60",
+    "tags": ["Motorbike Cargo", "Instant Delivery", "Call: 0772345678"],
+    "coverage": "Gate A, Gate B, Embassy, Boma",
+    "order": 3
+  },
+  {
+    "id": "clean-bright-laundry",
+    "type": 3,
+    "title": "Clean & Bright Laundry",
+    "subtitle": "Wash, Dry & Fold",
+    "description": "Quick-turnaround laundry service located opposite Gate A. Features high-grade washing machines, tumble dry, and neat garment folding.",
+    "price": "KSh 120 - 150/Kg",
+    "image": "https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?w=500&auto=format&fit=crop&q=60",
+    "tags": ["Machine Wash", "Gate A Area", "Call: 0782345678"],
+    "order": 1
+  },
+  {
+    "id": "fresh-student-laundry",
+    "type": 3,
+    "title": "Fresh Student Laundry",
+    "subtitle": "Wash & Steam Press",
+    "description": "Premium student laundry services at Gate B. Clothes are washed, ironed, steam-pressed, and wrapped on hangers ready for pickup.",
+    "price": "KSh 140 - 180/Kg",
+    "image": "https://images.unsplash.com/photo-1521563565961-87e224e398d5?w=500&auto=format&fit=crop&q=60",
+    "tags": ["Washing & Ironing", "Gate B Area", "Call: 0792345678"],
+    "order": 2
+  },
+  {
+    "id": "sparkle-cleaning-services",
+    "type": 3,
+    "title": "Sparkle Cleaning Services",
+    "subtitle": "Hostel Room Deep Clean",
+    "description": "Professional cleaning helpers specializing in scrubbing hostel floors, bathrooms, windows, and dusting. Perfect for moving-in or moving-out deep cleans.",
+    "price": "KSh 500 - 800/room",
+    "image": "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=500&auto=format&fit=crop&q=60",
+    "tags": ["Deep Cleaning", "Disinfection", "Call: 0702345678"],
+    "order": 3
+  }
+]

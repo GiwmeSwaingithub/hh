@@ -156,6 +156,16 @@ async function refreshServicesCache(env, idToken) {
     throw err;
   }
 
+  if (!services || services.length === 0) {
+    const existing = await env.HOSTELS_KV.get('services_data');
+    if (existing) {
+      console.log('[Refresh Services] Firestore returned 0 services — preserving existing KV cache.');
+      await env.HOSTELS_KV.delete('lock:services_refresh').catch(() => {});
+      const existingServices = JSON.parse(existing);
+      return { services: existingServices, meta: { timestamp: Date.now(), count: existingServices.length } };
+    }
+  }
+
   const jitter = (Math.random() - 0.5) * 2 * JITTER_MS; // ±JITTER_MS
   const meta = {
     timestamp: Date.now(),

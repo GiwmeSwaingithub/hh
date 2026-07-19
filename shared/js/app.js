@@ -201,6 +201,8 @@
       clearCache();
     }
 
+    const GITHUB_RAW_HOSTELS = 'https://raw.githubusercontent.com/GiwmeSwaingithub/hh/main/backups/latest_hostels.json';
+
     // --- 1. Fetch live from Cloudflare Worker (single source of truth) ------
     try {
       const res = await fetch(workerUrl, { cache: 'no-cache' });
@@ -216,10 +218,29 @@
         }
       }
     } catch (err) {
-      console.warn('[DKUT] Cloudflare fetch failed, attempting local cache fallback:', err);
+      console.warn('[DKUT] Cloudflare fetch failed, attempting GitHub Raw fallback:', err);
     }
 
-    // --- 2. Offline Fallback: Serve from browser localStorage ----------
+    // --- 2. Cloudflare Daily Limit / Failure Fallback: GitHub Raw Latest JSON ---
+    try {
+      console.info('[DKUT] Fetching latest hostels backup from GitHub Raw...');
+      const ghRes = await fetch(GITHUB_RAW_HOSTELS, { cache: 'no-cache' });
+      if (ghRes.ok) {
+        const raw = await ghRes.json();
+        const normalized = normalizeHostels(raw);
+        if (normalized.length > 0) {
+          try {
+            localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: normalized }));
+          } catch (_) {}
+          console.info('[DKUT] Loaded', normalized.length, 'hostels from GitHub Raw backup.');
+          return normalized;
+        }
+      }
+    } catch (ghErr) {
+      console.warn('[DKUT] GitHub Raw backup fetch failed:', ghErr);
+    }
+
+    // --- 3. Offline Fallback: Serve from browser localStorage ----------
     try {
       const raw = localStorage.getItem(cacheKey);
       if (raw) {
@@ -234,7 +255,7 @@
       }
     } catch (_) {}
 
-    // --- 3. Final Fallback: Static json files ----------
+    // --- 4. Final Fallback: Static json files ----------
     return fetchFromUrls(getDataUrls(), cacheKey, 'hostels fallback');
   }
 

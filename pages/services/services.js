@@ -49,7 +49,8 @@
   async function fetchServices() {
     const cacheKey = 'dkut_services_cache';
     let cfServicesUrl = 'https://dekuthostels-cache.giwme1socialtalk.workers.dev/services.json';
-    
+    const githubRawServicesUrl = 'https://raw.githubusercontent.com/GiwmeSwaingithub/hh/main/backups/latest_services.json';
+
     // Dynamically retrieve from global config if available
     if (window.DKUT && window.DKUT.CONFIG && window.DKUT.CONFIG.SETTINGS) {
       cfServicesUrl = window.DKUT.CONFIG.SETTINGS.cfWorkerUrl.replace('hostels.json', 'services.json');
@@ -60,39 +61,56 @@
       location.origin
     )).href;
 
-    // Check localStorage cache first
+    // 1. Try fetching live from Cloudflare Worker
+    try {
+      console.log('[Services] Fetching from worker:', cfServicesUrl);
+      const res = await fetch(cfServicesUrl, { cache: 'no-cache' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          try { localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data })); } catch (_) {}
+          return data;
+        }
+      }
+    } catch (e) {
+      console.warn('[Services] Worker fetch failed, trying GitHub Raw fallback:', e);
+    }
+
+    // 2. Cloudflare Daily Limit / Failure Fallback: GitHub Raw Latest Services JSON
+    try {
+      console.log('[Services] Fetching latest services backup from GitHub Raw...');
+      const ghRes = await fetch(githubRawServicesUrl, { cache: 'no-cache' });
+      if (ghRes.ok) {
+        const data = await ghRes.json();
+        if (Array.isArray(data) && data.length > 0) {
+          try { localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data })); } catch (_) {}
+          console.log('[Services] Served from GitHub Raw backup.');
+          return data;
+        }
+      }
+    } catch (ghErr) {
+      console.warn('[Services] GitHub Raw backup fetch failed:', ghErr);
+    }
+
+    // 3. Fallback to localStorage cache
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
       try {
-        const { timestamp, data } = JSON.parse(cached);
-        const cacheTTL = (window.DKUT && window.DKUT.CONFIG && window.DKUT.CONFIG.SETTINGS) ? window.DKUT.CONFIG.SETTINGS.cacheTTL : 300000;
-        if (Date.now() - timestamp < cacheTTL) {
-          console.log('[Services] Serving from local cache');
+        const { data } = JSON.parse(cached);
+        if (Array.isArray(data) && data.length > 0) {
+          console.log('[Services] Serving from local cache fallback');
           return data;
         }
       } catch (_) {}
     }
 
-    // Try fetching from Cloudflare Worker
-    try {
-      console.log('[Services] Fetching from worker:', cfServicesUrl);
-      const res = await fetch(cfServicesUrl);
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), data }));
-        return data;
-      }
-    } catch (e) {
-      console.warn('[Services] Worker fetch failed, trying local fallback:', e);
-    }
-
-    // Fallback to local copy
+    // 4. Final Fallback to local copy
     try {
       console.log('[Services] Loading local fallback:', localUrl);
-      const res = await fetch(localUrl);
+      const res = await fetch(localUrl, { cache: 'no-cache' });
       if (res.ok) {
         const data = await res.json();
-        return data;
+        if (Array.isArray(data) && data.length > 0) return data;
       }
     } catch (e) {
       console.error('[Services] Local fallback load failed:', e);
