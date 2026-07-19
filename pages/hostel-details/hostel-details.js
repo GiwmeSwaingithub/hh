@@ -106,12 +106,8 @@
       const imageUrl = (hostel.images && hostel.images.length > 0) ? hostel.images[0] : (hostel.image || '');
       const caretakerContact = hostel.contact ? hostel.contact.split(',')[0].trim() : '254769486775';
 
-      const botBaseUrl = (window.DKUT && window.DKUT.CONFIG && window.DKUT.CONFIG.SITE && window.DKUT.CONFIG.SITE.botApiUrl)
-        ? window.DKUT.CONFIG.SITE.botApiUrl
-        : 'http://20.164.16.100:5000';
-
       try {
-        const response = await fetch(`${botBaseUrl}/api/send-hostel-contact`, {
+        const response = await fetch('/api/send-hostel-contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -144,16 +140,14 @@
           throw new Error(data.error || 'Failed to send WhatsApp message');
         }
       } catch (err) {
-        console.warn('Bot API call failed, falling back to direct WhatsApp link:', err.message);
+        console.warn('Bot API call failed:', err.message);
         if (statusBox) {
           statusBox.style.display = 'block';
-          statusBox.style.background = 'rgba(234,179,8,0.2)';
-          statusBox.style.border = '1px solid rgba(234,179,8,0.4)';
-          statusBox.style.color = '#fde047';
-          statusBox.textContent = 'Opening direct WhatsApp chat...';
+          statusBox.style.background = 'rgba(239,68,68,0.2)';
+          statusBox.style.border = '1px solid rgba(239,68,68,0.4)';
+          statusBox.style.color = '#fca5a5';
+          statusBox.textContent = err.message || 'Bot error. Please try again or use direct WhatsApp below.';
         }
-        window.open(directWaUrl, '_blank');
-        setTimeout(closeSheet, 1500);
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;

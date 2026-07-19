@@ -42,6 +42,7 @@
     { "source": "/api/uploadImage", "destination": "/api/uploadImage" },
     { "source": "/api/sendMsg", "destination": "/api/sendMsg" },
     { "source": "/api/getWall", "destination": "/api/getWall" },
+    { "source": "/api/send-hostel-contact", "destination": "/api/send-hostel-contact" },
     { "source": "/api/sitemap", "destination": "/api/sitemap" }
   ],
   "headers": [
