@@ -194,7 +194,7 @@
     if (isMockMode()) return fetchMockHostels();
 
     const cfg      = DKUT.CONFIG && DKUT.CONFIG.SETTINGS;
-    const workerUrl = (cfg && cfg.cfWorkerUrl) || 'https://dekuthostels-cache.giwme1socialtalk.workers.dev/hostels.json';
+    const workerUrl = (cfg && cfg.cfWorkerUrl) || 'https://api.listing.dekut.site/hostels.json';
     const cacheKey  = (cfg && cfg.cacheKey)    || 'dkut_hostels_cf_cache';
 
     if (forceRefresh) {

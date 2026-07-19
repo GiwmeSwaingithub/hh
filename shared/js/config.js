@@ -78,7 +78,7 @@
 
   const SETTINGS = {
     // Cloudflare Worker — the single source of truth for all hostel data.
-    cfWorkerUrl: 'https://dekuthostels-cache.giwme1socialtalk.workers.dev/hostels.json',
+    cfWorkerUrl: 'https://api.listing.dekut.site/hostels.json',
     mockDataPath: '../../shared/data/hostels.mock.json',
     cacheKey: 'dkut_hostels_cf_cache',
     mockCacheKey: 'dkut_hostels_mock_cache',

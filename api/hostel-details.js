@@ -1,7 +1,7 @@
 const https = require('https');
 const path = require('path');
 
-const CF_WORKER_URL = 'https://dekuthostels-cache.giwme1socialtalk.workers.dev/hostels.json';
+const CF_WORKER_URL = 'https://api.listing.dekut.site/hostels.json';
 
 // Fetch hostels JSON from Cloudflare Worker (the single source of truth).
 function fetchHostelsFromCF() {

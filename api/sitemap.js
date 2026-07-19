@@ -1,6 +1,6 @@
 const https = require('https');
 
-const CF_WORKER_URL = 'https://dekuthostels-cache.giwme1socialtalk.workers.dev/hostels.json';
+const CF_WORKER_URL = 'https://api.listing.dekut.site/hostels.json';
 
 function fetchHostels() {
   return new Promise((resolve, reject) => {

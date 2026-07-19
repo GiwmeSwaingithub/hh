@@ -183,17 +183,47 @@ async function refreshServicesCache(env, idToken) {
 
 // ─── Request Handler ──────────────────────────────────────────────────────────
 
-const CORS = {
-  'Access-Control-Allow-Origin':  '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Max-Age':       '86400',
-};
+const ALLOWED_ORIGINS = [
+  'https://hostel.dekut.site',
+  'https://dekut.site',
+  'https://www.dekut.site',
+  'http://api.listing.dekut.site',
+  'https://api.listing.dekut.site',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'http://localhost:8080',
+  'http://127.0.0.1:5500'
+];
 
-function json(body, status = 200, extra = {}) {
+function getCorsHeaders(request) {
+  const origin = (request.headers.get('Origin') || '').toLowerCase();
+  const isAllowed = ALLOWED_ORIGINS.includes(origin) ||
+                    origin.endsWith('.dekut.site') ||
+                    origin.startsWith('http://localhost:') ||
+                    origin.startsWith('http://127.0.0.1:');
+
+  const allowedOrigin = isAllowed ? origin : 'https://hostel.dekut.site';
+
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Firebase-Id-Token',
+    'Access-Control-Max-Age': '86400',
+    'Vary': 'Origin'
+  };
+}
+
+function json(body, status = 200, extra = {}, request = null) {
+  const cors = request ? getCorsHeaders(request) : {
+    'Access-Control-Allow-Origin': 'https://hostel.dekut.site',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Firebase-Id-Token',
+    'Vary': 'Origin'
+  };
+
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json', ...CORS, ...extra },
+    headers: { 'Content-Type': 'application/json', ...cors, ...extra },
   });
 }
 
@@ -201,10 +231,11 @@ export default {
   // ── HTTP ──────────────────────────────────────────────────────────────────
   async fetch(request, env, ctx) {
     const { pathname } = new URL(request.url);
+    const corsHeaders = getCorsHeaders(request);
 
     // Preflight
     if (request.method === 'OPTIONS') {
-      return new Response(null, { headers: CORS });
+      return new Response(null, { headers: corsHeaders });
     }
 
     // ── /update-cache  (webhook — force refresh both caches) ──────────────────
@@ -265,7 +296,7 @@ export default {
               'X-Cache-Age-Seconds': '0',
               'X-Cache-Timestamp': (newMeta ? newMeta.timestamp : Date.now()).toString(),
               'ETag': '"' + (newMeta ? newMeta.timestamp : Date.now()) + '"',
-              ...CORS,
+              ...corsHeaders,
             },
           });
         } catch (err) {
@@ -299,7 +330,7 @@ export default {
           'X-Cache-Timestamp': meta?.timestamp ? meta.timestamp.toString() : Date.now().toString(),
           'ETag': '"' + (meta?.timestamp || Date.now()) + '"',
           'X-Hostel-Count': meta?.count?.toString() ?? '',
-          ...CORS,
+          ...corsHeaders,
         },
       });
     }
@@ -328,7 +359,7 @@ export default {
               'X-Cache-Age-Seconds': '0',
               'X-Cache-Timestamp': (newMeta ? newMeta.timestamp : Date.now()).toString(),
               'ETag': '"' + (newMeta ? newMeta.timestamp : Date.now()) + '"',
-              ...CORS,
+              ...corsHeaders,
             },
           });
         } catch (err) {
@@ -362,7 +393,7 @@ export default {
           'X-Cache-Timestamp': meta?.timestamp ? meta.timestamp.toString() : Date.now().toString(),
           'ETag': '"' + (meta?.timestamp || Date.now()) + '"',
           'X-Service-Count': meta?.count?.toString() ?? '',
-          ...CORS,
+          ...corsHeaders,
         },
       });
     }

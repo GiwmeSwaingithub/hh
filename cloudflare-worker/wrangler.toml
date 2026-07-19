@@ -13,6 +13,10 @@ FIREBASE_API_KEY = "AIzaSyBy2E0rFGh0quXssZSiQVofwE2C-f5Mt2w"
 binding = "HOSTELS_KV"
 id = "3672b77d0ff1444c87880d9f8264872b"
 
+routes = [
+  { pattern = "api.listing.dekut.site", custom_domain = true }
+]
+
 [triggers]
 # Run once per day at 2:00 AM UTC — stays well within Firebase free-tier read limits.
 # The cache only hits Firestore once per day OR when /update-cache is called after a write.

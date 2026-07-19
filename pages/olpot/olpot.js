@@ -18,7 +18,7 @@
     appId:             '1:984307401520:web:ac69f3b466d9030ce0fef5'
   };
 
-  var CF_STATS_URL    = 'https://dekuthostels-cache.giwme1socialtalk.workers.dev/hostels.json';
+  var CF_STATS_URL    = 'https://api.listing.dekut.site/hostels.json';
   var ADMIN_AUTH_PATH = '/api/admin-auth';
 
   /* ─── State ─── */

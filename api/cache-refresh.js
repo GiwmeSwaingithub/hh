@@ -2,7 +2,7 @@ const https = require('https');
 
 const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY || 'AIzaSyBy2E0rFGh0quXssZSiQVofwE2C-f5Mt2w';
 const CACHE_SECRET     = process.env.CACHE_SECRET     || 'dkut_cache_secret_J9xP2mQvRnW7sT4';
-const CACHE_WORKER_URL = 'https://dekuthostels-cache.giwme1socialtalk.workers.dev/update-cache';
+const CACHE_WORKER_URL = 'https://api.listing.dekut.site/update-cache';
 const ADMIN_UIDS       = ['uTyGBYW6l2e8qjASLxuvBxoLyZZ2'];
 
 // ── Verify Firebase ID Token via Google Identity REST ────────────────────────

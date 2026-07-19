@@ -48,7 +48,7 @@
 
   async function fetchServices() {
     const cacheKey = 'dkut_services_cache';
-    let cfServicesUrl = 'https://dekuthostels-cache.giwme1socialtalk.workers.dev/services.json';
+    let cfServicesUrl = 'https://api.listing.dekut.site/services.json';
     const githubRawServicesUrl = 'https://raw.githubusercontent.com/GiwmeSwaingithub/hh/main/backups/latest_services.json';
 
     // Dynamically retrieve from global config if available
