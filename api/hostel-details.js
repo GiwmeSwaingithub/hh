@@ -1,25 +1,67 @@
 const https = require('https');
 const path = require('path');
+const fs = require('fs');
 
 const CF_WORKER_URL = 'https://api.listing.dekut.site/hostels.json';
+const GITHUB_RAW_URL = 'https://raw.githubusercontent.com/GiwmeSwaingithub/hh/main/backups/latest_hostels.json';
 
-// Fetch hostels JSON from Cloudflare Worker (the single source of truth).
-function fetchHostelsFromCF() {
+function fetchJsonUrl(urlStr) {
   return new Promise((resolve, reject) => {
-    const req = https.get(CF_WORKER_URL, (res) => {
+    const req = https.get(urlStr, (res) => {
       let body = '';
       res.on('data', chunk => { body += chunk; });
       res.on('end', () => {
-        if (res.statusCode !== 200) {
-          return reject(new Error(`Cloudflare Worker returned HTTP ${res.statusCode}`));
-        }
+        if (res.statusCode !== 200) return reject(new Error(`HTTP ${res.statusCode} for ${urlStr}`));
         try { resolve(JSON.parse(body)); }
-        catch (e) { reject(new Error('Invalid JSON from Cloudflare Worker')); }
+        catch (e) { reject(new Error(`Invalid JSON from ${urlStr}`)); }
       });
     });
-    req.setTimeout(8000, () => { req.destroy(); reject(new Error('Cloudflare Worker request timed out')); });
+    req.setTimeout(5000, () => { req.destroy(); reject(new Error('Request timed out')); });
     req.on('error', reject);
   });
+}
+
+async function getHostelsData() {
+  // 1. Cloudflare Worker
+  try {
+    const data = await fetchJsonUrl(CF_WORKER_URL);
+    if (Array.isArray(data) && data.length > 0) return data;
+  } catch (e) {
+    console.warn('[hostel-details] Cloudflare Worker fetch failed:', e.message);
+  }
+
+  // 2. GitHub Raw Latest Backup
+  try {
+    const data = await fetchJsonUrl(GITHUB_RAW_URL);
+    if (Array.isArray(data) && data.length > 0) return data;
+  } catch (e) {
+    console.warn('[hostel-details] GitHub Raw backup fetch failed:', e.message);
+  }
+
+  // 3. Local JSON fallbacks
+  try {
+    const localPath = path.join(process.cwd(), 'shared', 'data', 'hostels.json');
+    if (fs.existsSync(localPath)) {
+      const data = JSON.parse(fs.readFileSync(localPath, 'utf8'));
+      const list = Array.isArray(data) ? data : (data.hostels || []);
+      if (list.length > 0) return list;
+    }
+  } catch (e) {
+    console.warn('[hostel-details] Local hostels.json read failed:', e.message);
+  }
+
+  try {
+    const firebasePath = path.join(process.cwd(), 'firebase.json');
+    if (fs.existsSync(firebasePath)) {
+      const data = JSON.parse(fs.readFileSync(firebasePath, 'utf8'));
+      const list = Array.isArray(data) ? data : (data.hostels || []);
+      if (list.length > 0) return list;
+    }
+  } catch (e) {
+    console.warn('[hostel-details] Local firebase.json read failed:', e.message);
+  }
+
+  return [];
 }
 
 function escapeAttr(str) {
@@ -30,8 +72,6 @@ function escapeAttr(str) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 }
-
-const fs = require('fs');
 
 module.exports = async (req, res) => {
   try {
@@ -46,8 +86,7 @@ module.exports = async (req, res) => {
     let jsonLdScript = '';
 
     if (h) {
-      // Fetch from Cloudflare Worker — the single source of truth
-      const hostels = await fetchHostelsFromCF();
+      const hostels = await getHostelsData();
 
       // Find matching hostel by id or name slug
       const hostel = hostels.find(item =>
