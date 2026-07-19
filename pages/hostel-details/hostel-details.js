@@ -404,12 +404,20 @@
         if (room) {
           selectedRoomName = room.name;
           
-          const priceStr = stripPeriod(DKUT.app.fmtPrice(room.price.amountSharing));
-          const priceAloneStr = room.price.amountAlone ? stripPeriod(DKUT.app.fmtPrice(room.price.amountAlone)) : 'N/A';
-          
-          let priceCell = `Sharing: ${esc(priceStr)}`;
-          if (room.price.amountAlone) {
-            priceCell += `<br><small style="color:#8a8298">Alone: ${esc(priceAloneStr)}</small>`;
+          const amtSharing = room.price ? room.price.amountSharing : 0;
+          const amtAlone = room.price ? room.price.amountAlone : 0;
+          let priceCell = '';
+
+          if (amtSharing > 0 && amtAlone > 0 && amtSharing === amtAlone) {
+            priceCell = esc(stripPeriod(DKUT.app.fmtPrice(amtSharing)));
+          } else if (amtSharing > 0 && amtAlone > 0) {
+            priceCell = `Sharing: ${esc(stripPeriod(DKUT.app.fmtPrice(amtSharing)))}<br><small style="color:#8a8298">Solo: ${esc(stripPeriod(DKUT.app.fmtPrice(amtAlone)))}</small>`;
+          } else if (amtSharing > 0) {
+            priceCell = `Sharing: ${esc(stripPeriod(DKUT.app.fmtPrice(amtSharing)))}`;
+          } else if (amtAlone > 0) {
+            priceCell = `Solo: ${esc(stripPeriod(DKUT.app.fmtPrice(amtAlone)))}`;
+          } else {
+            priceCell = 'Contact for price';
           }
 
           let depHtml = 'None';

@@ -26,7 +26,8 @@
         const defaultRoom = h.rooms && h.rooms[0];
         const priceSharing = defaultRoom && defaultRoom.price ? defaultRoom.price.amountSharing : 0;
         const priceAlone = defaultRoom && defaultRoom.price ? defaultRoom.price.amountAlone : 0;
-        const roomTypeStr = defaultRoom ? defaultRoom.name : '';
+        const roomTypeNames = h.rooms && Array.isArray(h.rooms) ? h.rooms.map(r => r.name).filter(Boolean) : [];
+        const roomTypeStr = roomTypeNames.length > 0 ? roomTypeNames.join(', ') : (defaultRoom ? defaultRoom.name : '');
         const occupancyStr = defaultRoom && defaultRoom.occupancy && defaultRoom.occupancy.maximumPeople > 1 ? 'shared' : 'stay-alone';
         
         const utilitiesArray = [];
@@ -314,13 +315,19 @@
     const priceLines = [];
     if (h.rooms && Array.isArray(h.rooms) && h.rooms.length > 0) {
       h.rooms.forEach(room => {
-        const amtStr = room.price.amountSharing ? stripPeriod(fmtPrice(room.price.amountSharing)) : '';
-        if (amtStr) {
-          priceLines.push(room.name + ' (Sharing): ' + amtStr);
-        }
-        const aloneStr = room.price.amountAlone ? stripPeriod(fmtPrice(room.price.amountAlone)) : '';
-        if (aloneStr) {
-          priceLines.push(room.name + ' (Solo): ' + aloneStr);
+        const amtSharing = room.price ? room.price.amountSharing : 0;
+        const amtAlone = room.price ? room.price.amountAlone : 0;
+        const period = room.price && room.price.period ? '/' + room.price.period.replace(/^month$/i, 'mo').replace(/^semester$/i, 'sem') : '';
+
+        if (amtSharing > 0 && amtAlone > 0 && amtSharing === amtAlone) {
+          priceLines.push(room.name + ': KES ' + amtSharing.toLocaleString('en-KE') + period);
+        } else {
+          if (amtSharing > 0) {
+            priceLines.push(room.name + ' (Sharing): KES ' + amtSharing.toLocaleString('en-KE') + period);
+          }
+          if (amtAlone > 0) {
+            priceLines.push(room.name + ' (Solo): KES ' + amtAlone.toLocaleString('en-KE') + period);
+          }
         }
       });
     } else {
@@ -342,6 +349,10 @@
       '</div>';
     }
 
+    const roomTagsHtml = (h.rooms && Array.isArray(h.rooms) && h.rooms.length > 0)
+      ? h.rooms.map(r => '<span class="project-tag" style="background:rgba(99,102,241,0.12);color:#a5b4fc;">' + esc(r.name) + '</span>').join('')
+      : '<span class="project-tag">' + esc(h.roomType || h.occupancy || 'Room') + '</span>';
+
     const actionBtn = options.linkToDetails
       ? '<a class="enquire-btn" href="' + esc(detailHref) + '"><em>View Details</em><i>&#10095;&#10095;</i></a>'
       : '<a1' + (whatsapp ? ' href="' + esc(whatsapp) + '" target="_blank" rel="noopener noreferrer"' : '') + '><em>Enquire Now</em><i>&#10095;&#10095;</i></a1>';
@@ -354,9 +365,9 @@
         '</div>' +
         '<div class="card-simple-info" style="margin-top:16px; text-align:left;">' +
           '<h3 class="project-title" style="margin: 0 0 8px 0;"><a href="' + esc(detailHref) + '">' + esc(h.name) + '</a></h3>' +
-          '<div class="project-meta" style="margin-bottom: 8px;">' +
+          '<div class="project-meta" style="margin-bottom: 8px; flex-wrap: wrap; gap: 4px;">' +
             '<a class="project-date" href="' + esc(homeLocationUrl(h.location)) + '" style="text-decoration:none;cursor:pointer;">' + esc(h.location) + '</a>' +
-            '<span class="project-tag">' + esc(h.roomType || h.occupancy || 'Room') + '</span>' +
+            roomTagsHtml +
           '</div>' +
           '<p class="project-description" style="text-align:left; margin-bottom:12px; font-size:0.85rem; color:#8a8298; line-height:1.5;">' + esc(descShort || 'No description available.') + '</p>' +
           '<div class="project-meta" style="flex-wrap:wrap;gap:6px;margin-bottom:12px;">' + badges + '</div>' +
@@ -387,7 +398,8 @@
         (h.location || '').toLowerCase().includes(q) ||
         (h.roomType || '').toLowerCase().includes(q) ||
         (h.description || '').toLowerCase().includes(q) ||
-        (h.utilities || []).join(' ').toLowerCase().includes(q)
+        (h.utilities || []).join(' ').toLowerCase().includes(q) ||
+        (h.rooms && h.rooms.some(r => (r.name || '').toLowerCase().includes(q)))
       );
     }
 
