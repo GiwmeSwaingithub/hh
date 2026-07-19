@@ -64,7 +64,10 @@
     // 1. Try fetching live from Cloudflare Worker
     try {
       console.log('[Services] Fetching from worker:', cfServicesUrl);
-      const res = await fetch(cfServicesUrl, { cache: 'no-cache' });
+      const res = await fetch(cfServicesUrl, { 
+        cache: 'no-cache',
+        headers: { 'X-DKUT-Client': 'dkut-web-app' }
+      });
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {

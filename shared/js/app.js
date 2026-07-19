@@ -205,7 +205,10 @@
 
     // --- 1. Fetch live from Cloudflare Worker (single source of truth) ------
     try {
-      const res = await fetch(workerUrl, { cache: 'no-cache' });
+      const res = await fetch(workerUrl, { 
+        cache: 'no-cache',
+        headers: { 'X-DKUT-Client': 'dkut-web-app' }
+      });
       if (res.ok) {
         const raw = await res.json();
         const normalized = normalizeHostels(raw);

@@ -227,6 +227,42 @@ function json(body, status = 200, extra = {}, request = null) {
   });
 }
 
+function isAuthorizedClientRequest(request) {
+  const secFetchMode = (request.headers.get('Sec-Fetch-Mode') || '').toLowerCase();
+  const secFetchDest = (request.headers.get('Sec-Fetch-Dest') || '').toLowerCase();
+  const acceptHeader = (request.headers.get('Accept') || '').toLowerCase();
+
+  // Block direct browser address bar navigations (when user pastes/opens URL directly in tab)
+  if (secFetchMode === 'navigate' || secFetchDest === 'document' || (acceptHeader.includes('text/html') && !request.headers.has('X-DKUT-Client'))) {
+    return false;
+  }
+
+  const { pathname } = new URL(request.url);
+  if (pathname === '/update-cache' || pathname === '/purge') {
+    return true;
+  }
+
+  const origin = (request.headers.get('Origin') || '').toLowerCase();
+  const referer = (request.headers.get('Referer') || '').toLowerCase();
+  const clientHeader = request.headers.get('X-DKUT-Client') || '';
+  const ua = (request.headers.get('User-Agent') || '').toLowerCase();
+
+  // Allow trusted server-side proxy (Vercel / Node) or client header
+  if (clientHeader === 'dkut-web-app' || ua.includes('node-fetch') || ua.includes('axios') || ua.includes('vercel') || request.headers.has('Authorization')) {
+    return true;
+  }
+
+  // Allow valid Origin or Referer from dekut.site or localhost
+  if (origin && (ALLOWED_ORIGINS.includes(origin) || origin.endsWith('.dekut.site') || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'))) {
+    return true;
+  }
+  if (referer && (referer.includes('dekut.site') || referer.includes('localhost:'))) {
+    return true;
+  }
+
+  return false;
+}
+
 export default {
   // ── HTTP ──────────────────────────────────────────────────────────────────
   async fetch(request, env, ctx) {
@@ -236,6 +272,21 @@ export default {
     // Preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
+    }
+
+    // Direct Link / Unauthorized Access Block
+    if (!isAuthorizedClientRequest(request)) {
+      return new Response(JSON.stringify({
+        error: 'Access Denied',
+        message: 'Direct link access to api.listing.dekut.site is prohibited. Requests must originate from https://hostel.dekut.site'
+      }), {
+        status: 403,
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-store',
+          ...corsHeaders
+        }
+      });
     }
 
     // ── /update-cache  (webhook — force refresh both caches) ──────────────────
