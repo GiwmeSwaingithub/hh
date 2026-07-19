@@ -1,124 +1,5 @@
 [
   {
-    "id": 1,
-    "name": "Internal Hostels",
-    "location": {
-      "gate": "Inside Main Campus",
-      "coordinates": {
-        "latitude": 40.7128,
-        "longitude": -74.006
-      }
-    },
-    "description": "Located inside DEDAN KIMATHI UNIVERSITY MAIN CAMPUS,It is the government policy that admissions into public universities should not pegged on available accommodation space. Of about 7000 students, the University can barely accommodate 152 ladies and 246 men, making the total available spaces to be 398. The Directorate of Students' Welfare (DSW)  is tasked with the allocation process.Allocation is based on students with special conditions such as medical, disability, physical challenges etc. are also considered",
-    "contact": {
-      "phone": [
-        "0700000000"
-      ],
-      "whatsapp": "0700000000"
-    },
-    "availability": {
-      "vacancies": true,
-      "lastUpdated": "2026-07-01"
-    },
-    "rooms": [
-      {
-        "id": "single",
-        "name": "Single Room",
-        "occupancy": {
-          "minimumPeople": 1,
-          "maximumPeople": 1
-        },
-        "price": {
-          "amountAlone": 7500,
-          "amountSharing": 5000,
-          "currency": "KES",
-          "period": "month"
-        },
-        "deposit": {
-          "required": true,
-          "amount": 7500,
-          "refundable": true
-        },
-        "available": true
-      }
-    ],
-    "utilities": {
-      "water": {
-        "type": "meter",
-        "description": "Water paid per unit usage"
-      },
-      "electricity": {
-        "type": "included",
-        "description": "Included in rent"
-      },
-      "wifi": {
-        "type": "included",
-        "description": "Free WiFi"
-      },
-      "garbageCollection": {
-        "type": "weekly",
-        "amount": 100,
-        "period": "week"
-      },
-      "hotShower": {
-        "available": false,
-        "included": true
-      },
-      "bed": {
-        "included": false,
-        "mattressIncluded": false
-      },
-      "laundry": {
-        "available": true,
-        "selfService": true
-      },
-      "parking": {
-        "available": false
-      }
-    },
-    "fees": {
-      "agreementFee": {
-        "required": true,
-        "amount": 1000
-      }
-    },
-    "media": {
-      "coverImage": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      "gallery": [
-        {
-          "category": "Entrance",
-          "images": []
-        },
-        {
-          "category": "Rooms",
-          "images": []
-        },
-        {
-          "category": "Laundry Area",
-          "images": []
-        },
-        {
-          "category": "Common Areas",
-          "images": [
-            "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-          ]
-        }
-      ],
-      "videos": [
-        {
-          "title": "Hostel Tour",
-          "url": ""
-        }
-      ]
-    },
-    "security": {
-      "fingerprintAccess": false,
-      "cctv": false,
-      "securityGuard": false,
-      "fenced": false
-    },
     "accessibility": {
       "wheelchairAccessible": false
     },
@@ -131,14 +12,249 @@
       "sleepovers": {
         "allowed": false
       },
-      "parties": {
-        "allowed": false
+      "noticeBeforeVacating": {
+        "duration": 30,
+        "unit": "days",
+        "required": true
+      },
+      "cleanliness": {
+        "tenantResponsible": true
       },
       "alcohol": {
         "allowed": false
       },
+      "pets": {
+        "allowed": false
+      },
+      "quietHours": {
+        "end": "6:00 AM",
+        "start": "10:00 PM"
+      },
+      "parties": {
+        "allowed": false
+      },
       "smoking": {
         "allowed": false
+      }
+    },
+    "media": {
+      "videos": [
+        {
+          "url": "",
+          "title": "Hostel Tour"
+        }
+      ],
+      "gallery": [
+        {
+          "category": "Boys- MT KENYA",
+          "images": [
+            "https://i.postimg.cc/ZYv0hSjB/image.webp"
+          ]
+        },
+        {
+          "category": "Nyandarua",
+          "images": [
+            "https://i.postimg.cc/rwLQs3VY/1780734153210-0-nyan1.webp"
+          ]
+        },
+        {
+          "category": "Ladies-Batian",
+          "images": [
+            "https://i.postimg.cc/nhpL7QxL/image.webp"
+          ]
+        },
+        {
+          "images": [],
+          "category": "Common Areas"
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/Hsr9L34c/1780736670651-0-87a.webp"
+          ],
+          "Category": "hostel 47"
+        }
+      ],
+      "coverImage": "https://i.postimg.cc/ZYv0hSjB/image.webp"
+    },
+    "name": "Internal Hostels",
+    "id": 1,
+    "description": "Located inside DEDAN KIMATHI UNIVERSITY MAIN CAMPUS,It is the government policy that admissions into public universities should not pegged on available accommodation space. Of about 7000 students, the University can barely accommodate 152 ladies and 246 men, making the total available spaces to be 398. The Directorate of Students' Welfare (DSW)  is tasked with the allocation process.Allocation is based on students with special conditions such as medical, disability, physical challenges etc. are also considered",
+    "availability": {
+      "vacancies": true,
+      "lastUpdated": "2026-07-01"
+    },
+    "rooms": [
+      {
+        "id": "single",
+        "occupancy": {
+          "maximumPeople": 2,
+          "minimumPeople": 2
+        },
+        "name": "Single Room",
+        "price": {
+          "amountSharing": 5000,
+          "amountAlone": "Can't Stay Alone",
+          "currency": "KES",
+          "period": "Semester"
+        },
+        "available": true,
+        "deposit": {
+          "amount": 0,
+          "required": false,
+          "refundable": true
+        }
+      }
+    ],
+    "utilities": {
+      "electricity": {
+        "description": "Included in rent",
+        "type": "included"
+      },
+      "wifi": {
+        "type": "included",
+        "description": "Free WiFi"
+      },
+      "water": {
+        "description": "Water paid per unit usage",
+        "type": true
+      },
+      "bed": {
+        "mattressIncluded": false,
+        "included": true
+      },
+      "hotShower": {
+        "available": true,
+        "included": true
+      }
+    },
+    "fees": {
+      "agreementFee": {
+        "amount": 0,
+        "required": false
+      }
+    },
+    "contact": {
+      "whatsapp": "254769486775",
+      "phone": [
+        "visit DSW"
+      ]
+    },
+    "security": {
+      "fenced": false,
+      "securityGuard": false,
+      "fingerprintAccess": false,
+      "cctv": false
+    },
+    "location": {
+      "coordinates": {
+        "latitude": 40.7128,
+        "longitude": -74.006
+      },
+      "gate": "Inside Main Campus"
+    }
+  },
+  {
+    "utilities": {
+      "laundry": {
+        "selfService": true,
+        "available": false
+      },
+      "hotShower": {
+        "included": true,
+        "available": true
+      },
+      "water": {
+        "type": "included",
+        "description": "Included in rent"
+      },
+      "parking": {
+        "available": false
+      },
+      "bed": {
+        "mattressIncluded": true,
+        "included": true
+      },
+      "garbageCollection": {
+        "amount": 100,
+        "type": "weekly",
+        "period": "week"
+      },
+      "electricity": {
+        "description": "Prepaid token purchased by tenants",
+        "type": "token"
+      },
+      "wifi": {
+        "description": "Free WiFi",
+        "type": "included"
+      }
+    },
+    "rooms": [
+      {
+        "price": {
+          "amountAlone": 9000,
+          "amountSharing": 4500,
+          "period": "month",
+          "currency": "KES"
+        },
+        "available": true,
+        "name": "Shared Room",
+        "id": "shared",
+        "occupancy": {
+          "maximumPeople": 2,
+          "minimumPeople": 1
+        },
+        "deposit": {
+          "amount": 9000,
+          "required": true,
+          "refundable": true
+        }
+      }
+    ],
+    "location": {
+      "coordinates": {
+        "latitude": 40.7589,
+        "longitude": -73.9851
+      },
+      "gate": "Gate A"
+    },
+    "security": {
+      "cctv": false,
+      "fingerprintAccess": true,
+      "securityGuard": false,
+      "fenced": false
+    },
+    "contact": {
+      "phone": [
+        "0746797393",
+        "0100492929"
+      ],
+      "whatsapp": "0746797393"
+    },
+    "fees": {
+      "agreementFee": {
+        "required": true,
+        "amount": 1000
+      }
+    },
+    "rules": {
+      "gateClosingTime": "10:00 PM",
+      "visitors": {
+        "allowed": true,
+        "allowedUntil": "8:00 PM"
+      },
+      "sleepovers": {
+        "allowed": false
+      },
+      "noticeBeforeVacating": {
+        "duration": 30,
+        "required": true,
+        "unit": "days"
+      },
+      "alcohol": {
+        "allowed": false
+      },
+      "cleanliness": {
+        "tenantResponsible": true
       },
       "pets": {
         "allowed": false
@@ -147,121 +263,35 @@
         "start": "10:00 PM",
         "end": "6:00 AM"
       },
-      "noticeBeforeVacating": {
-        "required": true,
-        "duration": 30,
-        "unit": "days"
+      "smoking": {
+        "allowed": false
       },
-      "cleanliness": {
-        "tenantResponsible": true
-      }
-    }
-  },
-  {
-    "id": 2,
-    "name": "KIMATHI STUDENT CENTRE",
-    "location": {
-      "gate": "Gate A",
-      "coordinates": {
-        "latitude": 40.7589,
-        "longitude": -73.9851
+      "parties": {
+        "allowed": false
       }
     },
-    "description": "Kimathi Student Centre has rooms with single bed, double deckers, two twin beds, three twin beds, four twin beds,and partitioned rooms for two beds.4,500 per person sharing & 9,000 Single Occupancy.",
-    "contact": {
-      "phone": [
-        "0746797393",
-        "0100492929"
-      ],
-      "whatsapp": "0746797393"
-    },
-    "availability": {
-      "vacancies": true,
-      "lastUpdated": "2026-07-01"
-    },
-    "rooms": [
-      {
-        "id": "shared",
-        "name": "Shared Room",
-        "occupancy": {
-          "minimumPeople": 1,
-          "maximumPeople": 2
-        },
-        "price": {
-          "amountAlone": 9000,
-          "amountSharing": 4500,
-          "currency": "KES",
-          "period": "month"
-        },
-        "deposit": {
-          "required": true,
-          "amount": 9000,
-          "refundable": true
-        },
-        "available": true
-      }
-    ],
-    "utilities": {
-      "water": {
-        "type": "included",
-        "description": "Included in rent"
-      },
-      "electricity": {
-        "type": "token",
-        "description": "Prepaid token purchased by tenants"
-      },
-      "wifi": {
-        "type": "included",
-        "description": "Free WiFi"
-      },
-      "garbageCollection": {
-        "type": "weekly",
-        "amount": 100,
-        "period": "week"
-      },
-      "hotShower": {
-        "available": true,
-        "included": true
-      },
-      "bed": {
-        "included": true,
-        "mattressIncluded": true
-      },
-      "laundry": {
-        "available": false,
-        "selfService": true
-      },
-      "parking": {
-        "available": false
-      }
-    },
-    "fees": {
-      "agreementFee": {
-        "required": true,
-        "amount": 1000
-      }
+    "accessibility": {
+      "wheelchairAccessible": false
     },
     "media": {
-      "coverImage": "https://i.postimg.cc/3JMN8cbg/image.webp",
       "gallery": [
         {
-          "category": "Entrance",
           "images": [
             "https://i.postimg.cc/zG7m3dJf/gate.png"
-          ]
+          ],
+          "category": "Entrance"
         },
         {
-          "category": "Rooms",
-          "images": []
+          "images": [],
+          "category": "Rooms"
         },
         {
-          "category": "Laundry Area",
           "images": [
             "https://i.postimg.cc/nzvGcWJr/launry-lines.png"
-          ]
+          ],
+          "category": "Laundry Area"
         },
         {
-          "category": "Common Areas",
           "images": [
             "https://i.postimg.cc/3JMN8cbg/image.webp",
             "https://i.postimg.cc/zGJ6mnn1/P1290019.jpg",
@@ -272,1210 +302,69 @@
             "https://i.postimg.cc/pdvTMcsN/P1280995.jpg",
             "https://i.postimg.cc/J0s75fzk/P1280993.jpg",
             "https://i.postimg.cc/25CzKb5k/P1280974.jpg"
-          ]
+          ],
+          "category": "Common Areas"
         }
       ],
+      "coverImage": "https://i.postimg.cc/3JMN8cbg/image.webp",
       "videos": [
         {
-          "title": "Hostel Tour",
-          "url": ""
+          "url": "https://www.instagram.com/reel/DaLMDBWIl--/?utm_source=ig_web_copy_link&igsh=NTc4MTIwNjQ2YQ==",
+          "title": "Hostel Tour"
         }
       ]
     },
-    "security": {
-      "fingerprintAccess": true,
-      "cctv": false,
-      "securityGuard": false,
-      "fenced": false
-    },
-    "accessibility": {
-      "wheelchairAccessible": false
-    },
-    "rules": {
-      "gateClosingTime": "10:00 PM",
-      "visitors": {
-        "allowed": true,
-        "allowedUntil": "8:00 PM"
-      },
-      "sleepovers": {
-        "allowed": false
-      },
-      "parties": {
-        "allowed": false
-      },
-      "alcohol": {
-        "allowed": false
-      },
-      "smoking": {
-        "allowed": false
-      },
-      "pets": {
-        "allowed": false
-      },
-      "quietHours": {
-        "start": "10:00 PM",
-        "end": "6:00 AM"
-      },
-      "noticeBeforeVacating": {
-        "required": true,
-        "duration": 30,
-        "unit": "days"
-      },
-      "cleanliness": {
-        "tenantResponsible": true
-      }
-    }
-  },
-  {
-    "id": 4,
-    "name": "MT Kenya Hostels",
-    "location": {
-      "gate": "Boma",
-      "coordinates": {
-        "latitude": 40.7505,
-        "longitude": -73.9934
-      }
-    },
-    "description": "Nestled in a quiet suburban neighborhood, this hostel offers a peaceful study environment while still being accessible to campus via public transport.",
-    "contact": {
-      "phone": [
-        "0726969255"
-      ],
-      "whatsapp": "0726969255"
-    },
+    "description": "Kimathi Student Centre has rooms with single bed, double deckers, two twin beds, three twin beds, four twin beds,and partitioned rooms for two beds.4,500 per person sharing & 9,000 Single Occupancy.",
+    "id": 2,
+    "name": "KIMATHI STUDENT CENTRE",
     "availability": {
       "vacancies": true,
       "lastUpdated": "2026-07-01"
-    },
-    "rooms": [
-      {
-        "id": "shared",
-        "name": "Shared Room",
-        "occupancy": {
-          "minimumPeople": 1,
-          "maximumPeople": 2
-        },
-        "price": {
-          "amountAlone": 120,
-          "amountSharing": 85,
-          "currency": "KES",
-          "period": "month"
-        },
-        "deposit": {
-          "required": true,
-          "amount": 120,
-          "refundable": true
-        },
-        "available": true
-      }
-    ],
+    }
+  },
+  {
     "utilities": {
-      "water": {
-        "type": "meter",
-        "description": "Water paid per unit usage"
-      },
       "electricity": {
-        "type": "included",
-        "description": "Included in rent"
+        "description": "Prepaid Tokens",
+        "type": "Token"
       },
       "wifi": {
         "type": "included",
         "description": "Free WiFi"
       },
-      "garbageCollection": {
-        "type": "weekly",
-        "amount": 100,
-        "period": "week"
-      },
-      "hotShower": {
-        "available": false,
-        "included": true
-      },
       "bed": {
-        "included": false,
-        "mattressIncluded": false
+        "included": true,
+        "mattressIncluded": true
       },
-      "laundry": {
-        "available": true,
-        "selfService": true
-      },
-      "parking": {
-        "available": false
-      }
-    },
-    "fees": {
-      "agreementFee": {
-        "required": true,
-        "amount": 1000
-      }
-    },
-    "media": {
-      "coverImage": "https://i.postimg.cc/ZYv0hSjB/image.webp",
-      "gallery": [
-        {
-          "category": "Entrance",
-          "images": []
-        },
-        {
-          "category": "Rooms",
-          "images": []
-        },
-        {
-          "category": "Laundry Area",
-          "images": []
-        },
-        {
-          "category": "Common Areas",
-          "images": [
-            "https://i.postimg.cc/ZYv0hSjB/image.webp",
-            "https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://i.postimg.cc/sXvxxdz3/image.webp"
-          ]
-        }
-      ],
-      "videos": [
-        {
-          "title": "Hostel Tour",
-          "url": ""
-        }
-      ]
-    },
-    "security": {
-      "fingerprintAccess": false,
-      "cctv": false,
-      "securityGuard": false,
-      "fenced": false
-    },
-    "accessibility": {
-      "wheelchairAccessible": false
-    },
-    "rules": {
-      "gateClosingTime": "10:00 PM",
-      "visitors": {
-        "allowed": true,
-        "allowedUntil": "8:00 PM"
-      },
-      "sleepovers": {
-        "allowed": false
-      },
-      "parties": {
-        "allowed": false
-      },
-      "alcohol": {
-        "allowed": false
-      },
-      "smoking": {
-        "allowed": false
-      },
-      "pets": {
-        "allowed": false
-      },
-      "quietHours": {
-        "start": "10:00 PM",
-        "end": "6:00 AM"
-      },
-      "noticeBeforeVacating": {
-        "required": true,
-        "duration": 30,
-        "unit": "days"
-      },
-      "cleanliness": {
-        "tenantResponsible": true
-      }
-    }
-  },
-  {
-    "id": 5,
-    "name": "Maisha Hostels",
-    "location": {
-      "gate": "Boma",
-      "coordinates": {
-        "latitude": -0.398,
-        "longitude": 36.962
-      }
-    },
-    "description": "Modern accommodations designed for tech students, with high-speed internet and dedicated study spaces. Close to the engineering and computer science buildings.",
-    "contact": {
-      "phone": [
-        "0745409929"
-      ],
-      "whatsapp": "0745409929"
-    },
-    "availability": {
-      "vacancies": true,
-      "lastUpdated": "2026-07-01"
-    },
-    "rooms": [
-      {
-        "id": "single",
-        "name": "Single Room",
-        "occupancy": {
-          "minimumPeople": 1,
-          "maximumPeople": 1
-        },
-        "price": {
-          "amountAlone": 10000,
-          "amountSharing": 5000,
-          "currency": "KES",
-          "period": "month"
-        },
-        "deposit": {
-          "required": true,
-          "amount": 10000,
-          "refundable": true
-        },
-        "available": true
-      }
-    ],
-    "utilities": {
       "water": {
-        "type": "meter",
-        "description": "Water paid per unit usage"
-      },
-      "electricity": {
-        "type": "included",
-        "description": "Included in rent"
-      },
-      "wifi": {
-        "type": "included",
-        "description": "Free WiFi"
+        "description": "Water paid per unit usage",
+        "type": "meter"
       },
       "garbageCollection": {
-        "type": "weekly",
         "amount": 100,
+        "type": "weekly",
         "period": "week"
       },
-      "hotShower": {
-        "available": false,
-        "included": true
+      "parking": {
+        "available": false
       },
-      "bed": {
-        "included": false,
-        "mattressIncluded": false
+      "hotShower": {
+        "included": true,
+        "available": false
       },
       "laundry": {
         "available": false,
         "selfService": true
-      },
-      "parking": {
-        "available": false
       }
-    },
-    "fees": {
-      "agreementFee": {
-        "required": true,
-        "amount": 1000
-      }
-    },
-    "media": {
-      "coverImage": "https://i.postimg.cc/bv6dqYKs/image.webp",
-      "gallery": [
-        {
-          "category": "Entrance",
-          "images": []
-        },
-        {
-          "category": "Rooms",
-          "images": []
-        },
-        {
-          "category": "Laundry Area",
-          "images": []
-        },
-        {
-          "category": "Common Areas",
-          "images": [
-            "https://i.postimg.cc/bv6dqYKs/image.webp"
-          ]
-        }
-      ],
-      "videos": [
-        {
-          "title": "Hostel Tour",
-          "url": ""
-        }
-      ]
-    },
-    "security": {
-      "fingerprintAccess": false,
-      "cctv": false,
-      "securityGuard": false,
-      "fenced": false
-    },
-    "accessibility": {
-      "wheelchairAccessible": false
-    },
-    "rules": {
-      "gateClosingTime": "10:00 PM",
-      "visitors": {
-        "allowed": true,
-        "allowedUntil": "8:00 PM"
-      },
-      "sleepovers": {
-        "allowed": false
-      },
-      "parties": {
-        "allowed": false
-      },
-      "alcohol": {
-        "allowed": false
-      },
-      "smoking": {
-        "allowed": false
-      },
-      "pets": {
-        "allowed": false
-      },
-      "quietHours": {
-        "start": "10:00 PM",
-        "end": "6:00 AM"
-      },
-      "noticeBeforeVacating": {
-        "required": true,
-        "duration": 30,
-        "unit": "days"
-      },
-      "cleanliness": {
-        "tenantResponsible": true
-      }
-    }
-  },
-  {
-    "id": 6,
-    "name": "La Duvet Hostels",
-    "location": {
-      "gate": "Boma",
-      "coordinates": {
-        "latitude": -0.398,
-        "longitude": 36.962
-      }
-    },
-    "description": "Eco-friendly accommodation with green spaces and sustainable features. A tranquil environment perfect for focused study.",
-    "contact": {
-      "phone": [
-        "0718862632"
-      ],
-      "whatsapp": "0718862632"
-    },
-    "availability": {
-      "vacancies": true,
-      "lastUpdated": "2026-07-01"
     },
     "rooms": [
       {
-        "id": "shared",
-        "name": "Shared Room",
-        "occupancy": {
-          "minimumPeople": 1,
-          "maximumPeople": 2
-        },
-        "price": {
-          "amountAlone": 110,
-          "amountSharing": 75,
-          "currency": "KES",
-          "period": "month"
-        },
         "deposit": {
+          "refundable": true,
           "required": true,
-          "amount": 110,
-          "refundable": true
+          "amount": 20000
         },
-        "available": true
-      }
-    ],
-    "utilities": {
-      "water": {
-        "type": "meter",
-        "description": "Water paid per unit usage"
-      },
-      "electricity": {
-        "type": "included",
-        "description": "Included in rent"
-      },
-      "wifi": {
-        "type": "included",
-        "description": "Free WiFi"
-      },
-      "garbageCollection": {
-        "type": "weekly",
-        "amount": 100,
-        "period": "week"
-      },
-      "hotShower": {
-        "available": false,
-        "included": true
-      },
-      "bed": {
-        "included": false,
-        "mattressIncluded": false
-      },
-      "laundry": {
-        "available": false,
-        "selfService": true
-      },
-      "parking": {
-        "available": false
-      }
-    },
-    "fees": {
-      "agreementFee": {
-        "required": true,
-        "amount": 1000
-      }
-    },
-    "media": {
-      "coverImage": "https://i.postimg.cc/9fXr3wN5/image.webp",
-      "gallery": [
-        {
-          "category": "Entrance",
-          "images": []
-        },
-        {
-          "category": "Rooms",
-          "images": []
-        },
-        {
-          "category": "Laundry Area",
-          "images": []
-        },
-        {
-          "category": "Common Areas",
-          "images": [
-            "https://i.postimg.cc/9fXr3wN5/image.webp",
-            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSwcMtZrc72Wpfho6iMCORDlvbt4fUVslL2VJks3zY4kOgenEaaCjyfSYYB-kOzQQmuCKjLfM4izaRsWq9pFrztx3ChQPEKj0-s2xDCQEiKiNk8LoAiMhZq-8JwILaeia6eUe-tB=s680-w680-h510-rw",
-            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSwLvx_PR0mLY4KR6hOaDiKfabjx5YEiowEt2QEMLrR3XdvypcDgk_bpw63fq86mV525R0-7j9SbzejI72nT-e2wJxHSHw7TwmarwgLoRYwGlonYnJZxUdHvQU8g_Df18ZJCYL9f=s680-w680-h510-rw",
-            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzonkzSe9GacKur8Du1jGOo39tf7s_DME9ela8BMuTlJn-LR1u7ZF52AAAlZAVvcZaFGH9zDDcur55wdWuSH-lo2Ec4TL-piLxxVoVTNDmfwySeORNv1y_YAv3HlI1Y5-WS5TTm=w200-h200-n-k-no-nu",
-            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSwbLSoAeRWpcaNPMVdwBWVOI_3bE-fgYjvh1FqTh-oTgyFHnlOIKNOdNVUPlpcl09oJw6Kk03Ls_-WlFSEy680F70o6bnhv3XCgBkgYKl8_6-tNnx6piFUwKstBEBh9QR7hXVPm_Q=w200-h250-n-k-no-nu",
-            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzvb4vsGpk22LqcaMRBw9l9jJJokblus6K5YuroXYdzqw_mhavuOKNdoYfmkWb2Y_BVqiyCng3NMVBVmcVISnwGLvAjig1krIRM4whdHWvexFR9HS67ZxZOI8sWue0zd13SNKNT=w200-h250-n-k-no-nu",
-            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzZyxQ8v3KS4kemF31hD_2H8B5C_A2xMMcZ2M76Dj382hLMLKO4eUGtPh2oeTvYlU9DSlAheBOM_UyTXt-SZyD4T2dKRxAyg_9owm5UYZxRznjhnP2FEs0bvlKVgpg_EWopXPuQ=w200-h333-n-k-no-nu",
-            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSyxUQJNHI3xlhPQ3xGOSoFvQDcckEXma-vTEzWPxA0H4uZMP9cnOhNJBwkPlyXKLbQXLc4tcvbufNBFQyjCR4Qx4FMtA8kUSiqQ9R3kmqYtRp7DHK51ZIg5OnvVCoPDzoQ8t9Jf=w200-h250-n-k-no-nu",
-            "https://lh3.googleusercontent.com/p/AF1QipNWzMMSNwmWocxHZYMFfftOel8gMmGakZ96O1yp=s680-w680-h510-rw",
-            "https://lh3.googleusercontent.com/p/AF1QipNHvITzdkn4Ei5XlkQpUZ9hAVTnebkjjMx0Jxdr=s680-w680-h510-rw",
-            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSxtmqSIRbZIMzXnUOyqit2AyBjLcP0LlHAD_Ox8YAtB4NslRNteMY-tBvTyHKaMMs-2Fw9Ond1KIw4N65HJmv7eElw7MB16khJ2oSplu4br00QGERQIi5oIAHQ2Damrel5ZjQ8y=w200-h250-n-k-no-nu",
-            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzb-dgq6EqYgQFwh2cXrMPeswk0P8da0SY_OAzNE9GQKGj_c6aKpmtVmh4WbjczPfUaOyMvU1vtdo0tKH2kRyU5p562k6HuaD7ClXf-3O5Cqcj6uJ4eVLQ7v16aw1Acj4dca_Em=w200-h333-n-k-no-nu",
-            "https://lh3.googleusercontent.com/gps-cs-s/AG0ilSyYv9gslfInjgFXBNkx8-vdtlXNRx_Cxi4TzhMN-UrVDn8j_OwQGDyaADy2PbJjIwa_yx4-3zETKjYowYXL9gG6Ih_0UeG9uFAyIn-4vYdyOFYy7y-soDkHsZBMTumRIAs20rj0=s680-w680-h510-rw"
-          ]
-        }
-      ],
-      "videos": [
-        {
-          "title": "Hostel Tour",
-          "url": ""
-        }
-      ]
-    },
-    "security": {
-      "fingerprintAccess": false,
-      "cctv": false,
-      "securityGuard": false,
-      "fenced": false
-    },
-    "accessibility": {
-      "wheelchairAccessible": false
-    },
-    "rules": {
-      "gateClosingTime": "10:00 PM",
-      "visitors": {
-        "allowed": true,
-        "allowedUntil": "8:00 PM"
-      },
-      "sleepovers": {
-        "allowed": false
-      },
-      "parties": {
-        "allowed": false
-      },
-      "alcohol": {
-        "allowed": false
-      },
-      "smoking": {
-        "allowed": false
-      },
-      "pets": {
-        "allowed": false
-      },
-      "quietHours": {
-        "start": "10:00 PM",
-        "end": "6:00 AM"
-      },
-      "noticeBeforeVacating": {
-        "required": true,
-        "duration": 30,
-        "unit": "days"
-      },
-      "cleanliness": {
-        "tenantResponsible": true
-      }
-    }
-  },
-  {
-    "id": 7,
-    "name": "Kens Hostel",
-    "location": {
-      "gate": "Boma",
-      "coordinates": {
-        "latitude": 40.7614,
-        "longitude": -73.9776
-      }
-    },
-    "description": "Contemporary urban living with easy access to public transportation. Ideal for students who need to commute to different campus locations.",
-    "contact": {
-      "phone": [
-        "0704835981"
-      ],
-      "whatsapp": "0704835981"
-    },
-    "availability": {
-      "vacancies": true,
-      "lastUpdated": "2026-07-01"
-    },
-    "rooms": [
-      {
-        "id": "single",
-        "name": "Single Room",
-        "occupancy": {
-          "minimumPeople": 1,
-          "maximumPeople": 1
-        },
-        "price": {
-          "amountAlone": 9000,
-          "amountSharing": 4500,
-          "currency": "KES",
-          "period": "month"
-        },
-        "deposit": {
-          "required": true,
-          "amount": 9000,
-          "refundable": true
-        },
-        "available": true
-      }
-    ],
-    "utilities": {
-      "water": {
-        "type": "meter",
-        "description": "Water paid per unit usage"
-      },
-      "electricity": {
-        "type": "included",
-        "description": "Included in rent"
-      },
-      "wifi": {
-        "type": "included",
-        "description": "Free WiFi"
-      },
-      "garbageCollection": {
-        "type": "weekly",
-        "amount": 100,
-        "period": "week"
-      },
-      "hotShower": {
-        "available": false,
-        "included": true
-      },
-      "bed": {
-        "included": false,
-        "mattressIncluded": false
-      },
-      "laundry": {
-        "available": false,
-        "selfService": true
-      },
-      "parking": {
-        "available": false
-      }
-    },
-    "fees": {
-      "agreementFee": {
-        "required": true,
-        "amount": 1000
-      }
-    },
-    "media": {
-      "coverImage": "https://i.postimg.cc/vm8cRxSG/image.webp",
-      "gallery": [
-        {
-          "category": "Entrance",
-          "images": []
-        },
-        {
-          "category": "Rooms",
-          "images": []
-        },
-        {
-          "category": "Laundry Area",
-          "images": []
-        },
-        {
-          "category": "Common Areas",
-          "images": [
-            "https://i.postimg.cc/vm8cRxSG/image.webp",
-            "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-          ]
-        }
-      ],
-      "videos": [
-        {
-          "title": "Hostel Tour",
-          "url": ""
-        }
-      ]
-    },
-    "security": {
-      "fingerprintAccess": false,
-      "cctv": false,
-      "securityGuard": false,
-      "fenced": false
-    },
-    "accessibility": {
-      "wheelchairAccessible": false
-    },
-    "rules": {
-      "gateClosingTime": "10:00 PM",
-      "visitors": {
-        "allowed": true,
-        "allowedUntil": "8:00 PM"
-      },
-      "sleepovers": {
-        "allowed": false
-      },
-      "parties": {
-        "allowed": false
-      },
-      "alcohol": {
-        "allowed": false
-      },
-      "smoking": {
-        "allowed": false
-      },
-      "pets": {
-        "allowed": false
-      },
-      "quietHours": {
-        "start": "10:00 PM",
-        "end": "6:00 AM"
-      },
-      "noticeBeforeVacating": {
-        "required": true,
-        "duration": 30,
-        "unit": "days"
-      },
-      "cleanliness": {
-        "tenantResponsible": true
-      }
-    }
-  },
-  {
-    "id": 8,
-    "name": "Mimshack Students Residence",
-    "location": {
-      "gate": "Boma",
-      "coordinates": {
-        "latitude": 40.7295,
-        "longitude": -73.9965
-      }
-    },
-    "description": "accommodation option for both male and female students.",
-    "contact": {
-      "phone": [
-        "0724693216"
-      ],
-      "whatsapp": "0724693216"
-    },
-    "availability": {
-      "vacancies": true,
-      "lastUpdated": "2026-07-01"
-    },
-    "rooms": [
-      {
-        "id": "shared",
-        "name": "Shared Room",
-        "occupancy": {
-          "minimumPeople": 1,
-          "maximumPeople": 2
-        },
-        "price": {
-          "amountAlone": 160,
-          "amountSharing": 110,
-          "currency": "KES",
-          "period": "month"
-        },
-        "deposit": {
-          "required": true,
-          "amount": 160,
-          "refundable": true
-        },
-        "available": true
-      }
-    ],
-    "utilities": {
-      "water": {
-        "type": "meter",
-        "description": "Water paid per unit usage"
-      },
-      "electricity": {
-        "type": "included",
-        "description": "Included in rent"
-      },
-      "wifi": {
-        "type": "included",
-        "description": "Free WiFi"
-      },
-      "garbageCollection": {
-        "type": "weekly",
-        "amount": 100,
-        "period": "week"
-      },
-      "hotShower": {
-        "available": false,
-        "included": true
-      },
-      "bed": {
-        "included": false,
-        "mattressIncluded": false
-      },
-      "laundry": {
-        "available": false,
-        "selfService": true
-      },
-      "parking": {
-        "available": false
-      }
-    },
-    "fees": {
-      "agreementFee": {
-        "required": true,
-        "amount": 1000
-      }
-    },
-    "media": {
-      "coverImage": "https://i.postimg.cc/SR9KL6jD/image.webp",
-      "gallery": [
-        {
-          "category": "Entrance",
-          "images": []
-        },
-        {
-          "category": "Rooms",
-          "images": []
-        },
-        {
-          "category": "Laundry Area",
-          "images": []
-        },
-        {
-          "category": "Common Areas",
-          "images": [
-            "https://i.postimg.cc/SR9KL6jD/image.webp",
-            "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-          ]
-        }
-      ],
-      "videos": [
-        {
-          "title": "Hostel Tour",
-          "url": ""
-        }
-      ]
-    },
-    "security": {
-      "fingerprintAccess": false,
-      "cctv": false,
-      "securityGuard": false,
-      "fenced": false
-    },
-    "accessibility": {
-      "wheelchairAccessible": false
-    },
-    "rules": {
-      "gateClosingTime": "10:00 PM",
-      "visitors": {
-        "allowed": true,
-        "allowedUntil": "8:00 PM"
-      },
-      "sleepovers": {
-        "allowed": false
-      },
-      "parties": {
-        "allowed": false
-      },
-      "alcohol": {
-        "allowed": false
-      },
-      "smoking": {
-        "allowed": false
-      },
-      "pets": {
-        "allowed": false
-      },
-      "quietHours": {
-        "start": "10:00 PM",
-        "end": "6:00 AM"
-      },
-      "noticeBeforeVacating": {
-        "required": true,
-        "duration": 30,
-        "unit": "days"
-      },
-      "cleanliness": {
-        "tenantResponsible": true
-      }
-    }
-  },
-  {
-    "id": 9,
-    "name": "Sunrise Hostel",
-    "location": {
-      "gate": "Boma",
-      "coordinates": {
-        "latitude": 40.7295,
-        "longitude": -73.9965
-      }
-    },
-    "description": "A serene living space right on campus with beautiful garden views. Perfect for students who value both convenience and tranquility.",
-    "contact": {
-      "phone": [
-        "0790739067"
-      ],
-      "whatsapp": "0790739067"
-    },
-    "availability": {
-      "vacancies": true,
-      "lastUpdated": "2026-07-01"
-    },
-    "rooms": [
-      {
-        "id": "shared",
-        "name": "Shared Room",
-        "occupancy": {
-          "minimumPeople": 1,
-          "maximumPeople": 2
-        },
-        "price": {
-          "amountAlone": 160,
-          "amountSharing": 110,
-          "currency": "KES",
-          "period": "month"
-        },
-        "deposit": {
-          "required": true,
-          "amount": 160,
-          "refundable": true
-        },
-        "available": true
-      }
-    ],
-    "utilities": {
-      "water": {
-        "type": "meter",
-        "description": "Water paid per unit usage"
-      },
-      "electricity": {
-        "type": "included",
-        "description": "Included in rent"
-      },
-      "wifi": {
-        "type": "included",
-        "description": "Free WiFi"
-      },
-      "garbageCollection": {
-        "type": "weekly",
-        "amount": 100,
-        "period": "week"
-      },
-      "hotShower": {
-        "available": false,
-        "included": true
-      },
-      "bed": {
-        "included": false,
-        "mattressIncluded": false
-      },
-      "laundry": {
-        "available": false,
-        "selfService": true
-      },
-      "parking": {
-        "available": false
-      }
-    },
-    "fees": {
-      "agreementFee": {
-        "required": true,
-        "amount": 1000
-      }
-    },
-    "media": {
-      "coverImage": "https://i.postimg.cc/tC0JqMmz/image.webp",
-      "gallery": [
-        {
-          "category": "Entrance",
-          "images": []
-        },
-        {
-          "category": "Rooms",
-          "images": []
-        },
-        {
-          "category": "Laundry Area",
-          "images": []
-        },
-        {
-          "category": "Common Areas",
-          "images": [
-            "https://i.postimg.cc/tC0JqMmz/image.webp",
-            "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://i.postimg.cc/q7Bzf6ZR/image.webp"
-          ]
-        }
-      ],
-      "videos": [
-        {
-          "title": "Hostel Tour",
-          "url": ""
-        }
-      ]
-    },
-    "security": {
-      "fingerprintAccess": false,
-      "cctv": false,
-      "securityGuard": false,
-      "fenced": false
-    },
-    "accessibility": {
-      "wheelchairAccessible": false
-    },
-    "rules": {
-      "gateClosingTime": "10:00 PM",
-      "visitors": {
-        "allowed": true,
-        "allowedUntil": "8:00 PM"
-      },
-      "sleepovers": {
-        "allowed": false
-      },
-      "parties": {
-        "allowed": false
-      },
-      "alcohol": {
-        "allowed": false
-      },
-      "smoking": {
-        "allowed": false
-      },
-      "pets": {
-        "allowed": false
-      },
-      "quietHours": {
-        "start": "10:00 PM",
-        "end": "6:00 AM"
-      },
-      "noticeBeforeVacating": {
-        "required": true,
-        "duration": 30,
-        "unit": "days"
-      },
-      "cleanliness": {
-        "tenantResponsible": true
-      }
-    }
-  },
-  {
-    "id": 10,
-    "name": "Arch Bishop Kirima Hostels",
-    "location": {
-      "gate": "Nyeri View",
-      "coordinates": {
-        "latitude": 40.7295,
-        "longitude": -73.9965
-      }
-    },
-    "description": "A serene living space right on campus with beautiful garden views. Perfect for students who value both convenience and tranquility.",
-    "contact": {
-      "phone": [
-        "0700008875",
-        "0721611281",
-        "0707557091",
-        "kirima.conference@gmail.com"
-      ],
-      "whatsapp": "0700008875"
-    },
-    "availability": {
-      "vacancies": true,
-      "lastUpdated": "2026-07-01"
-    },
-    "rooms": [
-      {
-        "id": "shared",
-        "name": "Shared Room",
-        "occupancy": {
-          "minimumPeople": 1,
-          "maximumPeople": 2
-        },
-        "price": {
-          "amountAlone": 160,
-          "amountSharing": 110,
-          "currency": "KES",
-          "period": "month"
-        },
-        "deposit": {
-          "required": true,
-          "amount": 160,
-          "refundable": true
-        },
-        "available": true
-      }
-    ],
-    "utilities": {
-      "water": {
-        "type": "meter",
-        "description": "Water paid per unit usage"
-      },
-      "electricity": {
-        "type": "included",
-        "description": "Included in rent"
-      },
-      "wifi": {
-        "type": "included",
-        "description": "Free WiFi"
-      },
-      "garbageCollection": {
-        "type": "weekly",
-        "amount": 100,
-        "period": "week"
-      },
-      "hotShower": {
-        "available": false,
-        "included": true
-      },
-      "bed": {
-        "included": false,
-        "mattressIncluded": false
-      },
-      "laundry": {
-        "available": false,
-        "selfService": true
-      },
-      "parking": {
-        "available": false
-      }
-    },
-    "fees": {
-      "agreementFee": {
-        "required": true,
-        "amount": 1000
-      }
-    },
-    "media": {
-      "coverImage": "https://i.postimg.cc/g2m0R6ps/image.webp",
-      "gallery": [
-        {
-          "category": "Entrance",
-          "images": []
-        },
-        {
-          "category": "Rooms",
-          "images": []
-        },
-        {
-          "category": "Laundry Area",
-          "images": []
-        },
-        {
-          "category": "Common Areas",
-          "images": [
-            "https://i.postimg.cc/g2m0R6ps/image.webp",
-            "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-          ]
-        }
-      ],
-      "videos": [
-        {
-          "title": "Hostel Tour",
-          "url": ""
-        }
-      ]
-    },
-    "security": {
-      "fingerprintAccess": false,
-      "cctv": false,
-      "securityGuard": false,
-      "fenced": false
-    },
-    "accessibility": {
-      "wheelchairAccessible": false
-    },
-    "rules": {
-      "gateClosingTime": "10:00 PM",
-      "visitors": {
-        "allowed": true,
-        "allowedUntil": "8:00 PM"
-      },
-      "sleepovers": {
-        "allowed": false
-      },
-      "parties": {
-        "allowed": false
-      },
-      "alcohol": {
-        "allowed": false
-      },
-      "smoking": {
-        "allowed": false
-      },
-      "pets": {
-        "allowed": false
-      },
-      "quietHours": {
-        "start": "10:00 PM",
-        "end": "6:00 AM"
-      },
-      "noticeBeforeVacating": {
-        "required": true,
-        "duration": 30,
-        "unit": "days"
-      },
-      "cleanliness": {
-        "tenantResponsible": true
-      }
-    }
-  },
-  {
-    "id": 3,
-    "name": "Grace Hostel",
-    "location": {
-      "gate": "Gate A",
-      "coordinates": {
-        "latitude": 40.7282,
-        "longitude": -73.9942
-      }
-    },
-    "description": "Fully furnished room (Kitchen with necessary cookingappliances and kitchen accessories, Living area, study table,chair, tv, a bed with a mattress and bedding.) and free Wifi.Kshs. 20,000 p.m,Refundable Deposit of Kshs.5,000,Kshs.1,300 per day",
-    "contact": {
-      "phone": [
-        "0795580924",
-        "0753844727"
-      ],
-      "whatsapp": "0795580924"
-    },
-    "availability": {
-      "vacancies": true,
-      "lastUpdated": "2026-07-01"
-    },
-    "rooms": [
-      {
         "id": "bedsitter",
-        "name": "BedSitter",
         "occupancy": {
           "minimumPeople": 1,
           "maximumPeople": 1
@@ -1483,74 +372,98 @@
         "price": {
           "amountAlone": 20000,
           "amountSharing": 20000,
-          "currency": "KES",
-          "period": "month"
+          "period": "month",
+          "currency": "KES"
         },
-        "deposit": {
-          "required": true,
-          "amount": 20000,
-          "refundable": true
-        },
-        "available": true
+        "available": true,
+        "name": "BedSitter"
       }
     ],
-    "utilities": {
-      "water": {
-        "type": "meter",
-        "description": "Water paid per unit usage"
-      },
-      "electricity": {
-        "type": "included",
-        "description": "Included in rent"
-      },
-      "wifi": {
-        "type": "included",
-        "description": "Free WiFi"
-      },
-      "garbageCollection": {
-        "type": "weekly",
-        "amount": 100,
-        "period": "week"
-      },
-      "hotShower": {
-        "available": false,
-        "included": true
-      },
-      "bed": {
-        "included": true,
-        "mattressIncluded": true
-      },
-      "laundry": {
-        "available": false,
-        "selfService": true
-      },
-      "parking": {
-        "available": false
+    "location": {
+      "gate": "Gate A",
+      "coordinates": {
+        "latitude": 40.7282,
+        "longitude": -73.9942
       }
+    },
+    "security": {
+      "cctv": true,
+      "fingerprintAccess": false,
+      "securityGuard": false,
+      "fenced": true
+    },
+    "contact": {
+      "whatsapp": "0769486775",
+      "phone": [
+        "0795580924",
+        "0753844727"
+      ]
     },
     "fees": {
       "agreementFee": {
-        "required": true,
-        "amount": 1000
+        "required": false,
+        "amount": 0
       }
     },
+    "rules": {
+      "pets": {
+        "allowed": false
+      },
+      "cleanliness": {
+        "tenantResponsible": true
+      },
+      "alcohol": {
+        "allowed": false
+      },
+      "smoking": {
+        "allowed": false
+      },
+      "parties": {
+        "allowed": false
+      },
+      "quietHours": {
+        "start": "10:00 PM",
+        "end": "6:00 AM"
+      },
+      "visitors": {
+        "allowed": true,
+        "allowedUntil": "8:00 PM"
+      },
+      "gateClosingTime": "10:00 PM",
+      "noticeBeforeVacating": {
+        "unit": "days",
+        "required": true,
+        "duration": 30
+      },
+      "sleepovers": {
+        "allowed": false
+      }
+    },
+    "accessibility": {
+      "wheelchairAccessible": false
+    },
     "media": {
+      "videos": [
+        {
+          "title": "Hostel Tour",
+          "url": ""
+        }
+      ],
       "coverImage": "https://i.postimg.cc/wjgBJszs/image.webp",
       "gallery": [
         {
-          "category": "Entrance",
-          "images": []
+          "images": [],
+          "category": "Entrance"
         },
         {
-          "category": "Rooms",
-          "images": []
+          "images": [],
+          "category": "Rooms"
         },
         {
           "category": "Laundry Area",
           "images": []
         },
         {
-          "category": "Common Areas",
           "images": [
             "https://i.postimg.cc/wjgBJszs/image.webp",
             "https://i.postimg.cc/MK83Jy14/IMG-20240520-WA0004.jpg",
@@ -1560,9 +473,162 @@
             "https://i.postimg.cc/4dgHxNwm/IMG-20240520-WA0011.jpg",
             "https://i.postimg.cc/4NgG2HyY/IMG-20240520-WA0009.jpg",
             "https://i.postimg.cc/5y5hWpy0/IMG-20240520-WA0017.jpg"
+          ],
+          "category": "Common Areas"
+        }
+      ]
+    },
+    "description": "Fully furnished room (Kitchen with necessary cookingappliances and kitchen accessories, Living area, study table,chair, tv, a bed with a mattress and bedding.) and free Wifi.Kshs. 20,000 p.m,Refundable Deposit of Kshs.5,000,Kshs.1,300 per day",
+    "id": 3,
+    "name": "Grace Hostel",
+    "availability": {
+      "vacancies": true,
+      "lastUpdated": "2026-07-01"
+    }
+  },
+  {
+    "utilities": {
+      "electricity": {
+        "description": "Prepaid Tokens",
+        "type": "token"
+      },
+      "wifi": {
+        "type": "tenant",
+        "description": "No WiFi"
+      },
+      "garbageCollection": {
+        "period": "week",
+        "type": "weekly",
+        "amount": 100
+      },
+      "bed": {
+        "included": true,
+        "mattressIncluded": false
+      },
+      "parking": {
+        "available": true
+      },
+      "water": {
+        "type": "included",
+        "description": "Included in Rent"
+      },
+      "hotShower": {
+        "available": false,
+        "included": true
+      },
+      "laundry": {
+        "selfService": true,
+        "available": true
+      }
+    },
+    "rooms": [
+      {
+        "available": true,
+        "price": {
+          "amountSharing": 3500,
+          "currency": "KES",
+          "period": "month",
+          "amountAlone": 7500
+        },
+        "name": "Single Room",
+        "occupancy": {
+          "maximumPeople": 2,
+          "minimumPeople": 1
+        },
+        "id": "single",
+        "deposit": {
+          "refundable": true,
+          "required": true,
+          "amount": 3500
+        }
+      }
+    ],
+    "contact": {
+      "phone": [
+        "0726969255"
+      ],
+      "whatsapp": "254769486775"
+    },
+    "fees": {
+      "agreementFee": {
+        "required": false,
+        "amount": 0
+      }
+    },
+    "location": {
+      "gate": "Boma",
+      "coordinates": {
+        "latitude": 40.7505,
+        "longitude": -73.9934
+      }
+    },
+    "security": {
+      "securityGuard": false,
+      "fenced": true,
+      "fingerprintAccess": false,
+      "cctv": false
+    },
+    "accessibility": {
+      "wheelchairAccessible": false
+    },
+    "rules": {
+      "alcohol": {
+        "allowed": false
+      },
+      "cleanliness": {
+        "tenantResponsible": true
+      },
+      "pets": {
+        "allowed": true
+      },
+      "quietHours": {
+        "end": "6:00 AM",
+        "start": "10:00 PM"
+      },
+      "parties": {
+        "allowed": false
+      },
+      "smoking": {
+        "allowed": false
+      },
+      "gateClosingTime": "10:00 PM",
+      "visitors": {
+        "allowed": true,
+        "allowedUntil": "8:00 PM"
+      },
+      "sleepovers": {
+        "allowed": false
+      },
+      "noticeBeforeVacating": {
+        "unit": "days",
+        "required": true,
+        "duration": 30
+      }
+    },
+    "media": {
+      "gallery": [
+        {
+          "images": [
+            "https://i.postimg.cc/sXvxxdz3/image.webp"
+          ],
+          "category": "Aerial View"
+        },
+        {
+          "category": "Gate",
+          "images": [
+            "https://i.postimg.cc/J7HSLrvn/mtkenyahostel.webp\n"
           ]
+        },
+        {
+          "images": [],
+          "category": "Laundry Area"
+        },
+        {
+          "category": "Common Areas",
+          "images": []
         }
       ],
+      "coverImage": "https://i.postimg.cc/sXvxxdz3/image.webp",
       "videos": [
         {
           "title": "Hostel Tour",
@@ -1570,11 +636,721 @@
         }
       ]
     },
+    "name": "MT Kenya Hostels",
+    "description": "Nestled in a quiet suburban neighborhood, this hostel offers a peaceful study environment while still being accessible to campus.",
+    "id": 4,
+    "availability": {
+      "vacancies": true,
+      "lastUpdated": "2026-07-01"
+    }
+  },
+  {
+    "contact": {
+      "whatsapp": "254769486775",
+      "phone": [
+        "0745409929"
+      ]
+    },
+    "fees": {
+      "agreementFee": {
+        "required": false,
+        "amount": 0
+      }
+    },
+    "location": {
+      "coordinates": {
+        "latitude": -0.398,
+        "longitude": 36.962
+      },
+      "gate": "Boma"
+    },
+    "security": {
+      "cctv": false,
+      "fingerprintAccess": false,
+      "fenced": false,
+      "securityGuard": false
+    },
+    "utilities": {
+      "laundry": {
+        "selfService": true,
+        "available": false
+      },
+      "bed": {
+        "mattressIncluded": false,
+        "included": true
+      },
+      "garbageCollection": {
+        "period": "week",
+        "type": "weekly",
+        "amount": 100
+      },
+      "water": {
+        "type": "meter",
+        "description": "Prepaid tokens"
+      },
+      "parking": {
+        "available": false
+      },
+      "hotShower": {
+        "included": true,
+        "available": false
+      },
+      "wifi": {
+        "description": "Free WiFi",
+        "type": "included"
+      },
+      "electricity": {
+        "type": "tenant",
+        "description": "Prepaid token"
+      }
+    },
+    "rooms": [
+      {
+        "available": true,
+        "price": {
+          "amountAlone": 10000,
+          "period": "month",
+          "currency": "KES",
+          "amountSharing": 5000
+        },
+        "name": "Bedsitter",
+        "id": "bedsitter",
+        "occupancy": {
+          "minimumPeople": 1,
+          "maximumPeople": 2
+        },
+        "deposit": {
+          "required": true,
+          "amount": 5000,
+          "refundable": true
+        }
+      }
+    ],
+    "availability": {
+      "vacancies": true,
+      "lastUpdated": "2026-07-01"
+    },
+    "name": "Maisha Hostels",
+    "description": "Modern accommodations designed for tech students, with high-speed internet and dedicated study spaces.",
+    "id": 5,
+    "media": {
+      "videos": [
+        {
+          "title": "Hostel Tour",
+          "url": ""
+        }
+      ],
+      "coverImage": "https://i.postimg.cc/C12F7FZj/1779910435140-1-maisha1.webp",
+      "gallery": [
+        {
+          "images": [
+            "https://i.postimg.cc/C12F7FZj/1779910435140-1-maisha1.webp",
+            "https://i.postimg.cc/bv6dqYKs/image.webp"
+          ],
+          "category": "Aerial View"
+        },
+        {
+          "category": "Key Card",
+          "images": [
+            "https://i.postimg.cc/g2Mkjqz9/1779910439550-3-maisha-xlg.webp"
+          ]
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/QdjHHdcJ/1779910441120-4-maisha-4.webp"
+          ],
+          "category": "Outside"
+        },
+        {
+          "category": "Common Areas",
+          "images": [
+            "https://i.postimg.cc/bv6dqYKs/image.webp"
+          ]
+        }
+      ]
+    },
+    "accessibility": {
+      "wheelchairAccessible": false
+    },
+    "rules": {
+      "visitors": {
+        "allowed": true,
+        "allowedUntil": "8:00 PM"
+      },
+      "gateClosingTime": "10:00 PM",
+      "sleepovers": {
+        "allowed": false
+      },
+      "noticeBeforeVacating": {
+        "unit": "days",
+        "required": true,
+        "duration": 30
+      },
+      "pets": {
+        "allowed": false
+      },
+      "cleanliness": {
+        "tenantResponsible": true
+      },
+      "alcohol": {
+        "allowed": false
+      },
+      "smoking": {
+        "allowed": false
+      },
+      "parties": {
+        "allowed": false
+      },
+      "quietHours": {
+        "start": "10:00 PM",
+        "end": "6:00 AM"
+      }
+    }
+  },
+  {
+    "availability": {
+      "vacancies": true,
+      "lastUpdated": "2026-07-01"
+    },
+    "description": "13 mins walk from DeKUT.\nHas a kitchen balcony and spacious if you want to live with a roomate\n\n\n",
+    "id": 6,
+    "name": "La Duvet Hostels",
+    "media": {
+      "videos": [
+        {
+          "url": "",
+          "title": "Hostel Tour"
+        }
+      ],
+      "coverImage": "https://i.postimg.cc/4dXrCjcY/472096041-1116297816853394-5071979688050436616-n-jpg-stp-dst-jpg-tt6-cstp-mx760x466-ctp-s760x466-nc.jpg",
+      "gallery": [
+        {
+          "images": [
+            "https://i.postimg.cc/c1pP0Kf0/APNQk-AG-rqs-QIUO-P-px-T-B-s-JLTt-UD-FGKn-M6NJm-KBYoo-q-W5JNE9r-Pr2vi-BJv-XSI5ypd-I7Iv-AMB36-Fcmuw7V.webp\n",
+            "https://i.postimg.cc/JnTJKWxJ/1779911005313-2-laduvet-last.webp"
+          ],
+          "category": "Entrance"
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/nhts4zxQ/1779911072497-0-laduvet2.webp",
+            "https://i.postimg.cc/Jnt5BqVY/1779911006572-3-laduvet3.webp",
+            "https://i.postimg.cc/ZRrKjkSd/AF1Qip-NWz-MMSNwm-Wocx-HZYMFfft-Oel8g-Mm-Gak-Z96O1yp-s680-w680-h510-rw.webp",
+            "https://i.postimg.cc/DwZrN6m3/APNQk-AGHA44G-5bo5Zs-IZa-GEq-Lfhv7J6gv-TXX5U7Mr-I5-t-G4KUag-Ox2WR-Hyr-FKy1LZFWLK6o-U-69-lt-CXUr-JGyg.webp"
+          ],
+          "category": "Rooms"
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/4dXrCjcY/472096041-1116297816853394-5071979688050436616-n-jpg-stp-dst-jpg-tt6-cstp-mx760x466-ctp-s760x466-nc.jpg"
+          ],
+          "category": "View"
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/VNkj3R6d/1779911003535-1-laduvet-4.webp",
+            "https://i.postimg.cc/cJPrXMtQ/AF1Qip-NHv-ITzdkn4Ei5Xlk-Qp-UZ9h-AVTnebkjj-Mx0Jxdr-s680-w680-h510-rw.webp",
+            "https://i.postimg.cc/mgt9jr6F/APNQk-AFu-Ull-W3tb-QH8TSEb-U3Mii-Qswdihi-YBd-B2h-ZV62A5QHvls-Ugih-WRg5Ks6Si-Ey-Omc7XXr-Uk-Cg-Phua-O.webp"
+          ],
+          "category": "Cabinet/Bed/Wardrope"
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/G2Q9d05C/APNQk-AHj-Un-Au8H8842-fi-STj-JFrk1our-Ev-Og4DEYxd-AYw-F9g-WUi-Hts-BJJ44-IZ71N3g-Mud-Uhp-Xiy-ZJvk-BG7.webp"
+          ],
+          "category": "Sink"
+        },
+        {
+          "category": "corridor",
+          "images": [
+            "https://i.postimg.cc/ZnbBdYdv/APNQk-AEZa0Ot-7i-BZGr-C1a-QXoo-Kp-BSYBjh-JDn7ju-Fu-HLxm3j-SIj-OUAh7Kpx-B-EAf-P5j4SWsfkdng9N1qmx5wo-K.webp"
+          ]
+        }
+      ]
+    },
+    "rules": {
+      "noticeBeforeVacating": {
+        "duration": 30,
+        "unit": "days",
+        "required": true
+      },
+      "sleepovers": {
+        "allowed": false
+      },
+      "gateClosingTime": "10:00 PM",
+      "visitors": {
+        "allowed": true,
+        "allowedUntil": "9:00 PM"
+      },
+      "quietHours": {
+        "start": "10:00 PM",
+        "end": "6:00 AM"
+      },
+      "parties": {
+        "allowed": false
+      },
+      "smoking": {
+        "allowed": false
+      },
+      "cleanliness": {
+        "tenantResponsible": true
+      },
+      "alcohol": {
+        "allowed": false
+      },
+      "pets": {
+        "allowed": false
+      }
+    },
+    "accessibility": {
+      "wheelchairAccessible": false
+    },
+    "location": {
+      "gate": "Boma",
+      "coordinates": {
+        "latitude": -0.398,
+        "longitude": 36.962
+      }
+    },
+    "security": {
+      "fingerprintAccess": false,
+      "cctv": false,
+      "fenced": false,
+      "securityGuard": false
+    },
+    "contact": {
+      "phone": [
+        "0718862632"
+      ],
+      "whatsapp": "254769486775"
+    },
+    "fees": {
+      "agreementFee": {
+        "amount": 0,
+        "required": false
+      }
+    },
+    "utilities": {
+      "bed": {
+        "included": true,
+        "mattressIncluded": true
+      },
+      "electricity": {
+        "type": "tenant",
+        "description": "prepaid token"
+      },
+      "water": {
+        "type": "included",
+        "description": "Use Carefully"
+      },
+      "wifi": {
+        "description": "Free WiFi",
+        "type": "included"
+      }
+    },
+    "rooms": [
+      {
+        "id": "bedsitter",
+        "occupancy": {
+          "maximumPeople": 2,
+          "minimumPeople": 1
+        },
+        "name": "Bedsitter",
+        "available": true,
+        "price": {
+          "currency": "KES",
+          "amountSharing": 5000,
+          "period": "month",
+          "amountAlone": 10000
+        },
+        "deposit": {
+          "required": true,
+          "amount": 3500,
+          "refundable": true
+        }
+      }
+    ]
+  },
+  {
+    "location": {
+      "coordinates": {
+        "latitude": 40.7614,
+        "longitude": -73.9776
+      },
+      "gate": "Boma"
+    },
     "security": {
       "fingerprintAccess": false,
       "cctv": false,
       "securityGuard": false,
       "fenced": false
+    },
+    "contact": {
+      "phone": [
+        "0791863678"
+      ],
+      "whatsapp": "254769486775"
+    },
+    "fees": {
+      "agreementFee": {
+        "required": false,
+        "amount": 0
+      }
+    },
+    "utilities": {
+      "wifi": {
+        "type": "included",
+        "description": "Free WiFi"
+      },
+      "electricity": {
+        "description": "Included in rent",
+        "type": "included"
+      },
+      "parking": {
+        "available": false
+      },
+      "bed": {
+        "mattressIncluded": false,
+        "included": false
+      },
+      "water": {
+        "description": "Water paid per unit usage",
+        "type": "included"
+      },
+      "hotShower": {
+        "available": false,
+        "included": true
+      },
+      "laundry": {
+        "available": false,
+        "selfService": true
+      }
+    },
+    "rooms": [
+      {
+        "id": "single",
+        "occupancy": {
+          "minimumPeople": 1,
+          "maximumPeople": 2
+        },
+        "available": true,
+        "name": "Single Room",
+        "price": {
+          "currency": "KES",
+          "amountAlone": 9000,
+          "period": "month",
+          "amountSharing": 5000
+        },
+        "deposit": {
+          "required": true,
+          "amount": 5000,
+          "refundable": true
+        }
+      }
+    ],
+    "media": {
+      "videos": [
+        {
+          "title": "Hostel Tour",
+          "url": ""
+        }
+      ],
+      "coverImage": "https://i.postimg.cc/vm8cRxSG/image.webp",
+      "gallery": [
+        {
+          "images": [],
+          "category": "Entrance"
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/CMnkb5Xj/1779909693061-3-kens-4.webp"
+          ],
+          "category": "Rooms"
+        },
+        {
+          "category": "Views",
+          "images": [
+            "https://i.postimg.cc/pLfmqnJX/1779909688125-1-kens-3.webp",
+            "https://i.postimg.cc/6TsQh972/1779909690270-2-kens-5.webp",
+            "https://i.postimg.cc/vm8cRxSG/image.webp",
+            "https://i.postimg.cc/DzY4X3c0/1779909695167-4-kens-1.webp"
+          ]
+        },
+        {
+          "category": "Common Areas"
+        }
+      ]
+    },
+    "rules": {
+      "pets": {
+        "allowed": false
+      },
+      "cleanliness": {
+        "tenantResponsible": true
+      },
+      "alcohol": {
+        "allowed": false
+      },
+      "smoking": {
+        "allowed": false
+      },
+      "parties": {
+        "allowed": false
+      },
+      "quietHours": {
+        "end": "6:00 AM",
+        "start": "10:00 PM"
+      },
+      "visitors": {
+        "allowed": true,
+        "allowedUntil": "8:00 PM"
+      },
+      "gateClosingTime": "10:00 PM",
+      "noticeBeforeVacating": {
+        "duration": 30,
+        "unit": "days",
+        "required": true
+      },
+      "sleepovers": {
+        "allowed": false
+      }
+    },
+    "accessibility": {
+      "wheelchairAccessible": false
+    },
+    "availability": {
+      "vacancies": true,
+      "lastUpdated": "2026-07-01"
+    },
+    "description": "Contemporary urban living with easy access to public transportation. Ideal for students who need to commute to different campus locations.",
+    "id": 7,
+    "name": "Kens Hostel"
+  },
+  {
+    "utilities": {
+      "electricity": {
+        "description": "Included in rent",
+        "type": "included"
+      },
+      "wifi": {
+        "type": "included",
+        "description": "Free WiFi"
+      },
+      "water": {
+        "description": "Water paid per unit usage",
+        "type": "meter"
+      },
+      "garbageCollection": {
+        "period": "week",
+        "amount": 100,
+        "type": "weekly"
+      },
+      "bed": {
+        "mattressIncluded": false,
+        "included": false
+      },
+      "parking": {
+        "available": false
+      },
+      "hotShower": {
+        "included": true,
+        "available": false
+      },
+      "laundry": {
+        "available": false,
+        "selfService": true
+      }
+    },
+    "rooms": [
+      {
+        "deposit": {
+          "required": true,
+          "amount": 6000,
+          "refundable": true
+        },
+        "occupancy": {
+          "maximumPeople": 2,
+          "minimumPeople": 1
+        },
+        "id": "bedsitter",
+        "available": true,
+        "price": {
+          "amountAlone": 6000,
+          "amountSharing": 6000,
+          "currency": "KES",
+          "period": "month"
+        },
+        "name": "BedSitter"
+      }
+    ],
+    "contact": {
+      "phone": [
+        "0724693216"
+      ],
+      "whatsapp": "25469486775"
+    },
+    "fees": {
+      "agreementFee": {
+        "amount": 0,
+        "required": false
+      }
+    },
+    "location": {
+      "coordinates": {
+        "latitude": 40.7295,
+        "longitude": -73.9965
+      },
+      "gate": "Boma"
+    },
+    "security": {
+      "securityGuard": false,
+      "fenced": false,
+      "cctv": false,
+      "fingerprintAccess": false
+    },
+    "name": "Mimshack Students Residence",
+    "description": "You are advantaged to be close to mimshack hotel,the landlady she is a nice person who understands students and there difficulties\n\nThe hostel is closest to the school",
+    "id": 8,
+    "availability": {
+      "vacancies": true,
+      "lastUpdated": "2026-07-01"
+    },
+    "accessibility": {
+      "wheelchairAccessible": false
+    },
+    "rules": {
+      "cleanliness": {
+        "tenantResponsible": true
+      },
+      "alcohol": {
+        "allowed": false
+      },
+      "pets": {
+        "allowed": false
+      },
+      "quietHours": {
+        "end": "6:00 AM",
+        "start": "10:00 PM"
+      },
+      "parties": {
+        "allowed": false
+      },
+      "smoking": {
+        "allowed": false
+      },
+      "gateClosingTime": "10:00 PM",
+      "visitors": {
+        "allowed": true,
+        "allowedUntil": "8:00 PM"
+      },
+      "noticeBeforeVacating": {
+        "duration": 30,
+        "unit": "days",
+        "required": true
+      },
+      "sleepovers": {
+        "allowed": false
+      }
+    },
+    "media": {
+      "videos": [
+        {
+          "url": "",
+          "title": "Hostel Tour"
+        }
+      ],
+      "gallery": [
+        {
+          "category": "Entrance",
+          "images": [
+            "https://i.postimg.cc/GhPN8fJ8/1779913422413-1-mim3.webp"
+          ]
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/vHfYz28f/card.webp",
+            "https://i.postimg.cc/RF2m1KjL/card.webp",
+            "https://i.postimg.cc/52pM7Zh2/card.webp",
+            "https://i.postimg.cc/t4qKxBsP/card.webp",
+            "https://i.postimg.cc/43MqjZB6/card.webp"
+          ],
+          "category": "Rooms"
+        },
+        {
+          "category": "View",
+          "images": [
+            "https://i.postimg.cc/FKYDZCcj/1779913425447-2-min2.webp",
+            "https://i.postimg.cc/SR9KL6jD/image.webp",
+            "https://i.postimg.cc/76vMNHqh/1779913426557-3-mim1.webp"
+          ]
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/MGFJx1KW/card.webp"
+          ],
+          "category": "Common Areas"
+        }
+      ],
+      "coverImage": "https://i.postimg.cc/SR9KL6jD/image.webp"
+    }
+  },
+  {
+    "availability": {
+      "vacancies": true,
+      "lastUpdated": "2026-07-01"
+    },
+    "name": "Sunrise Hostel",
+    "id": 9,
+    "description": "Watch the video above to understand more. And get the hostel tour.\nAs price varies according to rooms.\nPremium hostel close to DeKUT offering a bed,and chair, entertainment place.\nNo roommates,you stay alone.\n",
+    "media": {
+      "videos": [
+        {
+          "url": "https://www.instagram.com/p/Dair25eBbCM/",
+          "title": "Hostel Tour"
+        },
+        {
+          "title": "House Tour 2",
+          "url": ""
+        }
+      ],
+      "coverImage": "https://i.postimg.cc/tC0JqMmz/image.webp",
+      "gallery": [
+        {
+          "category": "Entrance",
+          "images": [
+            "https://i.postimg.cc/fRVfDbg5/1782245176494-444396.webp",
+            "https://i.postimg.cc/sX4pwGvV/1782245870212-127959.webp"
+          ]
+        },
+        {
+          "category": "Rooms",
+          "images": [
+            "https://i.postimg.cc/pXGm7tgs/1779911373912-4-sunrise1.webp",
+            "https://i.postimg.cc/g2L81Tns/1782245896154-127948.webp",
+            "https://i.postimg.cc/1tBqpxj6/1782245878426-127947.webp",
+            "https://i.postimg.cc/7PBzhk7w/1782245874593-127957.webp"
+          ]
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/02QQ7Bbm/1779911370003-1-sunrise-4.webp",
+            "https://i.postimg.cc/tC0JqMmz/image.webp",
+            "https://i.postimg.cc/ydydTqhK/1779911370997-2-sunrise3.webp",
+            "https://i.postimg.cc/tC0JqMmz/image.webp"
+          ],
+          "category": "View"
+        },
+        {
+          "category": "Kitchenette/washroom",
+          "images": [
+            "https://i.postimg.cc/SNDgm3Q8/1782245905581-127953.webp",
+            "https://i.postimg.cc/tgHZwC0V/1782245886257-127950.webp",
+            "https://i.postimg.cc/44FKZ1CB/1782245882197-127952.webp",
+            "https://i.postimg.cc/pXwp5XLz/1782245891654-127949.webp",
+            "https://i.postimg.cc/KYFjQqLM/1782245905581-127953.webp"
+          ]
+        }
+      ]
     },
     "accessibility": {
       "wheelchairAccessible": false
@@ -1585,82 +1361,563 @@
         "allowed": true,
         "allowedUntil": "8:00 PM"
       },
+      "noticeBeforeVacating": {
+        "duration": 30,
+        "unit": "days",
+        "required": true
+      },
       "sleepovers": {
         "allowed": false
       },
-      "parties": {
-        "allowed": false
+      "cleanliness": {
+        "tenantResponsible": true
       },
       "alcohol": {
-        "allowed": false
-      },
-      "smoking": {
         "allowed": false
       },
       "pets": {
         "allowed": false
       },
       "quietHours": {
-        "start": "10:00 PM",
-        "end": "6:00 AM"
+        "end": "6:00 AM",
+        "start": "10:00 PM"
       },
-      "noticeBeforeVacating": {
-        "required": true,
-        "duration": 30,
-        "unit": "days"
+      "parties": {
+        "allowed": false
       },
-      "cleanliness": {
-        "tenantResponsible": true
+      "smoking": {
+        "allowed": false
+      }
+    },
+    "fees": {
+      "agreementFee": {
+        "amount": 0,
+        "required": false
+      }
+    },
+    "contact": {
+      "whatsapp": "254769486775",
+      "phone": [
+        "0703753641"
+      ]
+    },
+    "security": {
+      "securityGuard": true,
+      "fenced": true,
+      "fingerprintAccess": true,
+      "cctv": true
+    },
+    "location": {
+      "coordinates": {
+        "latitude": 40.7295,
+        "longitude": -73.9965
+      },
+      "gate": "Boma"
+    },
+    "rooms": [
+      {
+        "price": {
+          "amountSharing": "no",
+          "currency": "KES",
+          "period": "month",
+          "amountAlone": 6500
+        },
+        "name": "Bed Sitter",
+        "available": true,
+        "id": "shared",
+        "occupancy": {
+          "maximumPeople": 1,
+          "minimumPeople": 1
+        },
+        "deposit": {
+          "required": true,
+          "amount": 0,
+          "refundable": true
+        }
+      }
+    ],
+    "utilities": {
+      "wifi": {
+        "description": "Free WiFi",
+        "type": "included"
+      },
+      "electricity": {
+        "type": "tenant",
+        "description": "Prepaid Token"
+      },
+      "laundry": {
+        "available": false,
+        "selfService": true
+      },
+      "garbageCollection": {
+        "period": "week",
+        "type": "weekly",
+        "amount": 0
+      },
+      "water": {
+        "description": "Water paid per unit usage",
+        "type": "meter"
+      },
+      "bed": {
+        "mattressIncluded": true,
+        "included": true
+      },
+      "parking": {
+        "available": false
+      },
+      "hotShower": {
+        "available": true,
+        "included": true
       }
     }
   },
   {
-    "id": 11,
-    "name": "Tamaal Hostel",
+    "availability": {
+      "vacancies": true,
+      "lastUpdated": "2026-07-01"
+    },
+    "id": 10,
+    "description": "A serene living space right around the campus at Gate B Nyeri View.\nCatholic Hostels\nPerfect for students who value both convenience and tranquility.",
+    "name": "Arch Bishop Kirima Hostels - Girls Only",
+    "media": {
+      "videos": [
+        {
+          "url": "",
+          "title": "Hostel Tour"
+        }
+      ],
+      "coverImage": "https://i.postimg.cc/g2m0R6ps/image.webp",
+      "gallery": [
+        {
+          "images": [
+            "https://i.postimg.cc/g2m0R6ps/image.webp"
+          ],
+          "category": "Entrance"
+        },
+        {
+          "images": [],
+          "category": "Rooms"
+        },
+        {
+          "images": [],
+          "category": "Laundry Area"
+        },
+        {
+          "category": "Common Areas"
+        }
+      ]
+    },
+    "rules": {
+      "smoking": {
+        "allowed": false
+      },
+      "parties": {
+        "allowed": false
+      },
+      "quietHours": {
+        "end": "6:00 AM",
+        "start": "10:00 PM"
+      },
+      "pets": {
+        "allowed": false
+      },
+      "cleanliness": {
+        "tenantResponsible": true
+      },
+      "alcohol": {
+        "allowed": false
+      },
+      "noticeBeforeVacating": {
+        "duration": 30,
+        "unit": "days",
+        "required": true
+      },
+      "sleepovers": {
+        "allowed": false
+      },
+      "visitors": {
+        "allowed": true,
+        "allowedUntil": "8:00 PM"
+      },
+      "gateClosingTime": "10:00 PM"
+    },
+    "accessibility": {
+      "wheelchairAccessible": false
+    },
+    "security": {
+      "cctv": false,
+      "fingerprintAccess": false,
+      "securityGuard": true,
+      "fenced": true
+    },
     "location": {
-      "gate": "Boma",
+      "gate": "Nyeri View",
       "coordinates": {
         "latitude": 40.7295,
         "longitude": -73.9965
       }
     },
-    "description": "A serene living space right on campus with beautiful garden views. Perfect for students who value both convenience and tranquility.",
+    "fees": {
+      "agreementFee": {
+        "required": false,
+        "amount": 0
+      }
+    },
     "contact": {
       "phone": [
-        "0726176330"
+        "0721611281",
+        "0707557091",
+        "kirima.conference@gmail.com"
       ],
-      "whatsapp": "0726176330"
+      "whatsapp": "254769486775"
     },
+    "rooms": [
+      {
+        "available": true,
+        "price": {
+          "amountAlone": "Contact for Price",
+          "amountSharing": "Contact for Price",
+          "period": "month",
+          "currency": "KES"
+        },
+        "name": "Bedsitter",
+        "occupancy": {
+          "maximumPeople": 2,
+          "minimumPeople": 1
+        },
+        "id": "bedsitter",
+        "deposit": {
+          "refundable": true,
+          "amount": "Contact for Price",
+          "required": true
+        }
+      }
+    ],
+    "utilities": {
+      "electricity": {
+        "description": "Included in rent",
+        "type": "included"
+      },
+      "wifi": {
+        "type": "tenant",
+        "description": "Self WiFi"
+      },
+      "bed": {
+        "included": true,
+        "mattressIncluded": false
+      },
+      "water": {
+        "description": "Included in rent\n",
+        "type": "included"
+      },
+      "garbageCollection": {
+        "type": "weekly",
+        "amount": 0,
+        "period": "week"
+      },
+      "parking": {
+        "available": false
+      },
+      "hotShower": {
+        "available": false,
+        "included": true
+      },
+      "laundry": {
+        "selfService": true,
+        "available": false
+      }
+    }
+  },
+  {
     "availability": {
       "vacancies": true,
       "lastUpdated": "2026-07-01"
     },
+    "description": "There are two old and new Tamaal.\n1 is the new Tamaal and 2 is the old one.\n\nEach room comes with a study table,bed,wifi router, wardrobe, curtains, a chair(chairs if living more than 1) and a good view of surrounding areas.",
+    "id": 11,
+    "name": "Tamaal Hostel",
+    "media": {
+      "gallery": [
+        {
+          "images": [
+            "https://i.postimg.cc/rmggj6st/1780735837400-0-tammal5.webp",
+            "https://i.postimg.cc/CLnHBnGm/1780735839954-2-tammal-1.webp"
+          ],
+          "category": "Entrance Tamaal 1"
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/T3m9S5hw/1780735838940-1-tammal4.webp"
+          ],
+          "category": "Kitchenette Tamaal 1"
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/Twht3dTf/1780735346452-0-tamaal-A.webp",
+            "https://i.postimg.cc/ydY0VvXW/image-url-https-pub-35395ff8fc144313adfa903807f2a359-r2-dev-7e22cb85-19d4-4d38-b40d-2fd5d0.jpg"
+          ],
+          "category": "Entrance Tamaal 2"
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/D0LdSmHS/1779911993134-2-tammal3.webp",
+            "https://i.postimg.cc/xTPMBr2r/1779911995924-4-tammal2.webp",
+            "https://i.postimg.cc/T3m9S5hw/1780735838940-1-tammal4.webp",
+            "https://i.postimg.cc/wjXNLSwF/image-url-https-pub-35395ff8fc144313adfa903807f2a359-r2-dev-7e22cb85-19d4-4d38-b40d-2fd5d0.jpg",
+            "https://i.postimg.cc/dQgnBc9t/image-url-https-pub-35395ff8fc144313adfa903807f2a359-r2-dev-7e22cb85-19d4-4d38-b40d-2fd5d0.jpg",
+            "https://i.postimg.cc/wvmRxZRF/image-url-https-pub-35395ff8fc144313adfa903807f2a359-r2-dev-7e22cb85-19d4-4d38-b40d-2fd5d0.jpg",
+            "https://i.postimg.cc/XvZpxmL3/image-url-https-pub-35395ff8fc144313adfa903807f2a359-r2-dev-7e22cb85-19d4-4d38-b40d-2fd5d0.jpg",
+            "https://i.postimg.cc/wT6Mn72j/image-url-https-pub-35395ff8fc144313adfa903807f2a359-r2-dev-7e22cb85-19d4-4d38-b40d-2fd5d0.jpg"
+          ],
+          "category": "Room Tamaal 2"
+        },
+        {
+          "images": [
+            "https://i.postimg.cc/TPkJ5zwf/image-url-https-pub-35395ff8fc144313adfa903807f2a359-r2-dev-7e22cb85-19d4-4d38-b40d-2fd5d0.webp",
+            "https://i.postimg.cc/NM3T1Bvx/image-url-https-pub-35395ff8fc144313adfa903807f2a359-r2-dev-7e22cb85-19d4-4d38-b40d-2fd5d0.jpg",
+            "https://i.postimg.cc/Qxb9MpCm/image-url-https-pub-35395ff8fc144313adfa903807f2a359-r2-dev-7e22cb85-19d4-4d38-b40d-2fd5d0.jpg"
+          ],
+          "category": "Washrooms Tamaal 2"
+        },
+        {
+          "category": "Kitchenette Tamaal 2",
+          "images": [
+            "https://i.postimg.cc/3R15GJvt/image-url-https-pub-35395ff8fc144313adfa903807f2a359-r2-dev-7e22cb85-19d4-4d38-b40d-2fd5d0.jpg",
+            "https://i.postimg.cc/sXwqXHFd/1782136453769-1000130400.webp",
+            "https://i.postimg.cc/jq3BY1Qg/1782136464398-1000130414.webp"
+          ]
+        }
+      ],
+      "coverImage": "https://i.postimg.cc/rmggj6st/1780735837400-0-tammal5.webp",
+      "videos": [
+        {
+          "url": "https://www.instagram.com/reel/DaXw5z5AGYn/?igsh=NW1yYzVtZjVoNGxl",
+          "title": "Hostel Tour"
+        }
+      ]
+    },
+    "rules": {
+      "visitors": {
+        "allowed": true,
+        "allowedUntil": "8:00 PM"
+      },
+      "gateClosingTime": "10:00 PM",
+      "sleepovers": {
+        "allowed": false
+      },
+      "noticeBeforeVacating": {
+        "duration": 30,
+        "required": true,
+        "unit": "days"
+      },
+      "pets": {
+        "allowed": false
+      },
+      "cleanliness": {
+        "tenantResponsible": true
+      },
+      "alcohol": {
+        "allowed": false
+      },
+      "parties": {
+        "allowed": false
+      },
+      "smoking": {
+        "allowed": false
+      },
+      "quietHours": {
+        "end": "6:00 AM",
+        "start": "10:00 PM"
+      }
+    },
+    "accessibility": {
+      "wheelchairAccessible": false
+    },
+    "location": {
+      "coordinates": {
+        "latitude": 40.7295,
+        "longitude": -73.9965
+      },
+      "gate": "Boma"
+    },
+    "security": {
+      "cctv": true,
+      "fingerprintAccess": true,
+      "fenced": true,
+      "securityGuard": false
+    },
+    "contact": {
+      "whatsapp": "254769486775",
+      "phone": [
+        "0726176330"
+      ]
+    },
+    "fees": {
+      "agreementFee": {
+        "amount": 0,
+        "required": false
+      }
+    },
+    "utilities": {
+      "hotShower": {
+        "available": false,
+        "included": false
+      },
+      "garbageCollection": {
+        "type": "weekly",
+        "amount": 0,
+        "period": "week"
+      },
+      "parking": {
+        "available": false
+      },
+      "bed": {
+        "included": false,
+        "mattressIncluded": false
+      },
+      "water": {
+        "type": "included",
+        "description": "Water included in rent"
+      },
+      "wifi": {
+        "type": "included",
+        "description": "Free WiFi"
+      },
+      "electricity": {
+        "type": "tenant",
+        "description": "Prepaid Token"
+      }
+    },
     "rooms": [
       {
+        "occupancy": {
+          "maximumPeople": 2,
+          "minimumPeople": 1
+        },
         "id": "shared",
-        "name": "Shared Room",
+        "price": {
+          "currency": "KES",
+          "amountSharing": 5000,
+          "amountAlone": 8500,
+          "period": "month"
+        },
+        "name": "BedSitter",
+        "available": true,
+        "deposit": {
+          "amount": 5000,
+          "required": true,
+          "refundable": true
+        }
+      }
+    ]
+  },
+  {
+    "rooms": [
+      {
+        "deposit": {
+          "refundable": true,
+          "amount": 7200,
+          "required": true
+        },
+        "name": "Bedsitter (Ground floor)",
+        "available": true,
+        "price": {
+          "amountAlone": 7200,
+          "amountSharing": 7200,
+          "period": "month",
+          "currency": "KES"
+        },
+        "id": "bedsitter-ground",
+        "occupancy": {
+          "minimumPeople": 1,
+          "maximumPeople": 1
+        }
+      },
+      {
+        "name": "Bedsitter (Upper floor)",
+        "available": true,
+        "price": {
+          "amountAlone": 8200,
+          "amountSharing": 8200,
+          "period": "month",
+          "currency": "KES"
+        },
+        "id": "bedsitter-upper",
+        "occupancy": {
+          "minimumPeople": 1,
+          "maximumPeople": 1
+        },
+        "deposit": {
+          "amount": 8200,
+          "required": true,
+          "refundable": true
+        }
+      },
+      {
+        "deposit": {
+          "required": true,
+          "amount": 6500,
+          "refundable": true
+        },
+        "available": true,
+        "price": {
+          "amountAlone": 6500,
+          "amountSharing": 6500,
+          "period": "month",
+          "currency": "KES"
+        },
+        "name": "Bedsitter (Smaller Size)",
+        "id": "bedsitter-smaller",
+        "occupancy": {
+          "maximumPeople": 1,
+          "minimumPeople": 1
+        }
+      },
+      {
+        "available": true,
+        "price": {
+          "amountAlone": 4500,
+          "amountSharing": 4500,
+          "period": "month",
+          "currency": "KES"
+        },
+        "name": "Bedsitter (Sharing)",
+        "id": "bedsitter-sharing",
         "occupancy": {
           "minimumPeople": 1,
           "maximumPeople": 2
         },
-        "price": {
-          "amountAlone": 160,
-          "amountSharing": 110,
-          "currency": "KES",
-          "period": "month"
-        },
         "deposit": {
-          "required": true,
-          "amount": 160,
-          "refundable": true
-        },
-        "available": true
+          "refundable": true,
+          "amount": 4500,
+          "required": true
+        }
       }
     ],
     "utilities": {
+      "laundry": {
+        "selfService": true,
+        "available": true
+      },
       "water": {
         "type": "meter",
         "description": "Water paid per unit usage"
+      },
+      "garbageCollection": {
+        "type": "weekly",
+        "amount": 100,
+        "period": "week"
+      },
+      "bed": {
+        "included": false,
+        "mattressIncluded": false
+      },
+      "parking": {
+        "available": false
+      },
+      "hotShower": {
+        "available": false,
+        "included": true
       },
       "electricity": {
         "type": "included",
@@ -1669,26 +1926,6 @@
       "wifi": {
         "type": "included",
         "description": "Free WiFi"
-      },
-      "garbageCollection": {
-        "type": "weekly",
-        "amount": 100,
-        "period": "week"
-      },
-      "hotShower": {
-        "available": false,
-        "included": true
-      },
-      "bed": {
-        "included": false,
-        "mattressIncluded": false
-      },
-      "laundry": {
-        "available": true,
-        "selfService": true
-      },
-      "parking": {
-        "available": false
       }
     },
     "fees": {
@@ -1697,165 +1934,76 @@
         "amount": 1000
       }
     },
-    "media": {
-      "coverImage": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-      "gallery": [
-        {
-          "category": "Entrance",
-          "images": []
-        },
-        {
-          "category": "Rooms",
-          "images": []
-        },
-        {
-          "category": "Laundry Area",
-          "images": []
-        },
-        {
-          "category": "Common Areas",
-          "images": [
-            "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-            "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-          ]
-        }
-      ],
-      "videos": [
-        {
-          "title": "Hostel Tour",
-          "url": ""
-        }
-      ]
-    },
-    "security": {
-      "fingerprintAccess": false,
-      "cctv": false,
-      "securityGuard": false,
-      "fenced": false
-    },
-    "accessibility": {
-      "wheelchairAccessible": false
-    },
-    "rules": {
-      "gateClosingTime": "10:00 PM",
-      "visitors": {
-        "allowed": true,
-        "allowedUntil": "8:00 PM"
-      },
-      "sleepovers": {
-        "allowed": false
-      },
-      "parties": {
-        "allowed": false
-      },
-      "alcohol": {
-        "allowed": false
-      },
-      "smoking": {
-        "allowed": false
-      },
-      "pets": {
-        "allowed": false
-      },
-      "quietHours": {
-        "start": "10:00 PM",
-        "end": "6:00 AM"
-      },
-      "noticeBeforeVacating": {
-        "required": true,
-        "duration": 30,
-        "unit": "days"
-      },
-      "cleanliness": {
-        "tenantResponsible": true
-      }
-    }
-  },
-  {
-    "id": 12,
-    "name": "Lolan Scholars",
-    "location": {
-      "gate": "Boma",
-      "coordinates": {
-        "latitude": 40.7295,
-        "longitude": -73.9965
-      }
-    },
-    "description": "A serene living space right on campus with beautiful garden views. Perfect for students who value both convenience and tranquility.",
     "contact": {
       "phone": [
         "0711905530"
       ],
       "whatsapp": "0711905530"
     },
+    "security": {
+      "fenced": false,
+      "securityGuard": false,
+      "cctv": false,
+      "fingerprintAccess": false
+    },
+    "location": {
+      "gate": "Boma",
+      "coordinates": {
+        "latitude": 40.7295,
+        "longitude": -73.9965
+      }
+    },
+    "name": "Lolan Scholars",
+    "id": 12,
+    "description": "A serene living space right on campus with beautiful garden views. Perfect for students who value both convenience and tranquility.",
     "availability": {
       "vacancies": true,
-      "lastUpdated": "2026-07-01"
+      "lastUpdated": "2026-07-19"
     },
-    "rooms": [
-      {
-        "id": "shared",
-        "name": "Shared Room",
-        "occupancy": {
-          "minimumPeople": 1,
-          "maximumPeople": 2
-        },
-        "price": {
-          "amountAlone": 160,
-          "amountSharing": 110,
-          "currency": "KES",
-          "period": "month"
-        },
-        "deposit": {
-          "required": true,
-          "amount": 160,
-          "refundable": true
-        },
-        "available": true
-      }
-    ],
-    "utilities": {
-      "water": {
-        "type": "meter",
-        "description": "Water paid per unit usage"
-      },
-      "electricity": {
-        "type": "included",
-        "description": "Included in rent"
-      },
-      "wifi": {
-        "type": "included",
-        "description": "Free WiFi"
-      },
-      "garbageCollection": {
-        "type": "weekly",
-        "amount": 100,
-        "period": "week"
-      },
-      "hotShower": {
-        "available": false,
-        "included": true
-      },
-      "bed": {
-        "included": false,
-        "mattressIncluded": false
-      },
-      "laundry": {
-        "available": true,
-        "selfService": true
-      },
-      "parking": {
-        "available": false
-      }
+    "accessibility": {
+      "wheelchairAccessible": false
     },
-    "fees": {
-      "agreementFee": {
-        "required": true,
-        "amount": 1000
+    "rules": {
+      "alcohol": {
+        "allowed": false
+      },
+      "cleanliness": {
+        "tenantResponsible": true
+      },
+      "pets": {
+        "allowed": false
+      },
+      "quietHours": {
+        "end": "6:00 AM",
+        "start": "10:00 PM"
+      },
+      "smoking": {
+        "allowed": false
+      },
+      "parties": {
+        "allowed": false
+      },
+      "gateClosingTime": "10:00 PM",
+      "visitors": {
+        "allowed": true,
+        "allowedUntil": "8:00 PM"
+      },
+      "sleepovers": {
+        "allowed": false
+      },
+      "noticeBeforeVacating": {
+        "duration": 30,
+        "unit": "days",
+        "required": true
       }
     },
     "media": {
+      "videos": [
+        {
+          "title": "Hostel Tour",
+          "url": ""
+        }
+      ],
       "coverImage": "https://i.postimg.cc/c1t6NSTQ/image.webp",
       "gallery": [
         {
@@ -1863,12 +2011,12 @@
           "images": []
         },
         {
-          "category": "Rooms",
-          "images": []
+          "images": [],
+          "category": "Rooms"
         },
         {
-          "category": "Laundry Area",
-          "images": []
+          "images": [],
+          "category": "Laundry Area"
         },
         {
           "category": "Common Areas",
@@ -1879,56 +2027,7 @@
             "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
           ]
         }
-      ],
-      "videos": [
-        {
-          "title": "Hostel Tour",
-          "url": ""
-        }
       ]
-    },
-    "security": {
-      "fingerprintAccess": false,
-      "cctv": false,
-      "securityGuard": false,
-      "fenced": false
-    },
-    "accessibility": {
-      "wheelchairAccessible": false
-    },
-    "rules": {
-      "gateClosingTime": "10:00 PM",
-      "visitors": {
-        "allowed": true,
-        "allowedUntil": "8:00 PM"
-      },
-      "sleepovers": {
-        "allowed": false
-      },
-      "parties": {
-        "allowed": false
-      },
-      "alcohol": {
-        "allowed": false
-      },
-      "smoking": {
-        "allowed": false
-      },
-      "pets": {
-        "allowed": false
-      },
-      "quietHours": {
-        "start": "10:00 PM",
-        "end": "6:00 AM"
-      },
-      "noticeBeforeVacating": {
-        "required": true,
-        "duration": 30,
-        "unit": "days"
-      },
-      "cleanliness": {
-        "tenantResponsible": true
-      }
     }
   },
   {
