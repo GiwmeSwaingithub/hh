@@ -1011,6 +1011,69 @@
         </button>
     </div>
 
+    <!-- Get Contact Bottom Sheet -->
+    <div id="get-contact-sheet-overlay" class="bottom-sheet-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:99999;backdrop-filter:blur(6px);opacity:0;transition:opacity 0.3s ease;">
+        <div id="get-contact-bottom-sheet" class="bottom-sheet" style="position:fixed;bottom:0;left:0;right:0;width:100%;max-width:540px;margin:0 auto;background:#181824;color:#fff;border-top-left-radius:28px;border-top-right-radius:28px;padding:12px 24px 32px 24px;box-shadow:0 -10px 40px rgba(0,0,0,0.6);border-top:1px solid rgba(255,255,255,0.12);transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);box-sizing:border-box;">
+            
+            <!-- Drag Handle / Header -->
+            <div style="display:flex;flex-direction:column;align-items:center;position:relative;padding-top:4px;padding-bottom:12px;">
+                <div style="width:44px;height:5px;background:rgba(255,255,255,0.25);border-radius:10px;"></div>
+                <button type="button" id="close-contact-sheet" style="position:absolute;right:0;top:-2px;background:rgba(255,255,255,0.1);border:none;color:#aaa;width:32px;height:32px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">&times;</button>
+            </div>
+
+            <!-- Sheet Title -->
+            <div style="text-align:center;margin-bottom:18px;">
+                <h3 style="margin:0 0 6px 0;font-size:1.25rem;font-weight:700;letter-spacing:-0.01em;">Request Caretaker Contact</h3>
+                <p style="margin:0;font-size:0.85rem;color:#aaa;line-height:1.4;">Choose how you want to receive the caretaker contact and hostel details.</p>
+            </div>
+
+            <!-- Option 1: Via Bot -->
+            <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:16px;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                    <div style="width:40px;height:40px;background:linear-gradient(135deg,#25d366,#128c7e);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#fff;flex-shrink:0;box-shadow:0 4px 12px rgba(37,211,102,0.3);">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin:0;font-size:0.95rem;font-weight:700;">Get Contact via Bot</h4>
+                        <span style="font-size:0.78rem;color:#aaa;">Receive caretaker phone number, copy button, photos & pricing on WhatsApp.</span>
+                    </div>
+                </div>
+
+                <form id="get-contact-form" style="display:flex;flex-direction:column;gap:10px;">
+                    <div>
+                        <input type="tel" id="user-wa-phone" placeholder="Enter your WhatsApp number (e.g. 0712345678)" required style="width:100%;padding:13px 14px;border-radius:12px;background:#0d0d14;border:1px solid rgba(255,255,255,0.18);color:#fff;font-size:0.95rem;outline:none;box-sizing:border-box;" />
+                    </div>
+                    <div id="contact-modal-status" style="font-size:0.85rem;display:none;padding:10px 14px;border-radius:10px;line-height:1.4;"></div>
+                    <button type="submit" id="send-wa-contact-btn" style="width:100%;padding:13px;border-radius:12px;background:linear-gradient(135deg,#25d366,#128c7e);border:none;color:#fff;font-weight:700;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 18px rgba(37,211,102,0.25);transition:opacity 0.15s;">
+                        <span>Send Details to My WhatsApp</span>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Divider -->
+            <div style="display:flex;align-items:center;gap:12px;margin:14px 0;opacity:0.6;">
+                <div style="flex:1;height:1px;background:rgba(255,255,255,0.2);"></div>
+                <span style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#aaa;">OR</span>
+                <div style="flex:1;height:1px;background:rgba(255,255,255,0.2);"></div>
+            </div>
+
+            <!-- Option 2: Direct WhatsApp Chat Navigation -->
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:14px;text-align:center;">
+                <div style="margin-bottom:10px;">
+                    <h4 style="margin:0 0 4px 0;font-size:0.92rem;font-weight:700;">Request Directly on WhatsApp</h4>
+                    <span style="font-size:0.78rem;color:#aaa;display:block;">Open WhatsApp chat directly to request the caretaker number manually like before.</span>
+                </div>
+                <a id="direct-wa-fallback" href="#" target="_blank" rel="noopener" style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-weight:600;font-size:0.9rem;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;transition:background 0.2s;">
+                    <i class="fa-brands fa-whatsapp" style="color:#25d366;font-size:1.1rem;"></i>
+                    <span>Open WhatsApp Chat Directly</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.8rem;opacity:0.7;"></i>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
     <script src="../../shared/utils/helpers.js"></script>
     <script src="../../shared/js/config.js"></script>
     <script src="../../shared/js/app.js"></script>

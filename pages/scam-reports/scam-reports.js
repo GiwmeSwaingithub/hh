@@ -81,6 +81,15 @@
     if (!result) return;
     result.hidden = false;
 
+    // Update hash so URL can be shared directly
+    try {
+      if (history.replaceState) {
+        history.replaceState(null, '', location.pathname + '#' + norm);
+      } else {
+        location.hash = '#' + norm;
+      }
+    } catch (_) {}
+
     if (!isValidPhone(phone)) {
       result.className = 'checker-result flagged';
       result.innerHTML = '<strong>Invalid number.</strong> Enter a valid Kenyan phone (e.g. 0712345678).';
@@ -95,13 +104,36 @@
       } catch (_) {}
     }
 
+    const shareUrl = `${location.origin}${location.pathname}#${norm}`;
+
     if (!reports.length) {
       result.className = 'checker-result clean';
-      result.innerHTML = `<strong>Not in database.</strong> No reports for <strong>${esc(maskPhone(norm))}</strong>. Always verify in person before paying.`;
+      result.innerHTML = `
+        <div>
+          <strong>Not in database.</strong> No reports for <strong>${esc(maskPhone(norm))}</strong>. Always verify in person before paying.
+        </div>
+        <button id="copy-scam-link-btn" class="share-btn-sm" style="margin-top:12px;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:inherit;cursor:pointer;font-size:0.8rem;display:inline-flex;align-items:center;gap:6px;">
+          <i class="fa-solid fa-link"></i> Copy Direct Link
+        </button>`;
     } else {
       result.className = 'checker-result flagged';
-      result.innerHTML = `<strong>Warning: ${reports.length} report(s) found</strong> for <strong>${esc(maskPhone(norm))}</strong>. Exercise caution.`;
+      result.innerHTML = `
+        <div>
+          <strong>Warning: ${reports.length} report(s) found</strong> for <strong>${esc(maskPhone(norm))}</strong>. Exercise caution.
+        </div>
+        <button id="copy-scam-link-btn" class="share-btn-sm" style="margin-top:12px;padding:6px 14px;border-radius:20px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:inherit;cursor:pointer;font-size:0.8rem;display:inline-flex;align-items:center;gap:6px;">
+          <i class="fa-solid fa-link"></i> Copy Direct Link
+        </button>`;
     }
+
+    document.getElementById('copy-scam-link-btn')?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        showToast('Direct link copied to clipboard!', 'success');
+      } catch (_) {
+        showToast('Direct link: ' + shareUrl, 'info');
+      }
+    });
   }
 
   async function loadAlerts() {
@@ -656,7 +688,29 @@
     bindAllEvents();
     updateLastSeen();
     setInterval(updateLastSeen, 60000);
-    setMode('report'); // Default mode
+
+    // Check if URL has hash or query specifying a phone number to check directly
+    const searchParams = new URLSearchParams(window.location.search);
+    let autoPhone = searchParams.get('phone') || searchParams.get('check') || searchParams.get('q');
+    if (!autoPhone && window.location.hash) {
+      const rawHash = decodeURIComponent(window.location.hash.replace(/^#/, '').replace(/^check=/, '').trim());
+      if (rawHash && /^[\d+]{5,15}$/.test(rawHash.replace(/[^\d+]/g, ''))) {
+        autoPhone = rawHash;
+      }
+    }
+
+    if (autoPhone) {
+      setMode('check');
+      const input = document.getElementById('checker-phone');
+      if (input) input.value = autoPhone;
+      await checkPhone(autoPhone);
+      setTimeout(() => {
+        document.getElementById('checker-result')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    } else {
+      setMode('report'); // Default mode
+    }
+
     await new Promise(r => setTimeout(r, 800));
     loadAlerts();
   }

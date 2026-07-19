@@ -21,13 +21,147 @@
 
   function renderContact(hostel) {
     const container = document.getElementById('contact-buttons');
-    const msg = encodeURIComponent(`Hello, I would like to request the caretaker's number for "${hostel.name}" (Hostel ID: ${hostel.id}).`);
+    if (!container) return;
+
+    const directMsg = encodeURIComponent(`Hello, I would like to request the caretaker's number for "${hostel.name}" (Hostel ID: ${hostel.id}).`);
+    const directWaUrl = `https://wa.me/254769486775?text=${directMsg}`;
+
     container.innerHTML = `
-      <a class="enquire-btn" href="https://wa.me/254769486775?text=${msg}" target="_blank" rel="noopener" style="width:100%;">
-        <em>Request Caretaker Number</em><i>&#10095;&#10095;</i>
-      </a>
-      <span style="font-size:0.8rem; opacity:0.7; text-align:center; display:block; margin-top:4px;">For privacy, contact details are provided upon request.</span>
+      <button type="button" id="open-get-contact-btn" class="enquire-btn" style="width:100%;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;">
+        <i class="fa-brands fa-whatsapp" style="font-size:1.2rem;"></i>
+        <em>Get Contact & Details via WhatsApp</em><i>&#10095;&#10095;</i>
+      </button>
+      <span style="font-size:0.8rem; opacity:0.7; text-align:center; display:block; margin-top:4px;">Contact number, photos & pricing sent directly to your WhatsApp.</span>
     `;
+
+    // Bottom Sheet Elements
+    const overlay = document.getElementById('get-contact-sheet-overlay');
+    const sheet = document.getElementById('get-contact-bottom-sheet');
+    const closeBtn = document.getElementById('close-contact-sheet');
+    const form = document.getElementById('get-contact-form');
+    const phoneInput = document.getElementById('user-wa-phone');
+    const statusBox = document.getElementById('contact-modal-status');
+    const submitBtn = document.getElementById('send-wa-contact-btn');
+    const fallbackLink = document.getElementById('direct-wa-fallback');
+
+    if (fallbackLink) fallbackLink.href = directWaUrl;
+
+    const openSheet = () => {
+      if (overlay && sheet) {
+        overlay.style.display = 'block';
+        const savedPhone = localStorage.getItem('user_wa_phone') || '';
+        if (phoneInput && savedPhone) phoneInput.value = savedPhone;
+        if (statusBox) statusBox.style.display = 'none';
+        requestAnimationFrame(() => {
+          overlay.style.opacity = '1';
+          sheet.style.transform = 'translateY(0)';
+          if (phoneInput) phoneInput.focus();
+        });
+      }
+    };
+
+    const closeSheet = () => {
+      if (overlay && sheet) {
+        sheet.style.transform = 'translateY(100%)';
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.style.display = 'none';
+        }, 350);
+      }
+    };
+
+    document.getElementById('open-get-contact-btn')?.addEventListener('click', openSheet);
+    closeBtn?.addEventListener('click', closeSheet);
+    overlay?.addEventListener('click', (e) => { if (e.target === overlay) closeSheet(); });
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const rawPhone = phoneInput.value.trim();
+      const normPhone = normalizePhone(rawPhone);
+
+      if (!/^254[17]\d{8}$/.test(normPhone)) {
+        if (statusBox) {
+          statusBox.style.display = 'block';
+          statusBox.style.background = 'rgba(239,68,68,0.2)';
+          statusBox.style.border = '1px solid rgba(239,68,68,0.4)';
+          statusBox.style.color = '#fca5a5';
+          statusBox.textContent = 'Please enter a valid Kenyan phone number (e.g. 0712345678).';
+        }
+        return;
+      }
+
+      localStorage.setItem('user_wa_phone', rawPhone);
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
+        submitBtn.innerHTML = `<span>Sending...</span><i class="fa-solid fa-spinner fa-spin"></i>`;
+      }
+
+      if (statusBox) statusBox.style.display = 'none';
+
+      // Prepare hostel details
+      const roomPrices = (hostel.rooms || []).map(r => `${r.type || r.name || 'Room'}: Ksh ${r.price || 'N/A'}`).join(', ');
+      const priceStr = roomPrices || hostel.price || hostel.pricing || 'Contact for prices';
+      const imageUrl = (hostel.images && hostel.images.length > 0) ? hostel.images[0] : (hostel.image || '');
+      const caretakerContact = hostel.contact ? hostel.contact.split(',')[0].trim() : '254769486775';
+
+      const botBaseUrl = (window.DKUT && window.DKUT.CONFIG && window.DKUT.CONFIG.SITE && window.DKUT.CONFIG.SITE.botApiUrl)
+        ? window.DKUT.CONFIG.SITE.botApiUrl
+        : 'http://20.164.16.100:5000';
+
+      try {
+        const response = await fetch(`${botBaseUrl}/api/send-hostel-contact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userPhone: normPhone,
+            hostelId: hostel.id,
+            hostelName: hostel.name,
+            contact: caretakerContact,
+            price: priceStr,
+            description: hostel.description || hostel.overview || 'Verified student hostel near DEKUT campus.',
+            imageUrl: imageUrl,
+            hostelUrl: window.location.href
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          if (statusBox) {
+            statusBox.style.display = 'block';
+            statusBox.style.background = 'rgba(37,211,102,0.2)';
+            statusBox.style.border = '1px solid rgba(37,211,102,0.4)';
+            statusBox.style.color = '#86efac';
+            statusBox.textContent = 'Sent! Check your WhatsApp for caretaker contact and hostel details.';
+          }
+          if (window.DKUT && window.DKUT.app && window.DKUT.app.showToast) {
+            window.DKUT.app.showToast('Hostel details sent to your WhatsApp!', 'success');
+          }
+          setTimeout(closeSheet, 2200);
+        } else {
+          throw new Error(data.error || 'Failed to send WhatsApp message');
+        }
+      } catch (err) {
+        console.warn('Bot API call failed, falling back to direct WhatsApp link:', err.message);
+        if (statusBox) {
+          statusBox.style.display = 'block';
+          statusBox.style.background = 'rgba(234,179,8,0.2)';
+          statusBox.style.border = '1px solid rgba(234,179,8,0.4)';
+          statusBox.style.color = '#fde047';
+          statusBox.textContent = 'Opening direct WhatsApp chat...';
+        }
+        window.open(directWaUrl, '_blank');
+        setTimeout(closeSheet, 1500);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = '1';
+          submitBtn.innerHTML = `<span>Send Details to My WhatsApp</span><i class="fa-solid fa-paper-plane"></i>`;
+        }
+      }
+    });
   }
 
   function setupLightbox() {
@@ -800,11 +934,14 @@
       
       document.getElementById('bottom-contact-cta')?.addEventListener('click', (e) => {
         e.preventDefault();
-        const contactSec = document.getElementById('contact-buttons');
-        if (contactSec) {
-          contactSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          contactSec.style.outline = '2px dashed var(--accent)';
-          setTimeout(() => contactSec.style.outline = 'none', 1500);
+        const openBtn = document.getElementById('open-get-contact-btn');
+        if (openBtn) {
+          openBtn.click();
+        } else {
+          const contactSec = document.getElementById('contact-buttons');
+          if (contactSec) {
+            contactSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
         }
       });
     }

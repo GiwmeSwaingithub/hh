@@ -292,7 +292,7 @@
     if (DKUT.CONFIG && DKUT.CONFIG.pageUrl) {
       return DKUT.CONFIG.pageUrl('pages/hostel-details/index.html?h=' + encodeURIComponent(hostelId));
     }
-    return '../hostel-details/index.html?h=' + encodeURIComponent(hostelId);
+    return '/hostel-details?h=' + encodeURIComponent(hostelId);
   }
 
   function homeLocationUrl(locationName) {

@@ -1,6 +1,9 @@
 {
   "cleanUrls": true,
   "redirects": [
+    { "source": "/home/pages/hostel-details(.*)", "destination": "/hostel-details$1", "permanent": true },
+    { "source": "/home/pages/:path*", "destination": "/:path*", "permanent": true },
+    { "source": "/home/hostel-details(.*)", "destination": "/hostel-details$1", "permanent": true },
     { "source": "/pages/home(.*)", "destination": "/", "permanent": true },
     { "source": "/pages/:path*", "destination": "/:path*", "permanent": true }
   ],

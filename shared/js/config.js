@@ -26,6 +26,7 @@
     country:        'Kenya',
     currency:       'KES',
     currencySymbol: 'KSh',
+    botApiUrl:      (window.DKUT_BOT_API_URL || 'http://20.164.16.100:5000').replace(/\/$/, ''),
   };
 
   const LOCATIONS = [
