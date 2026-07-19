@@ -1,6 +1,6 @@
 const BASE_PATH = self.location.pathname.substring(0, self.location.pathname.lastIndexOf('/') + 1);
 
-const CACHE_VERSION = 'dkut-hostel-v8';
+const CACHE_VERSION = 'dkut-hostel-v9';
 const DATA_CACHE = 'dkut-hostel-data-v3';
 
 const STATIC_ASSETS = [
@@ -56,7 +56,8 @@ self.addEventListener('fetch', event => {
 
   if (url.hostname.includes('firebase') || url.hostname.includes('google') ||
       url.hostname.includes('googleapis') || url.hostname.includes('postimg') ||
-      url.hostname.includes('dicebear') || url.hostname.includes('unsplash')) {
+      url.hostname.includes('dicebear') || url.hostname.includes('unsplash') ||
+      url.hostname.includes('cloudinary') || event.request.destination === 'image') {
     event.respondWith(fetch(event.request).catch(() => new Response('', { status: 503 })));
     return;
   }
