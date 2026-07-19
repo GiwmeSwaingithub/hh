@@ -1,6 +1,11 @@
 name = "dekuthostels-cache"
 main = "src/index.js"
 compatibility_date = "2024-04-01"
+workers_dev = true
+
+routes = [
+  { pattern = "api.listing.dekut.site", custom_domain = true }
+]
 
 [vars]
 FIRESTORE_PROJECT_ID = "dekuthostels"
@@ -12,10 +17,6 @@ FIREBASE_API_KEY = "AIzaSyBy2E0rFGh0quXssZSiQVofwE2C-f5Mt2w"
 [[kv_namespaces]]
 binding = "HOSTELS_KV"
 id = "3672b77d0ff1444c87880d9f8264872b"
-
-routes = [
-  { pattern = "api.listing.dekut.site", custom_domain = true }
-]
 
 [triggers]
 # Run once per day at 2:00 AM UTC — stays well within Firebase free-tier read limits.
