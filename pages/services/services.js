@@ -149,9 +149,11 @@
           <span><strong>Coverage:</strong> ${esc(item.coverage || '')}</span>
         </div>` : '';
 
+      const SVG_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3E%3Crect width='600' height='400' fill='%231e1b2e'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23a5b4fc' font-family='sans-serif' font-size='22' font-weight='600'%3EDKUT Service%3C/text%3E%3C/svg%3E";
+
       li.innerHTML = `
         <div class="macos-location-card">
-          <img class="service-card-img" src="${esc(item.image || '')}" alt="${esc(item.title || '')}" />
+          <img class="service-card-img" src="${esc(item.image || '')}" alt="${esc(item.title || '')}" loading="lazy" decoding="async" style="background:#1e1b2e;" onerror="this.onerror=null;this.src='${SVG_FALLBACK}';" />
           <div>
             <h4 class="location-title">${esc(item.title || '')}</h4>
             <span class="location-distance">${esc(item.subtitle || '')}</span>

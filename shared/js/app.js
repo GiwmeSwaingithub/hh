@@ -381,10 +381,12 @@
       ? '<a class="enquire-btn" href="' + esc(detailHref) + '"><em>View Details</em><i>&#10095;&#10095;</i></a>'
       : '<a1' + (whatsapp ? ' href="' + esc(whatsapp) + '" target="_blank" rel="noopener noreferrer"' : '') + '><em>Enquire Now</em><i>&#10095;&#10095;</i></a1>';
 
+    const SVG_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3E%3Crect width='600' height='400' fill='%231e1b2e'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23a5b4fc' font-family='sans-serif' font-size='22' font-weight='600'%3EDKUT Hostels%3C/text%3E%3C/svg%3E";
+
     return '<li class="project-item active" data-name="' + esc((h.name || '').toLowerCase()) + '" data-loc="' + esc((h.location || '').toLowerCase()) + '" data-id="' + esc(hostelId) + '">' +
       '<div class="project-card">' +
-        '<div class="card-hero-wrap">' +
-          '<img src="' + esc(thumb) + '" alt="' + esc(h.name) + '" class="card-hero-img" loading="lazy" onerror="this.src=\'' + FALLBACK_IMG + '\'">' +
+        '<div class="card-hero-wrap" style="background:#1e1b2e;border-radius:12px;overflow:hidden;">' +
+          '<img src="' + esc(thumb) + '" alt="' + esc(h.name) + '" class="card-hero-img" loading="lazy" decoding="async" style="background:#1e1b2e;" onerror="this.onerror=null;this.src=\'' + SVG_FALLBACK + '\';">' +
           '<span class="card-hero-badge">#' + esc(hostelId) + '</span>' +
         '</div>' +
         '<div class="card-simple-info" style="margin-top:16px; text-align:left;">' +
