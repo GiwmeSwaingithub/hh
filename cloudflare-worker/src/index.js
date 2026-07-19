@@ -60,10 +60,10 @@ function parseDocument(doc) {
 
 // ─── Firestore Fetch ──────────────────────────────────────────────────────────
 
-async function fetchFromFirestore(projectId, idToken) {
-  // Fetch up to 300 documents in one round-trip
-  // Use the admin Firebase ID Token as Bearer to authenticate Firestore REST reads
-  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/hostels?pageSize=300`;
+async function fetchFromFirestore(env, idToken) {
+  const projectId = env?.FIRESTORE_PROJECT_ID || 'dekuthostels';
+  const apiKey = env?.FIREBASE_API_KEY || 'AIzaSyBy2E0rFGh0quXssZSiQVofwE2C-f5Mt2w';
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/hostels?pageSize=300&key=${apiKey}`;
   const headers = { 'Content-Type': 'application/json' };
   if (idToken) headers['Authorization'] = `Bearer ${idToken}`;
   const res = await fetch(url, { method: 'GET', headers, cf: { cacheTtl: 0 } });
@@ -90,12 +90,11 @@ async function fetchFromFirestore(projectId, idToken) {
 // ─── Cache Refresh ────────────────────────────────────────────────────────────
 
 async function refreshCache(env, idToken) {
-  const projectId = env.FIRESTORE_PROJECT_ID || 'dekuthostels';
   console.log('[Refresh] Fetching from Firestore…');
 
   let hostels;
   try {
-    hostels = await fetchFromFirestore(projectId, idToken);
+    hostels = await fetchFromFirestore(env, idToken);
   } catch (err) {
     // Release lock on failure so the next request can retry sooner
     await env.HOSTELS_KV.delete('lock:hostels_refresh').catch(() => {});
@@ -124,8 +123,10 @@ async function refreshCache(env, idToken) {
 
 // ─── Services Cache Refresh ───────────────────────────────────────────────────
 
-async function fetchServicesFromFirestore(projectId, idToken) {
-  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/services?pageSize=300`;
+async function fetchServicesFromFirestore(env, idToken) {
+  const projectId = env?.FIRESTORE_PROJECT_ID || 'dekuthostels';
+  const apiKey = env?.FIREBASE_API_KEY || 'AIzaSyBy2E0rFGh0quXssZSiQVofwE2C-f5Mt2w';
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/services?pageSize=300&key=${apiKey}`;
   const headers = { 'Content-Type': 'application/json' };
   if (idToken) headers['Authorization'] = `Bearer ${idToken}`;
   const res = await fetch(url, { method: 'GET', headers, cf: { cacheTtl: 0 } });
