@@ -766,6 +766,12 @@
       scrollTimeout = setTimeout(saveState, 200);
     });
 
+    // Listen for live cache invalidation from admin sync
+    document.addEventListener('dkut-cache-invalidated', () => {
+      console.info('[DKUT Home] Re-loading data due to Cloudflare sync...');
+      loadData();
+    });
+
     loadData();
   }
 

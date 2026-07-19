@@ -180,46 +180,88 @@
     return fetchFromUrls(getMockDataUrls(), cacheKey, 'mock hostels');
   }
 
-  async function fetchHostels() {
+  function clearCache() {
+    try {
+      const cfg = DKUT.CONFIG && DKUT.CONFIG.SETTINGS;
+      const cacheKey = (cfg && cfg.cacheKey) || 'dkut_hostels_cf_cache';
+      localStorage.removeItem(cacheKey);
+      console.info('[DKUT] Local hostel cache cleared.');
+    } catch (_) {}
+  }
+
+  async function fetchHostels(forceRefresh) {
     if (isMockMode()) return fetchMockHostels();
 
     const cfg      = DKUT.CONFIG && DKUT.CONFIG.SETTINGS;
     const workerUrl = (cfg && cfg.cfWorkerUrl) || 'https://dekuthostels-cache.giwme1socialtalk.workers.dev/hostels.json';
     const cacheKey  = (cfg && cfg.cacheKey)    || 'dkut_hostels_cf_cache';
-    const cacheTTL  = (cfg && cfg.cacheTTL)    || 300000; // 5 minutes browser cache
 
-    // --- 1. Serve from browser localStorage (5-min session cache) ----------
+    if (forceRefresh) {
+      clearCache();
+    }
+
+    // --- 1. Fetch live from Cloudflare Worker (single source of truth) ------
+    try {
+      const res = await fetch(workerUrl, { cache: 'no-cache' });
+      if (res.ok) {
+        const raw = await res.json();
+        const normalized = normalizeHostels(raw);
+        if (normalized.length > 0) {
+          try {
+            localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: normalized }));
+          } catch (_) {}
+          console.info('[DKUT] Loaded', normalized.length, 'hostels from Cloudflare Worker.');
+          return normalized;
+        }
+      }
+    } catch (err) {
+      console.warn('[DKUT] Cloudflare fetch failed, attempting local cache fallback:', err);
+    }
+
+    // --- 2. Offline Fallback: Serve from browser localStorage ----------
     try {
       const raw = localStorage.getItem(cacheKey);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (parsed && parsed.ts && parsed.data && (Date.now() - parsed.ts < cacheTTL)) {
+        if (parsed && parsed.data) {
           const normalized = normalizeHostels(parsed.data);
           if (normalized.length > 0) {
-            console.info('[DKUT] Served', normalized.length, 'hostels from browser cache.');
+            console.info('[DKUT] Served', normalized.length, 'hostels from browser cache fallback.');
             return normalized;
           }
         }
       }
-    } catch (_) {
-      try { localStorage.removeItem(cacheKey); } catch (__) {}
-    }
-
-    // --- 2. Fetch from Cloudflare Worker (the single source of truth) ------
-    const res = await fetch(workerUrl);
-    if (!res.ok) throw new Error('Cloudflare cache returned HTTP ' + res.status);
-    const raw = await res.json();
-    const normalized = normalizeHostels(raw);
-    if (normalized.length === 0) throw new Error('Cloudflare cache returned 0 hostels.');
-
-    // Persist in localStorage so subsequent same-session page loads are instant
-    try {
-      localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: normalized }));
     } catch (_) {}
 
-    console.info('[DKUT] Loaded', normalized.length, 'hostels from Cloudflare Worker.');
-    return normalized;
+    // --- 3. Final Fallback: Static json files ----------
+    return fetchFromUrls(getDataUrls(), cacheKey, 'hostels fallback');
   }
+
+  // Watch Firestore cloudflare/sync document for live invalidation across open tabs
+  (function initLiveCacheInvalidation() {
+    let listening = false;
+    function setupListener() {
+      if (listening) return;
+      try {
+        if (window.firebase && window.firebase.apps && window.firebase.apps.length > 0) {
+          const db = window.firebase.firestore();
+          let initial = true;
+          db.collection('cloudflare').doc('sync').onSnapshot(doc => {
+            if (initial) { initial = false; return; }
+            console.info('[DKUT] Cloudflare sync update detected! Invalidating cache...');
+            clearCache();
+            document.dispatchEvent(new CustomEvent('dkut-cache-invalidated', { detail: doc.data() }));
+          }, () => {});
+          listening = true;
+        }
+      } catch (_) {}
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => setTimeout(setupListener, 1000));
+    } else {
+      setTimeout(setupListener, 1000);
+    }
+  })();
 
   function detailsUrl(hostelId) {
     if (DKUT.CONFIG && DKUT.CONFIG.pageUrl) {
@@ -501,7 +543,7 @@
   } catch (_) {}
 
   DKUT.app = {
-    fetchHostels, fetchMockHostels, buildHostelCard, switchTab, fmtPrice, showToast,
+    fetchHostels, fetchMockHostels, buildHostelCard, switchTab, fmtPrice, showToast, clearCache,
     filterHostels, esc, normalizeHostels, detailsUrl, homeLocationUrl, FALLBACK_IMG,
     isMockMode, setMockMode, getTheme, getAccent, setTheme, setAccent, applyTheme, applyAccent,
   };

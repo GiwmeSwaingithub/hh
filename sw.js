@@ -1,7 +1,7 @@
 const BASE_PATH = self.location.pathname.substring(0, self.location.pathname.lastIndexOf('/') + 1);
 
-const CACHE_VERSION = 'dkut-hostel-v7';
-const DATA_CACHE = 'dkut-hostel-data-v2';
+const CACHE_VERSION = 'dkut-hostel-v8';
+const DATA_CACHE = 'dkut-hostel-data-v3';
 
 const STATIC_ASSETS = [
   BASE_PATH,
@@ -63,7 +63,7 @@ self.addEventListener('fetch', event => {
 
   if (url.pathname.includes('hostels.json') || url.pathname.includes('services.json')) {
     event.respondWith(
-      fetch(event.request).then(response => {
+      fetch(event.request, { cache: 'no-cache' }).then(response => {
         const clone = response.clone();
         caches.open(DATA_CACHE).then(c => c.put(event.request, clone));
         return response;

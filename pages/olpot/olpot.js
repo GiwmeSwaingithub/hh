@@ -946,6 +946,10 @@
           showCacheBox(box, 'success', 'Cache updated \u2014 ' + r.body.count + ' hostels refreshed from Firestore.');
           toast('Cache refreshed! ' + r.body.count + ' hostels live.', 'success');
 
+          if (window.DKUT && window.DKUT.app && window.DKUT.app.clearCache) {
+            window.DKUT.app.clearCache();
+          }
+
           // Register sync metadata to cloudflare/sync AND sync/cloudflare
           if (db) {
             console.log('[DKUT] Registering cloudflare sync metadata in Firestore…');
@@ -958,13 +962,16 @@
               .then(function () {
                 console.log('[DKUT] Registered cloudflare sync documents successfully.');
                 refreshStats();
+                loadHostelsList();
               })
               .catch(function (err) {
                 console.error('[DKUT] Error registering cloudflare sync:', err);
                 refreshStats();
+                loadHostelsList();
               });
           } else {
             refreshStats();
+            loadHostelsList();
           }
         } else {
           throw new Error(r.body.error || 'Unknown error from server.');

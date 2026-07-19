@@ -250,9 +250,11 @@ export default {
           return new Response(JSON.stringify(hostels), {
             headers: {
               'Content-Type': 'application/json',
-              'Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
+              'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
               'X-Cache-Status': 'MISS',
               'X-Cache-Age-Seconds': '0',
+              'X-Cache-Timestamp': (newMeta ? newMeta.timestamp : Date.now()).toString(),
+              'ETag': '"' + (newMeta ? newMeta.timestamp : Date.now()) + '"',
               ...CORS,
             },
           });
@@ -281,10 +283,12 @@ export default {
       return new Response(rawData, {
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
+          'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
           'X-Cache-Status': stale ? 'STALE' : 'HIT',
           'X-Cache-Age-Seconds': Math.round(age / 1000).toString(),
-          'X-Hostel-Count': meta.count?.toString() ?? '',
+          'X-Cache-Timestamp': meta?.timestamp ? meta.timestamp.toString() : Date.now().toString(),
+          'ETag': '"' + (meta?.timestamp || Date.now()) + '"',
+          'X-Hostel-Count': meta?.count?.toString() ?? '',
           ...CORS,
         },
       });
@@ -309,9 +313,11 @@ export default {
           return new Response(JSON.stringify(services), {
             headers: {
               'Content-Type': 'application/json',
-              'Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
+              'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
               'X-Cache-Status': 'MISS',
               'X-Cache-Age-Seconds': '0',
+              'X-Cache-Timestamp': (newMeta ? newMeta.timestamp : Date.now()).toString(),
+              'ETag': '"' + (newMeta ? newMeta.timestamp : Date.now()) + '"',
               ...CORS,
             },
           });
@@ -340,10 +346,12 @@ export default {
       return new Response(rawData, {
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
+          'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
           'X-Cache-Status': stale ? 'STALE' : 'HIT',
           'X-Cache-Age-Seconds': Math.round(age / 1000).toString(),
-          'X-Service-Count': meta.count?.toString() ?? '',
+          'X-Cache-Timestamp': meta?.timestamp ? meta.timestamp.toString() : Date.now().toString(),
+          'ETag': '"' + (meta?.timestamp || Date.now()) + '"',
+          'X-Service-Count': meta?.count?.toString() ?? '',
           ...CORS,
         },
       });

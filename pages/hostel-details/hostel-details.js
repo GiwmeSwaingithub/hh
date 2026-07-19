@@ -152,39 +152,123 @@
       mapIframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(coords)}&layer=c&cbll=${encodeURIComponent(hostel.coordinates || '')}&output=embed`;
     }
 
-    // Amenities Categorization & Sorting
-    const utilities = hostel.utilities || [];
+    // Amenities / Utilities — supports both structured object and legacy flat array
+    const utilitiesRaw = hostel.utilities;
     let included = [];
     let paid = [];
 
-    if (hostel.utilitiesIncluded && Array.isArray(hostel.utilitiesIncluded)) {
-      included = [...hostel.utilitiesIncluded];
-    }
-    if (hostel.utilitiesPaid && Array.isArray(hostel.utilitiesPaid)) {
-      paid = [...hostel.utilitiesPaid];
-    }
+    // Helper icon SVGs for utility types
+    const utilIcons = {
+      water:       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"><path d="M12 2C6 10 4 14 4 17a8 8 0 0 0 16 0c0-3-2-7-8-15z"/></svg>',
+      electricity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+      wifi:        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>',
+      garbage:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>',
+      shower:      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"><path d="M4 12h16"/><path d="M4 12a8 8 0 0 1 8-8v8"/><path d="M8 20h.01M12 20h.01M16 20h.01M10 18h.01M14 18h.01"/></svg>',
+      bed:         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>',
+      laundry:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"><rect x="2" y="2" width="20" height="20" rx="2"/><circle cx="12" cy="12" r="4"/><path d="M8 2v3"/><circle cx="17" cy="6" r="1" fill="currentColor"/></svg>',
+      parking:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg>',
+    };
 
-    if (included.length === 0 && paid.length === 0) {
-      utilities.forEach(u => {
-        const lower = u.toLowerCase();
-        if (
-          lower.includes('token') ||
-          lower.includes('paid') ||
-          lower.includes('extra') ||
-          lower.includes('pay for') ||
-          lower.includes('own cost') ||
-          lower.includes('meter') ||
-          lower.includes('separately') ||
-          lower.includes('not in rent') ||
-          lower.includes('not included') ||
-          lower.includes('electricity (') ||
-          lower.includes('water (')
-        ) {
-          paid.push(u);
-        } else {
-          included.push(u);
+    if (utilitiesRaw && typeof utilitiesRaw === 'object' && !Array.isArray(utilitiesRaw)) {
+      // Structured object format: { water: {type, description}, electricity: {type}, garbageCollection: {...}, ... }
+      const keyLabelMap = {
+        water: 'Water',
+        electricity: 'Electricity',
+        wifi: 'WiFi',
+        garbageCollection: 'Garbage Collection',
+        hotShower: 'Hot Shower',
+        bed: 'Bed / Mattress',
+        laundry: 'Laundry',
+        parking: 'Parking',
+      };
+      const iconMap = {
+        water: utilIcons.water,
+        electricity: utilIcons.electricity,
+        wifi: utilIcons.wifi,
+        garbageCollection: utilIcons.garbage,
+        hotShower: utilIcons.shower,
+        bed: utilIcons.bed,
+        laundry: utilIcons.laundry,
+        parking: utilIcons.parking,
+      };
+      const paidTypes = ['meter', 'token', 'paid', 'extra', 'weekly', 'monthly', 'per'];
+      const isPaidType = (type) => type && paidTypes.some(p => String(type).toLowerCase().includes(p));
+
+      Object.entries(utilitiesRaw).forEach(([key, val]) => {
+        if (!val) return;
+        const label = keyLabelMap[key] || key;
+        const icon = iconMap[key] || '';
+        let pillLabel = icon + esc(label);
+
+        if (typeof val === 'boolean') {
+          if (val) included.push(pillLabel);
+          // If false, skip silently
+          return;
+        }
+
+        if (typeof val === 'object') {
+          // Determine included vs paid
+          const type = val.type || '';
+          const isIncl = val.included === true || type === 'included';
+          const isAvail = val.available === true;
+          const selfService = val.selfService === true;
+          const desc = val.description ? ` (${val.description})` : '';
+          const amt = val.amount ? ` — KES ${val.amount}/${val.period || 'mo'}` : '';
+
+          if (key === 'garbageCollection') {
+            // Always show with cost if any
+            const gcLabel = icon + esc(label) + esc(amt || (type ? ` (${type})` : ''));
+            if (isPaidType(type) || val.amount) {
+              paid.push(gcLabel);
+            } else {
+              included.push(gcLabel);
+            }
+          } else if (key === 'hotShower') {
+            if (isIncl || isAvail) {
+              included.push(icon + esc('Hot Shower'));
+            }
+          } else if (key === 'bed') {
+            if (val.included === true) included.push(icon + esc('Bed Included'));
+            if (val.mattressIncluded === true) included.push(esc('Mattress Included'));
+          } else if (key === 'laundry') {
+            if (isAvail) {
+              const lLabel = icon + esc('Laundry') + (selfService ? ' (Self-service)' : '');
+              included.push(lLabel);
+            }
+          } else if (key === 'parking') {
+            if (isAvail) included.push(icon + esc('Parking Available'));
+          } else if (isPaidType(type)) {
+            paid.push(icon + esc(label) + esc(desc));
+          } else if (isIncl || type === 'included' || type === 'free') {
+            included.push(icon + esc(label) + esc(desc));
+          } else if (type) {
+            paid.push(icon + esc(label) + esc(` (${type})`) + esc(desc));
+          }
         }
       });
+    } else if (Array.isArray(utilitiesRaw)) {
+      // Legacy flat array format
+      if (hostel.utilitiesIncluded && Array.isArray(hostel.utilitiesIncluded)) {
+        included = [...hostel.utilitiesIncluded];
+      }
+      if (hostel.utilitiesPaid && Array.isArray(hostel.utilitiesPaid)) {
+        paid = [...hostel.utilitiesPaid];
+      }
+      if (included.length === 0 && paid.length === 0) {
+        utilitiesRaw.forEach(u => {
+          const lower = u.toLowerCase();
+          if (
+            lower.includes('token') || lower.includes('paid') || lower.includes('extra') ||
+            lower.includes('pay for') || lower.includes('own cost') || lower.includes('meter') ||
+            lower.includes('separately') || lower.includes('not in rent') ||
+            lower.includes('not included') || lower.includes('electricity (') || lower.includes('water (')
+          ) {
+            paid.push(u);
+          } else {
+            included.push(u);
+          }
+        });
+      }
     }
 
     const amenitiesContainer = document.getElementById('amenities-container');
@@ -203,7 +287,7 @@
                     Included in Rent
                 </h4>
                 <div class="amenities-grid">
-                    ${included.map(u => `<span class="amenity-pill pill-included">${esc(u)}</span>`).join('')}
+                    ${included.map(u => `<span class="amenity-pill pill-included">${u}</span>`).join('')}
                 </div>
             </div>
           `;
@@ -220,7 +304,7 @@
                     Paid Separately (by Tenant)
                 </h4>
                 <div class="amenities-grid">
-                    ${paid.map(u => `<span class="amenity-pill pill-paid">${esc(u)}</span>`).join('')}
+                    ${paid.map(u => `<span class="amenity-pill pill-paid">${u}</span>`).join('')}
                 </div>
             </div>
           `;
@@ -527,14 +611,30 @@
         if (r.quietHours) {
           ruleLines.push(`Quiet Hours: ${r.quietHours.start} - ${r.quietHours.end}`);
         }
+        // Rules fields are {allowed: bool} objects in DB
         if (r.parties !== undefined) {
-          ruleLines.push(`Parties: ${r.parties ? 'Allowed' : 'Not allowed'}`);
+          const v = typeof r.parties === 'object' ? r.parties.allowed : r.parties;
+          ruleLines.push(`Parties: ${v ? 'Allowed' : 'Not allowed'}`);
         }
         if (r.alcohol !== undefined) {
-          ruleLines.push(`Alcohol: ${r.alcohol ? 'Allowed' : 'Not allowed'}`);
+          const v = typeof r.alcohol === 'object' ? r.alcohol.allowed : r.alcohol;
+          ruleLines.push(`Alcohol: ${v ? 'Allowed' : 'Not allowed'}`);
         }
         if (r.smoking !== undefined) {
-          ruleLines.push(`Smoking: ${r.smoking ? 'Allowed' : 'Not allowed'}`);
+          const v = typeof r.smoking === 'object' ? r.smoking.allowed : r.smoking;
+          ruleLines.push(`Smoking: ${v ? 'Allowed' : 'Not allowed'}`);
+        }
+        if (r.pets !== undefined) {
+          const v = typeof r.pets === 'object' ? r.pets.allowed : r.pets;
+          ruleLines.push(`Pets: ${v ? 'Allowed' : 'Not allowed'}`);
+        }
+        if (r.noticeBeforeVacating && r.noticeBeforeVacating.required) {
+          const dur = r.noticeBeforeVacating.duration || '';
+          const unit = r.noticeBeforeVacating.unit || 'days';
+          ruleLines.push(`Notice Before Vacating: ${dur} ${unit}`);
+        }
+        if (r.cleanliness && r.cleanliness.tenantResponsible) {
+          ruleLines.push('Cleanliness: Tenant is responsible for maintaining cleanliness');
         }
 
         const others = r.others || r.other;
